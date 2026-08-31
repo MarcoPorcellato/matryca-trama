@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Documentation and project overview
+    url: https://github.com/MarcoPorcellato/matryca-trama#readme
+    about: Read the project documentation before opening an issue.
+  - name: Security vulnerability report
+    url: https://github.com/MarcoPorcellato/matryca-trama/security/advisories/new
+    about: Report security issues privately through GitHub Security Advisories.
