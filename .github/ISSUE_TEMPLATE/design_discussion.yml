@@ -1,0 +1,23 @@
+name: Design discussion
+description: Discuss architecture, product boundaries, or public contracts.
+title: "design: "
+labels: [design]
+body:
+  - type: textarea
+    id: context
+    attributes:
+      label: Context
+      description: Explain the decision or trade-off.
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposal
+      description: Describe the direction and impact on Community, commercial use, Pro, Parser, Plumber, and Brain.
+    validations:
+      required: true
+  - type: textarea
+    id: questions
+    attributes:
+      label: Open questions

@@ -1,0 +1,25 @@
+# Local environments and caches
+.venv/
+venv/
+__pycache__/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.cache/
+
+# Local vaults and private data
+*.vault/
+.env
+.env.*
+!.env.example
+
+# Generated outputs
+dist/
+build/
+coverage.xml
+htmlcov/
+
+# Editor and OS files
+.DS_Store
+.idea/
+.vscode/
