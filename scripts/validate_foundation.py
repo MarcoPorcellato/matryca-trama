@@ -85,6 +85,14 @@ def validate(root: Path) -> list[str]:
                 "README must preserve permissions for named noncommercial organisations"
             )
 
+    workflow_path = root / ".github" / "workflows" / "foundation.yml"
+    if workflow_path.is_file() and "fetch-depth: 2" not in workflow_path.read_text(
+        encoding="utf-8"
+    ):
+        errors.append(
+            "foundation workflow must use fetch-depth: 2 before checking HEAD^"
+        )
+
     for path in files:
         relative = path.relative_to(root)
         relative_text = relative.as_posix()

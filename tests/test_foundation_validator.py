@@ -60,6 +60,8 @@ def create_minimum_repository(root: Path) -> None:
                 "Community source-available foundation; named noncommercial "
                 "organisations retain their licence permissions.\n"
             )
+        elif relative == ".github/workflows/foundation.yml":
+            content = "fetch-depth: 2\n"
         path.write_text(content, encoding="utf-8")
 
 
@@ -141,6 +143,19 @@ class FoundationValidatorTests(unittest.TestCase):
 
             self.assertNotEqual(result.returncode, 0)
             self.assertIn("named noncommercial organisations", result.stderr)
+
+    def test_foundation_workflow_must_fetch_parent_commit(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            create_minimum_repository(root)
+            (root / ".github" / "workflows" / "foundation.yml").write_text(
+                "fetch-depth: 1\n", encoding="utf-8"
+            )
+
+            result = run_validator(root)
+
+            self.assertNotEqual(result.returncode, 0)
+            self.assertIn("fetch-depth: 2", result.stderr)
 
 
 if __name__ == "__main__":
