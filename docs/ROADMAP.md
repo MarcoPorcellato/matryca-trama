@@ -9,7 +9,14 @@ documentation checks on the foundation commit.
 
 ## Phase 1 — Shared contracts
 
-Define versioned contracts for Parser and Plumber, provenance fields, compatibility rules, error semantics, and fixture ownership. Evidence: contract tests run without private dependencies.
+Define versioned contracts for Parser and Plumber, provenance fields,
+compatibility rules, error semantics, and fixture ownership. The contract set
+must publish a compatibility matrix for Trama, Parser, Plumber, and the
+supported Logseq host surface; canonical contract identifiers and semantic
+version ranges; accepted and rejected profiles; and sanitized fixture
+ownership. Every result must carry producer identity and version, source mode
+and binding, capability set, and fixture or result digest. Evidence: contract
+tests run without private dependencies and reject unsupported versions.
 
 ## Phase 2 — Community core
 
@@ -18,9 +25,14 @@ Build the smallest deterministic Trama core around the public Parser capability.
 ## Phase 3 — Logseq adapters
 
 Add an OG adapter and an initially read-only DB adapter with capability
-detection, documented limitations, and authority-preserving fixtures. Evidence:
-supported and unsupported cases are tested, provenance is retained, and no DB
-write path exists without a later accepted ADR.
+detection, documented limitations, and authority-preserving fixtures. The
+initial contract covers only graph identification, one page read, and one
+complete ordered block-subtree read. The DB adapter selects no host surface
+until a focused compatibility spike establishes an official, versioned
+read-only route. Events, Shadow acceleration, synchronization, and every write
+path remain deferred. Evidence: supported and unsupported cases are tested,
+provenance is retained, and no DB write path exists without a later accepted
+ADR.
 
 ## Phase 4 — Nodi
 
