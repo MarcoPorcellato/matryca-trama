@@ -30,14 +30,33 @@ derived index never becomes an implicit replacement authority.
 - `trama-core`: Community domain behavior and stable public APIs.
 - `contracts`: versioned interfaces shared with Parser and Plumber.
 - `parser-bridge`: integration boundary for the public Parser capability.
-- `plumber-bridge`: integration boundary for orchestration and transport capabilities.
+- `plumber-bridge`: contract-mediated integration boundary for Plumber consumer
+  capabilities. It never imports Plumber internals or becomes a second
+  authority for graph content.
 - `logseq-og-adapter`: explicit Logseq OG support.
 - `logseq-db-adapter`: explicit Logseq DB support, initially read-only until a
   later ADR proves safe write, export, and recovery semantics.
 - `nodi`: user-facing knowledge companion and presentation model.
 - `apps`: thin compositions of packages; business rules belong below this layer.
 
-Matryca Brain is a separate product and repository. Trama may depend on public contracts, never on Brain-private source. Pro source is excluded from this foundation.
+Matryca Brain is a separate product and repository. Trama may depend on public
+contracts, never on Brain-private source. A Plumber bridge and any future Brain
+bridge are independently versioned public boundaries; neither silently widens
+the other. Pro source is excluded from this foundation.
+
+## Initial Logseq read boundary
+
+The first adapter contract is deliberately narrow: identify a graph, read one
+page, and read one complete ordered block subtree. It must state the native
+authority, adapter capability set, source binding, producer version, and
+unsupported-condition result for every response. The OG adapter reads
+authoritative Markdown; the DB adapter reads only through a later-qualified
+official Logseq host surface. A cached export or derived projection is never
+silently substituted for either source.
+
+Events, subscriptions, Shadow acceleration, synchronization, mutation, and
+write recovery are outside this initial boundary. They require their own
+accepted ADRs, contracts, fixtures, and executable evidence.
 
 ## Data and safety rules
 

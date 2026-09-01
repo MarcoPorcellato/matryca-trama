@@ -23,7 +23,20 @@ contracts; Trama never imports Brain-private source.
 
 ## Consequences
 
-Each product can evolve and release independently. Contract design and compatibility testing become essential. A future commercial integration must document authentication, data flow, licensing, and failure behavior before implementation.
+Each product can evolve and release independently. Contract design and
+compatibility testing become essential. A future commercial integration must
+document authentication, data flow, licensing, and failure behavior before
+implementation.
+
+## Integration gate
+
+Before a Trama--Brain connection is implemented, a reviewed public contract
+must name its identifier, compatible version range, authentication and
+authorization model, exact data flow, access selection and revocation,
+licensing or entitlement boundary, upgrade and downgrade behavior, and failure
+results. Tests must reject private-source imports and incompatible or
+underspecified profiles. This gate applies equally when the connection is
+optional: optionality does not permit implicit private coupling.
 
 ## Reversal
 
