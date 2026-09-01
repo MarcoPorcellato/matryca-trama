@@ -108,16 +108,19 @@ or write behavior.
 
 ### Task 2 — Specify the public contract in an independent PR
 
-**Prerequisites:** Task 1 is merged; Trama issue #2 is reconciled to this
-scope; the application-stack decision provides the test layout.
+**Prerequisites:** Task 1 is merged and Trama issue #2 is reconciled to this
+scope. Documentation may define public semantics before the application-stack
+decision. Contract fixtures, tests, package paths, and an implementation claim
+remain blocked until that decision provides their layout.
 
-**Files to create later:**
+**Documentation files in this delivery slice:**
 
 - `docs/contracts/LOGSEQ_READ_CONTRACT_V1.md`
 - `docs/contracts/PARSER_COMPATIBILITY.md`
 - `docs/contracts/PLUMBER_COMPATIBILITY.md`
-- versioned synthetic fixtures and contract tests in the layout accepted by the
-  application-stack ADR.
+
+**Deferred until ADR-0004:** versioned synthetic fixtures and contract tests in
+the accepted application-stack layout.
 
 **Acceptance evidence:** tests accept a complete profile and reject an unknown
 version, missing provenance, wrong authority, incomplete subtree, and private
