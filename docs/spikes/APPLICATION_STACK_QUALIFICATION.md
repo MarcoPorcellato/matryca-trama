@@ -55,6 +55,18 @@ Each qualification record must include:
 Public evidence excludes local paths, user vault content, credentials, generated
 DB files, private Brain source, and machine identifiers.
 
+## Hosted contract gate
+
+`.github/workflows/python-contracts.yml` is the fork-safe hosted gate for the
+locked contract, containment, Plumber-consumer, and Foundation suites. Its
+existence and local workflow-contract tests do not constitute hosted execution
+or qualification evidence.
+
+A hosted record may be added only after the workflow is terminal on its exact
+commit. The record must use the sanitized template under
+`docs/spikes/evidence/python-read-contract-v1/`; a missing, failed, cancelled,
+or non-terminal run leaves this protocol's completion rule unmet.
+
 ## Completion rule
 
 The first executable slice becomes qualified only when every mandatory gate
