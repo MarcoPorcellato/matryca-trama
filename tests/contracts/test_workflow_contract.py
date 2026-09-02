@@ -31,6 +31,8 @@ jobs:
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
       - name: Set up uv
         uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
+      - run: python --version
+      - run: uv --version
       - run: uv sync --locked --all-packages
       - run: uv run --all-packages python -m unittest discover -s tests/contracts -v
       - run: uv run --all-packages python -m unittest discover -s tests/containment -v
@@ -51,6 +53,8 @@ class WorkflowContractTests(unittest.TestCase):
         workflow = self.workflow()
 
         for command in (
+            "python --version",
+            "uv --version",
             "uv sync --locked --all-packages",
             "uv run --all-packages python -m unittest discover -s tests/contracts -v",
             "uv run --all-packages python -m unittest discover -s tests/containment -v",
@@ -115,6 +119,8 @@ class WorkflowContractTests(unittest.TestCase):
         self.assertEqual(
             runs,
             [
+                "python --version",
+                "uv --version",
                 "uv sync --locked --all-packages",
                 "uv run --all-packages python -m unittest discover -s tests/contracts -v",
                 "uv run --all-packages python -m unittest discover -s tests/containment -v",
