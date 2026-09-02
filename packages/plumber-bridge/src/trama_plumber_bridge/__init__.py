@@ -1,0 +1,1 @@
+"""Public Plumber consumer boundary."""

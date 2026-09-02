@@ -126,7 +126,7 @@ class WorkspaceTest(unittest.TestCase):
 
 - [ ] **Step 2: Run test to verify it fails**
 
-Run: `uv run python -m unittest tests.contracts.test_workspace -v`
+Run: `uv run --all-packages python -m unittest tests.contracts.test_workspace -v`
 
 Expected: FAIL because no workspace package exists.
 
@@ -151,7 +151,7 @@ Parser range only to `packages/parser-bridge/pyproject.toml`.
 
 - [ ] **Step 4: Generate lockfile and run import test**
 
-Run: `uv lock && uv run python -m unittest tests.contracts.test_workspace -v`
+Run: `uv lock && uv run --all-packages python -m unittest tests.contracts.test_workspace -v`
 
 Expected: PASS. `uv.lock` contains only public resolved dependencies.
 
@@ -199,7 +199,7 @@ class ReadContractTests(unittest.TestCase):
 
 - [ ] **Step 2: Run focused test to verify it fails**
 
-Run: `uv run python -m unittest tests.contracts.test_models -v`
+Run: `uv run --all-packages python -m unittest tests.contracts.test_models -v`
 
 Expected: FAIL because DTOs and validation do not exist.
 
@@ -232,7 +232,7 @@ operation.
 
 - [ ] **Step 4: Run contract suite**
 
-Run: `uv run python -m unittest tests.contracts.test_models -v`
+Run: `uv run --all-packages python -m unittest tests.contracts.test_models -v`
 
 Expected: PASS, including unknown version, invalid request, authority mismatch,
 missing provenance, and failure-result cases.
@@ -277,7 +277,7 @@ class FixtureBoundaryTests(unittest.TestCase):
 
 - [ ] **Step 2: Run focused test to verify it fails**
 
-Run: `uv run python -m unittest tests.containment.test_fixture_boundary -v`
+Run: `uv run --all-packages python -m unittest tests.containment.test_fixture_boundary -v`
 
 Expected: FAIL because containment and canonicalization helpers do not exist.
 
@@ -300,7 +300,7 @@ fixture is consumed.
 
 - [ ] **Step 4: Run containment and contract tests**
 
-Run: `uv run python -m unittest tests.containment.test_fixture_boundary tests.contracts.test_models -v`
+Run: `uv run --all-packages python -m unittest tests.containment.test_fixture_boundary tests.contracts.test_models -v`
 
 Expected: PASS. No test reads outside its temporary or fixture root.
 
@@ -342,7 +342,7 @@ class ParserLoaderTests(unittest.TestCase):
 
 - [ ] **Step 2: Run focused test to verify it fails**
 
-Run: `uv run python -m unittest tests.contracts.test_parser_loader -v`
+Run: `uv run --all-packages python -m unittest tests.contracts.test_parser_loader -v`
 
 Expected: FAIL because the bridge is absent.
 
@@ -365,7 +365,7 @@ unless a later contract test proves a stricter required behavior.
 
 - [ ] **Step 4: Run loader, containment, and contract tests**
 
-Run: `uv run python -m unittest tests.contracts.test_parser_loader tests.containment.test_fixture_boundary tests.contracts.test_models -v`
+Run: `uv run --all-packages python -m unittest tests.contracts.test_parser_loader tests.containment.test_fixture_boundary tests.contracts.test_models -v`
 
 Expected: PASS.
 
@@ -415,7 +415,7 @@ missing provenance, and source-order preservation of the complete subtree.
 
 - [ ] **Step 2: Run focused tests to verify they fail**
 
-Run: `uv run python -m unittest tests.contracts.test_og_read_contract -v`
+Run: `uv run --all-packages python -m unittest tests.contracts.test_og_read_contract -v`
 
 Expected: FAIL because no OG adapter exists.
 
@@ -470,7 +470,7 @@ helpers, including a two-level ordered subtree.
 
 - [ ] **Step 4: Run complete producer suite**
 
-Run: `uv run python -m unittest discover -s tests/contracts -v && uv run python -m unittest discover -s tests/containment -v`
+Run: `uv run --all-packages python -m unittest discover -s tests/contracts -v && uv run --all-packages python -m unittest discover -s tests/containment -v`
 
 Expected: PASS. Static review finds no write, watcher, export, DB, or network
 imports in `packages/logseq-og-adapter`.
@@ -525,7 +525,7 @@ class PlumberConsumerTests(unittest.TestCase):
 
 - [ ] **Step 2: Run focused test to verify it fails**
 
-Run: `uv run python -m unittest tests.integration.test_plumber_consumer -v`
+Run: `uv run --all-packages python -m unittest tests.integration.test_plumber_consumer -v`
 
 Expected: FAIL because the consumer boundary is absent.
 
@@ -548,7 +548,7 @@ cross-repository import.
 
 - [ ] **Step 4: Run producer and consumer suites**
 
-Run: `uv run python -m unittest discover -s tests -v`
+Run: `uv run --all-packages python -m unittest discover -s tests -v`
 
 Expected: PASS. The consumer rejects all non-success outcomes and non-native
 authority without fallback.
@@ -582,13 +582,13 @@ import unittest
 class WorkflowContractTests(unittest.TestCase):
     def test_python_contract_workflow_runs_locked_suite(self) -> None:
         workflow = Path(".github/workflows/python-contracts.yml").read_text()
-        self.assertIn("uv sync --locked", workflow)
+        self.assertIn("uv sync --locked --all-packages", workflow)
         self.assertIn("python -m unittest discover -s tests -v", workflow)
 ```
 
 - [ ] **Step 2: Run test to verify it fails**
 
-Run: `uv run python -m unittest tests.contracts.test_workflow_contract -v`
+Run: `uv run --all-packages python -m unittest tests.contracts.test_workflow_contract -v`
 
 Expected: FAIL because the workflow does not exist.
 
@@ -608,8 +608,8 @@ jobs:
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - uses: astral-sh/setup-uv@20cfd1bf945f4377ade1205e4dbc17946fc9a30d # v10.0.1
-      - run: uv sync --locked
-      - run: uv run python -m unittest discover -s tests -v
+      - run: uv sync --locked --all-packages
+      - run: uv run --all-packages python -m unittest discover -s tests -v
 ```
 
 Pin every action to a reviewed full SHA. Do not add secrets, cache uploads,
@@ -617,7 +617,7 @@ artifact publication, deployment, or privileged pull-request triggers.
 
 - [ ] **Step 4: Run local workflow-contract and full test suite**
 
-Run: `uv run python -m unittest discover -s tests -v`
+Run: `uv run --all-packages python -m unittest discover -s tests -v`
 
 Expected: PASS. Then inspect hosted CI on the exact pull-request head.
 
