@@ -90,6 +90,12 @@ the foundation locally and in fork-safe GitHub Actions.
 - [ ] Accept ADR-0004 only when one candidate satisfies every mandatory gate.
 - [ ] Create `apps/` and `packages/` only after ADR-0004 is accepted.
 
+**Current direction:** the maintainer selected Python 3.12+ with `uv` as the
+first Community stack. Architecture direction is accepted through ADR-0004;
+runtime admission remains blocked until the qualification protocol records the
+mandatory evidence. No `apps/` or `packages/` directory is created by this
+documentation delivery.
+
 ### Task 4: Define Parser and Plumber contracts
 
 **Files:**
