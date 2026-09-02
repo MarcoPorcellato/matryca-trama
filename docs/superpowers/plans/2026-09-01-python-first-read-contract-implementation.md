@@ -627,12 +627,20 @@ Accept Parser versions in `>=1.7.1,<2.0.0` and Plumber `2.0.0` only. Do not
 add a Plumber dependency, retrieval call, CLI/MCP selection, write path, or
 cross-repository import.
 
-- [ ] **Step 4: Run producer and consumer suites**
+- [ ] **Step 4: Run producer, containment, consumer, and Foundation suites**
 
-Run: `uv run --all-packages python -m unittest discover -s tests -v`
+Run:
+
+```bash
+uv run --all-packages python -m unittest discover -s tests/contracts -v
+uv run --all-packages python -m unittest discover -s tests/containment -v
+uv run --all-packages python -m unittest tests.integration.test_plumber_consumer -v
+uv run --all-packages python -m unittest tests.test_foundation_validator -v
+```
 
 Expected: PASS. The consumer rejects all non-success outcomes and non-native
-authority without fallback.
+authority without fallback. Each suite is invoked explicitly: `discover -s
+tests` alone covers only root Foundation tests in this layout.
 
 - [ ] **Step 5: Commit consumer boundary slice**
 
@@ -664,7 +672,14 @@ class WorkflowContractTests(unittest.TestCase):
     def test_python_contract_workflow_runs_locked_suite(self) -> None:
         workflow = Path(".github/workflows/python-contracts.yml").read_text()
         self.assertIn("uv sync --locked --all-packages", workflow)
-        self.assertIn("python -m unittest discover -s tests -v", workflow)
+        for command in (
+            "python -m unittest discover -s tests/contracts -v",
+            "python -m unittest discover -s tests/containment -v",
+            "python -m unittest tests.integration.test_plumber_consumer -v",
+            "python -m unittest tests.test_foundation_validator -v",
+        ):
+            self.assertIn(command, workflow)
+        self.assertNotIn("python -m unittest discover -s tests -v", workflow)
 ```
 
 - [ ] **Step 2: Run test to verify it fails**
@@ -690,17 +705,30 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - uses: astral-sh/setup-uv@20cfd1bf945f4377ade1205e4dbc17946fc9a30d # v10.0.1
       - run: uv sync --locked --all-packages
-      - run: uv run --all-packages python -m unittest discover -s tests -v
+      - run: uv run --all-packages python -m unittest discover -s tests/contracts -v
+      - run: uv run --all-packages python -m unittest discover -s tests/containment -v
+      - run: uv run --all-packages python -m unittest tests.integration.test_plumber_consumer -v
+      - run: uv run --all-packages python -m unittest tests.test_foundation_validator -v
 ```
 
 Pin every action to a reviewed full SHA. Do not add secrets, cache uploads,
 artifact publication, deployment, or privileged pull-request triggers.
 
-- [ ] **Step 4: Run local workflow-contract and full test suite**
+- [ ] **Step 4: Run local workflow-contract and all explicit suites**
 
-Run: `uv run --all-packages python -m unittest discover -s tests -v`
+Run:
 
-Expected: PASS. Then inspect hosted CI on the exact pull-request head.
+```bash
+uv run --all-packages python -m unittest tests.contracts.test_workflow_contract -v
+uv run --all-packages python -m unittest discover -s tests/contracts -v
+uv run --all-packages python -m unittest discover -s tests/containment -v
+uv run --all-packages python -m unittest tests.integration.test_plumber_consumer -v
+uv run --all-packages python -m unittest tests.test_foundation_validator -v
+```
+
+Expected: PASS. These explicit invocations cover contracts, containment,
+integration, and root Foundation tests; `discover -s tests` alone is not a
+complete-suite claim. Then inspect hosted CI on the exact pull-request head.
 
 - [ ] **Step 5: Record sanitized qualification evidence and commit**
 
