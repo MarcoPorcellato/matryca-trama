@@ -1,7 +1,7 @@
 # Application Stack Qualification Protocol
 
-> **Status:** planned evidence protocol. No runtime, supported platform, or
-> Logseq host is qualified by this document.
+> **Status:** qualified evidence exists for the bounded synthetic OG contract
+> slice only. No user graph, DB host, or broader runtime is qualified.
 
 ## Purpose
 
@@ -80,3 +80,5 @@ This protocol does not qualify a Logseq DB host, application UI, Nodi,
 distribution artifact, performance target, write path, events, synchronization,
 Shadow acceleration, export, or recovery behavior. Each needs a separate
 decision and evidence protocol.
+
+Network behavior is also unsupported by this qualification.

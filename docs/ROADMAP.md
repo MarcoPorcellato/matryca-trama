@@ -33,8 +33,11 @@ detection, documented limitations, and authority-preserving fixtures. The
 initial contract covers only graph identification, one page read, and one
 complete ordered block-subtree read. The DB adapter selects no host surface
 until a focused compatibility spike establishes an official, versioned
-read-only route. Events, Shadow acceleration, synchronization, and every write
-path remain deferred. Evidence: supported and unsupported cases are tested,
+read-only route. Current qualification applies only to synthetic OG fixtures for
+`graph.identify`, `page.read`, and complete ordered `block.subtree.read.complete`.
+User graphs, DB, writes, events, Shadow, synchronization, export, recovery,
+UI/Nodi, distribution, performance, and network remain unsupported. Evidence:
+supported and unsupported cases are tested,
 provenance is retained, and no DB write path exists without a later accepted
 ADR.
 

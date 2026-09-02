@@ -10,10 +10,13 @@ Trama while preserving clean commercial, Pro, and Matryca Brain boundaries.
 Complete the foundation specification, architecture, ADRs, roadmap, repository
 policy, and reviewable evidence. Public Parser/Plumber compatibility and the
 three-operation Logseq read contract are documented. The next gate is Python
-application-stack qualification for synthetic contract tests; do not infer that
-an executable adapter exists. Do not add Pro source, Brain implementation,
+application-stack qualification is limited to synthetic OG contract tests for
+`graph.identify`, `page.read`, and complete ordered `block.subtree.read.complete`;
+do not infer a user-graph or host adapter. Do not add Pro source, Brain implementation,
 secrets, private dependencies, DB-host access, runtime adapters, or a write
-path outside its separate evidence gate.
+path outside its separate evidence gate. User graphs, DB, writes, events, Shadow,
+synchronization, export, recovery, UI/Nodi, distribution, performance, and
+network remain unsupported by this qualification.
 
 ## Completion criteria
 
