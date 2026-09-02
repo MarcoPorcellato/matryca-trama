@@ -126,7 +126,7 @@ class WorkspaceTest(unittest.TestCase):
 
 - [ ] **Step 2: Run test to verify it fails**
 
-Run: `uv run python -m unittest tests.contracts.test_workspace -v`
+Run: `uv run --all-packages python -m unittest tests.contracts.test_workspace -v`
 
 Expected: FAIL because no workspace package exists.
 
@@ -151,7 +151,7 @@ Parser range only to `packages/parser-bridge/pyproject.toml`.
 
 - [ ] **Step 4: Generate lockfile and run import test**
 
-Run: `uv lock && uv run python -m unittest tests.contracts.test_workspace -v`
+Run: `uv lock && uv run --all-packages python -m unittest tests.contracts.test_workspace -v`
 
 Expected: PASS. `uv.lock` contains only public resolved dependencies.
 
@@ -193,13 +193,28 @@ class ReadContractTests(unittest.TestCase):
         self.assertIs(validate_request(request), Outcome.INCOMPATIBLE)
 
     def test_success_requires_complete_provenance(self) -> None:
-        result = ReadResult.success(request_id="request-1", payload={})
+        request = ReadRequest(
+            contract_id="trama.logseq.read/v1",
+            accepted_contract_major=1,
+            operation="graph.identify",
+            request_id="request-1",
+            graph_selector="fixture:og-minimal",
+        )
+        result = ReadResult.success(
+            request=request,
+            contract_version="1.0.0",
+            graph_binding=None,
+            producer="trama-logseq-og-adapter 1.0.0",
+            capabilities=("graph.identify",),
+            payload={},
+            provenance=None,
+        )
         self.assertIs(result.outcome, Outcome.PROVENANCE_FAILURE)
 ```
 
 - [ ] **Step 2: Run focused test to verify it fails**
 
-Run: `uv run python -m unittest tests.contracts.test_models -v`
+Run: `uv run --all-packages python -m unittest tests.contracts.test_models -v`
 
 Expected: FAIL because DTOs and validation do not exist.
 
@@ -222,17 +237,20 @@ class Provenance:
     authority: Literal["logseq_og_markdown", "logseq_db_native"]
     source_reference: str
     evidence_digest: str
+    producer: str
+    exercised_capabilities: tuple[str, ...]
 ```
 
 Use `@dataclass(frozen=True)` and JSON-compatible mappings. `ReadResult.success`
 returns `PROVENANCE_FAILURE` unless every provenance field is non-empty and the
-authority matches source mode. Reject any request containing an empty
-`request_id`, `graph_selector`, required page/block reference, or unsupported
-operation.
+authority matches source mode. Both factories receive the original request and
+explicit profile metadata: contract version, graph binding or `None`, producer,
+capabilities, and payload. Reject any request containing an empty `request_id`,
+`graph_selector`, required page/block reference, or unsupported operation.
 
 - [ ] **Step 4: Run contract suite**
 
-Run: `uv run python -m unittest tests.contracts.test_models -v`
+Run: `uv run --all-packages python -m unittest tests.contracts.test_models -v`
 
 Expected: PASS, including unknown version, invalid request, authority mismatch,
 missing provenance, and failure-result cases.
@@ -277,7 +295,7 @@ class FixtureBoundaryTests(unittest.TestCase):
 
 - [ ] **Step 2: Run focused test to verify it fails**
 
-Run: `uv run python -m unittest tests.containment.test_fixture_boundary -v`
+Run: `uv run --all-packages python -m unittest tests.containment.test_fixture_boundary -v`
 
 Expected: FAIL because containment and canonicalization helpers do not exist.
 
@@ -300,7 +318,7 @@ fixture is consumed.
 
 - [ ] **Step 4: Run containment and contract tests**
 
-Run: `uv run python -m unittest tests.containment.test_fixture_boundary tests.contracts.test_models -v`
+Run: `uv run --all-packages python -m unittest tests.containment.test_fixture_boundary tests.contracts.test_models -v`
 
 Expected: PASS. No test reads outside its temporary or fixture root.
 
@@ -342,7 +360,7 @@ class ParserLoaderTests(unittest.TestCase):
 
 - [ ] **Step 2: Run focused test to verify it fails**
 
-Run: `uv run python -m unittest tests.contracts.test_parser_loader -v`
+Run: `uv run --all-packages python -m unittest tests.contracts.test_parser_loader -v`
 
 Expected: FAIL because the bridge is absent.
 
@@ -365,7 +383,7 @@ unless a later contract test proves a stricter required behavior.
 
 - [ ] **Step 4: Run loader, containment, and contract tests**
 
-Run: `uv run python -m unittest tests.contracts.test_parser_loader tests.containment.test_fixture_boundary tests.contracts.test_models -v`
+Run: `uv run --all-packages python -m unittest tests.contracts.test_parser_loader tests.containment.test_fixture_boundary tests.contracts.test_models -v`
 
 Expected: PASS.
 
@@ -415,7 +433,7 @@ missing provenance, and source-order preservation of the complete subtree.
 
 - [ ] **Step 2: Run focused tests to verify they fail**
 
-Run: `uv run python -m unittest tests.contracts.test_og_read_contract -v`
+Run: `uv run --all-packages python -m unittest tests.contracts.test_og_read_contract -v`
 
 Expected: FAIL because no OG adapter exists.
 
@@ -423,6 +441,14 @@ Expected: FAIL because no OG adapter exists.
 
 ```python
 class OgReadAdapter:
+    _contract_version = "1.0.0"
+    _producer = "trama-logseq-og-adapter 1.0.0"
+    _capabilities = (
+        "graph.identify",
+        "page.read",
+        "block.subtree.read.complete",
+    )
+
     def __init__(self, graph: LogseqGraph, fixture_digest: str) -> None:
         self._graph = graph
         self._fixture_digest = fixture_digest
@@ -439,14 +465,39 @@ class OgReadAdapter:
     def _read(self, request: ReadRequest, reference: str | None) -> ReadResult:
         validation = validate_request(request)
         if validation is not None:
-            return ReadResult.failure(validation, request_id=request.request_id)
+            return ReadResult.failure(
+                validation,
+                request=request,
+                contract_version=self._contract_version,
+                graph_binding=self._fixture_digest,
+                producer=self._producer,
+                capabilities=self._capabilities,
+                payload={"reason": validation.value},
+            )
         payload = build_og_payload(self._graph, request.operation, reference)
         if payload is None:
-            return ReadResult.failure(Outcome.NOT_FOUND, request_id=request.request_id)
+            return ReadResult.failure(
+                Outcome.NOT_FOUND,
+                request=request,
+                contract_version=self._contract_version,
+                graph_binding=self._fixture_digest,
+                producer=self._producer,
+                capabilities=self._capabilities,
+                payload={"reason": Outcome.NOT_FOUND.value},
+            )
         return ReadResult.success(
-            request_id=request.request_id,
+            request=request,
+            contract_version=self._contract_version,
+            graph_binding=self._fixture_digest,
+            producer=self._producer,
+            capabilities=self._capabilities,
             payload=payload,
-            provenance=og_provenance(self._fixture_digest, payload),
+            provenance=og_provenance(
+                self._fixture_digest,
+                payload,
+                producer=self._producer,
+                exercised_capabilities=(request.operation,),
+            ),
         )
 ```
 
@@ -461,16 +512,18 @@ through `graph.get_page`, blocks through `graph.get_node_by_uuid`, and walks
 each node's `children` depth-first in list order. It returns `None` for an
 absent reference or an operation outside the three identifiers. For the subtree
 operation it emits nested `children` rather than a flattened list. Implement
-`og_provenance(fixture_digest, payload)` in the same module; it returns
+`og_provenance(fixture_digest, payload, *, producer, exercised_capabilities)`
+in the same module; it returns
 `Provenance(source_mode="og_markdown", authority="logseq_og_markdown",
-source_reference="fixture:og-minimal", evidence_digest=sha256_bytes(canonical_json(payload)))`.
+source_reference="fixture:og-minimal", evidence_digest=sha256_bytes(canonical_json(payload)),
+producer=producer, exercised_capabilities=exercised_capabilities)`.
 `fixture_digest` remains the graph-binding value carried in the payload; the
 evidence digest is the canonical result digest. Add direct tests for both
 helpers, including a two-level ordered subtree.
 
 - [ ] **Step 4: Run complete producer suite**
 
-Run: `uv run python -m unittest discover -s tests/contracts -v && uv run python -m unittest discover -s tests/containment -v`
+Run: `uv run --all-packages python -m unittest discover -s tests/contracts -v && uv run --all-packages python -m unittest discover -s tests/containment -v`
 
 Expected: PASS. Static review finds no write, watcher, export, DB, or network
 imports in `packages/logseq-og-adapter`.
@@ -502,19 +555,47 @@ import unittest
 
 class PlumberConsumerTests(unittest.TestCase):
     def success_result(self) -> ReadResult:
-        return ReadResult.success(
+        request = ReadRequest(
+            contract_id="trama.logseq.read/v1",
+            accepted_contract_major=1,
+            operation="graph.identify",
             request_id="r1",
+            graph_selector="fixture:og-minimal",
+        )
+        return ReadResult.success(
+            request=request,
+            contract_version="1.0.0",
+            graph_binding="fixture-digest:og-minimal",
+            producer="trama-logseq-og-adapter 1.0.0",
+            capabilities=("graph.identify",),
             payload={"operation": "graph.identify"},
             provenance=Provenance(
                 source_mode="og_markdown",
                 authority="logseq_og_markdown",
                 source_reference="fixture:og-minimal",
                 evidence_digest="a" * 64,
+                producer="trama-logseq-og-adapter 1.0.0",
+                exercised_capabilities=("graph.identify",),
             ),
         )
 
     def test_consumer_rejects_missing_provenance(self) -> None:
-        result = ReadResult.failure(Outcome.PROVENANCE_FAILURE, request_id="r1")
+        request = ReadRequest(
+            contract_id="trama.logseq.read/v1",
+            accepted_contract_major=1,
+            operation="graph.identify",
+            request_id="r1",
+            graph_selector="fixture:og-minimal",
+        )
+        result = ReadResult.failure(
+            Outcome.PROVENANCE_FAILURE,
+            request=request,
+            contract_version="1.0.0",
+            graph_binding="fixture-digest:og-minimal",
+            producer="trama-logseq-og-adapter 1.0.0",
+            capabilities=("graph.identify",),
+            payload={"reason": "missing provenance"},
+        )
         with self.assertRaisesRegex(ValueError, "provenance_failure"):
             accept_for_plumber(result, parser_version="1.8.2", plumber_version="2.0.0")
 
@@ -525,7 +606,7 @@ class PlumberConsumerTests(unittest.TestCase):
 
 - [ ] **Step 2: Run focused test to verify it fails**
 
-Run: `uv run python -m unittest tests.integration.test_plumber_consumer -v`
+Run: `uv run --all-packages python -m unittest tests.integration.test_plumber_consumer -v`
 
 Expected: FAIL because the consumer boundary is absent.
 
@@ -546,12 +627,20 @@ Accept Parser versions in `>=1.7.1,<2.0.0` and Plumber `2.0.0` only. Do not
 add a Plumber dependency, retrieval call, CLI/MCP selection, write path, or
 cross-repository import.
 
-- [ ] **Step 4: Run producer and consumer suites**
+- [ ] **Step 4: Run producer, containment, consumer, and Foundation suites**
 
-Run: `uv run python -m unittest discover -s tests -v`
+Run:
+
+```bash
+uv run --all-packages python -m unittest discover -s tests/contracts -v
+uv run --all-packages python -m unittest discover -s tests/containment -v
+uv run --all-packages python -m unittest tests.integration.test_plumber_consumer -v
+uv run --all-packages python -m unittest tests.test_foundation_validator -v
+```
 
 Expected: PASS. The consumer rejects all non-success outcomes and non-native
-authority without fallback.
+authority without fallback. Each suite is invoked explicitly: `discover -s
+tests` alone covers only root Foundation tests in this layout.
 
 - [ ] **Step 5: Commit consumer boundary slice**
 
@@ -582,13 +671,20 @@ import unittest
 class WorkflowContractTests(unittest.TestCase):
     def test_python_contract_workflow_runs_locked_suite(self) -> None:
         workflow = Path(".github/workflows/python-contracts.yml").read_text()
-        self.assertIn("uv sync --locked", workflow)
-        self.assertIn("python -m unittest discover -s tests -v", workflow)
+        self.assertIn("uv sync --locked --all-packages", workflow)
+        for command in (
+            "python -m unittest discover -s tests/contracts -v",
+            "python -m unittest discover -s tests/containment -v",
+            "python -m unittest tests.integration.test_plumber_consumer -v",
+            "python -m unittest tests.test_foundation_validator -v",
+        ):
+            self.assertIn(command, workflow)
+        self.assertNotIn("python -m unittest discover -s tests -v", workflow)
 ```
 
 - [ ] **Step 2: Run test to verify it fails**
 
-Run: `uv run python -m unittest tests.contracts.test_workflow_contract -v`
+Run: `uv run --all-packages python -m unittest tests.contracts.test_workflow_contract -v`
 
 Expected: FAIL because the workflow does not exist.
 
@@ -607,19 +703,32 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - uses: astral-sh/setup-uv@20cfd1bf945f4377ade1205e4dbc17946fc9a30d # v10.0.1
-      - run: uv sync --locked
-      - run: uv run python -m unittest discover -s tests -v
+      - uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
+      - run: uv sync --locked --all-packages
+      - run: uv run --all-packages python -m unittest discover -s tests/contracts -v
+      - run: uv run --all-packages python -m unittest discover -s tests/containment -v
+      - run: uv run --all-packages python -m unittest tests.integration.test_plumber_consumer -v
+      - run: uv run --all-packages python -m unittest tests.test_foundation_validator -v
 ```
 
 Pin every action to a reviewed full SHA. Do not add secrets, cache uploads,
 artifact publication, deployment, or privileged pull-request triggers.
 
-- [ ] **Step 4: Run local workflow-contract and full test suite**
+- [ ] **Step 4: Run local workflow-contract and all explicit suites**
 
-Run: `uv run python -m unittest discover -s tests -v`
+Run:
 
-Expected: PASS. Then inspect hosted CI on the exact pull-request head.
+```bash
+uv run --all-packages python -m unittest tests.contracts.test_workflow_contract -v
+uv run --all-packages python -m unittest discover -s tests/contracts -v
+uv run --all-packages python -m unittest discover -s tests/containment -v
+uv run --all-packages python -m unittest tests.integration.test_plumber_consumer -v
+uv run --all-packages python -m unittest tests.test_foundation_validator -v
+```
+
+Expected: PASS. These explicit invocations cover contracts, containment,
+integration, and root Foundation tests; `discover -s tests` alone is not a
+complete-suite claim. Then inspect hosted CI on the exact pull-request head.
 
 - [ ] **Step 5: Record sanitized qualification evidence and commit**
 
