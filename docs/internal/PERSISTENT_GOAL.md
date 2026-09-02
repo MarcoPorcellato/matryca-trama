@@ -8,11 +8,12 @@ Trama while preserving clean commercial, Pro, and Matryca Brain boundaries.
 ## Current scope
 
 Complete the foundation specification, architecture, ADRs, roadmap, repository
-policy, and reviewable evidence. The next planning boundary defines public
-Parser/Plumber compatibility and a future Logseq read-only contract for graph
-identification, page reads, and complete block-subtree reads. Do not add Pro
-source, Brain implementation, secrets, private dependencies, runtime adapters,
-or a write path.
+policy, and reviewable evidence. Public Parser/Plumber compatibility and the
+three-operation Logseq read contract are documented. The next gate is Python
+application-stack qualification for synthetic contract tests; do not infer that
+an executable adapter exists. Do not add Pro source, Brain implementation,
+secrets, private dependencies, DB-host access, runtime adapters, or a write
+path outside its separate evidence gate.
 
 ## Completion criteria
 

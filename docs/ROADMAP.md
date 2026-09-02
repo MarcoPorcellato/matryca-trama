@@ -22,6 +22,10 @@ tests run without private dependencies and reject unsupported versions.
 
 Build the smallest deterministic Trama core around the public Parser capability. Preserve bounded filesystem behavior, stable identifiers, source locations, and reproducible outputs. Evidence: unit, integration, and reproducibility checks.
 
+ADR-0004 selects Python 3.12+ with `uv` for the first Community implementation
+direction. Runtime packages, contract tests, and platform support remain blocked
+until the application-stack qualification protocol records exact-commit evidence.
+
 ## Phase 3 — Logseq adapters
 
 Add an OG adapter and an initially read-only DB adapter with capability
