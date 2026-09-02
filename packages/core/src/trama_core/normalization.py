@@ -44,19 +44,39 @@ def verified_fixture_path(root: Path, relative: PurePosixPath) -> Path:
     """Return a contained fixture path only after manifest-digest verification."""
 
     candidate = resolve_fixture_path(root, relative)
-    manifest_path = resolve_fixture_path(root, _MANIFEST_PATH)
-    manifest = _load_manifest(manifest_path)
-    path_key = relative.as_posix()
-    expected_digest = manifest.get(path_key)
+    manifest = _load_manifest(root)
+    expected_digest = manifest.get(relative)
     if not isinstance(expected_digest, str):
         raise ValueError("fixture digest missing from manifest")
-    actual_digest = sha256_bytes(candidate.read_bytes())
-    if not hmac.compare_digest(expected_digest, actual_digest):
-        raise ValueError("fixture digest mismatch")
+    _verify_fixture_digest(candidate, expected_digest)
     return candidate
 
 
-def _load_manifest(manifest_path: Path) -> Mapping[str, str]:
+def verified_fixture_directory(root: Path, relative: PurePosixPath) -> Path:
+    """Return a fully manifest-bound fixture directory without symlink content."""
+
+    directory = resolve_fixture_path(root, relative)
+    if not directory.is_dir():
+        raise ValueError("fixture directory is invalid")
+    _reject_symlinked_selection(root, relative)
+
+    root_resolved = root.resolve(strict=True)
+    manifest = _load_manifest(root)
+    expected_files = {
+        path: digest
+        for path, digest in manifest.items()
+        if _is_directory_descendant(path, relative)
+    }
+    actual_files = _contained_regular_files(root_resolved, directory)
+    if set(actual_files) != set(expected_files):
+        raise ValueError("fixture manifest coverage mismatch")
+    for path, candidate in actual_files.items():
+        _verify_fixture_digest(candidate, expected_files[path])
+    return directory
+
+
+def _load_manifest(root: Path) -> Mapping[PurePosixPath, str]:
+    manifest_path = resolve_fixture_path(root, _MANIFEST_PATH)
     try:
         raw_manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
     except (OSError, UnicodeDecodeError, json.JSONDecodeError) as error:
@@ -64,11 +84,50 @@ def _load_manifest(manifest_path: Path) -> Mapping[str, str]:
     if not isinstance(raw_manifest, dict):
         raise ValueError("fixture manifest is invalid")
     files = raw_manifest.get("files")
-    if not isinstance(files, dict) or not all(
-        isinstance(path, str) and isinstance(digest, str)
-        for path, digest in files.items()
-    ):
+    if not isinstance(files, dict):
         raise ValueError("fixture manifest is invalid")
+    manifest: dict[PurePosixPath, str] = {}
+    for path, digest in files.items():
+        if not isinstance(path, str) or not isinstance(digest, str):
+            raise ValueError("fixture manifest is invalid")
+        relative = PurePosixPath(path)
+        if relative.is_absolute() or ".." in relative.parts or relative == PurePosixPath("."):
+            raise ValueError("fixture manifest is invalid")
+        manifest[relative] = digest
+    return manifest
+
+
+def _verify_fixture_digest(candidate: Path, expected_digest: str) -> None:
+    actual_digest = sha256_bytes(candidate.read_bytes())
+    if not hmac.compare_digest(expected_digest, actual_digest):
+        raise ValueError("fixture digest mismatch")
+
+
+def _reject_symlinked_selection(root: Path, relative: PurePosixPath) -> None:
+    current = root
+    for part in relative.parts:
+        current /= part
+        if current.is_symlink():
+            raise ValueError("fixture directory contains symlink")
+
+
+def _is_directory_descendant(
+    candidate: PurePosixPath,
+    directory: PurePosixPath,
+) -> bool:
+    return candidate.parts[: len(directory.parts)] == directory.parts
+
+
+def _contained_regular_files(
+    root: Path,
+    directory: Path,
+) -> Mapping[PurePosixPath, Path]:
+    files: dict[PurePosixPath, Path] = {}
+    for candidate in directory.rglob("*"):
+        if candidate.is_symlink():
+            raise ValueError("fixture directory contains symlink")
+        if candidate.is_file():
+            files[PurePosixPath(candidate.relative_to(root).as_posix())] = candidate
     return files
 
 
