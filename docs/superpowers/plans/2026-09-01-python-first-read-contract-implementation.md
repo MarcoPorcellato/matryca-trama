@@ -193,7 +193,22 @@ class ReadContractTests(unittest.TestCase):
         self.assertIs(validate_request(request), Outcome.INCOMPATIBLE)
 
     def test_success_requires_complete_provenance(self) -> None:
-        result = ReadResult.success(request_id="request-1", payload={})
+        request = ReadRequest(
+            contract_id="trama.logseq.read/v1",
+            accepted_contract_major=1,
+            operation="graph.identify",
+            request_id="request-1",
+            graph_selector="fixture:og-minimal",
+        )
+        result = ReadResult.success(
+            request=request,
+            contract_version="1.0.0",
+            graph_binding=None,
+            producer="trama-logseq-og-adapter 1.0.0",
+            capabilities=("graph.identify",),
+            payload={},
+            provenance=None,
+        )
         self.assertIs(result.outcome, Outcome.PROVENANCE_FAILURE)
 ```
 
@@ -222,13 +237,16 @@ class Provenance:
     authority: Literal["logseq_og_markdown", "logseq_db_native"]
     source_reference: str
     evidence_digest: str
+    producer: str
+    exercised_capabilities: tuple[str, ...]
 ```
 
 Use `@dataclass(frozen=True)` and JSON-compatible mappings. `ReadResult.success`
 returns `PROVENANCE_FAILURE` unless every provenance field is non-empty and the
-authority matches source mode. Reject any request containing an empty
-`request_id`, `graph_selector`, required page/block reference, or unsupported
-operation.
+authority matches source mode. Both factories receive the original request and
+explicit profile metadata: contract version, graph binding or `None`, producer,
+capabilities, and payload. Reject any request containing an empty `request_id`,
+`graph_selector`, required page/block reference, or unsupported operation.
 
 - [ ] **Step 4: Run contract suite**
 
@@ -423,6 +441,14 @@ Expected: FAIL because no OG adapter exists.
 
 ```python
 class OgReadAdapter:
+    _contract_version = "1.0.0"
+    _producer = "trama-logseq-og-adapter 1.0.0"
+    _capabilities = (
+        "graph.identify",
+        "page.read",
+        "block.subtree.read.complete",
+    )
+
     def __init__(self, graph: LogseqGraph, fixture_digest: str) -> None:
         self._graph = graph
         self._fixture_digest = fixture_digest
@@ -439,14 +465,39 @@ class OgReadAdapter:
     def _read(self, request: ReadRequest, reference: str | None) -> ReadResult:
         validation = validate_request(request)
         if validation is not None:
-            return ReadResult.failure(validation, request_id=request.request_id)
+            return ReadResult.failure(
+                validation,
+                request=request,
+                contract_version=self._contract_version,
+                graph_binding=self._fixture_digest,
+                producer=self._producer,
+                capabilities=self._capabilities,
+                payload={"reason": validation.value},
+            )
         payload = build_og_payload(self._graph, request.operation, reference)
         if payload is None:
-            return ReadResult.failure(Outcome.NOT_FOUND, request_id=request.request_id)
+            return ReadResult.failure(
+                Outcome.NOT_FOUND,
+                request=request,
+                contract_version=self._contract_version,
+                graph_binding=self._fixture_digest,
+                producer=self._producer,
+                capabilities=self._capabilities,
+                payload={"reason": Outcome.NOT_FOUND.value},
+            )
         return ReadResult.success(
-            request_id=request.request_id,
+            request=request,
+            contract_version=self._contract_version,
+            graph_binding=self._fixture_digest,
+            producer=self._producer,
+            capabilities=self._capabilities,
             payload=payload,
-            provenance=og_provenance(self._fixture_digest, payload),
+            provenance=og_provenance(
+                self._fixture_digest,
+                payload,
+                producer=self._producer,
+                exercised_capabilities=(request.operation,),
+            ),
         )
 ```
 
@@ -461,9 +512,11 @@ through `graph.get_page`, blocks through `graph.get_node_by_uuid`, and walks
 each node's `children` depth-first in list order. It returns `None` for an
 absent reference or an operation outside the three identifiers. For the subtree
 operation it emits nested `children` rather than a flattened list. Implement
-`og_provenance(fixture_digest, payload)` in the same module; it returns
+`og_provenance(fixture_digest, payload, *, producer, exercised_capabilities)`
+in the same module; it returns
 `Provenance(source_mode="og_markdown", authority="logseq_og_markdown",
-source_reference="fixture:og-minimal", evidence_digest=sha256_bytes(canonical_json(payload)))`.
+source_reference="fixture:og-minimal", evidence_digest=sha256_bytes(canonical_json(payload)),
+producer=producer, exercised_capabilities=exercised_capabilities)`.
 `fixture_digest` remains the graph-binding value carried in the payload; the
 evidence digest is the canonical result digest. Add direct tests for both
 helpers, including a two-level ordered subtree.
@@ -502,19 +555,47 @@ import unittest
 
 class PlumberConsumerTests(unittest.TestCase):
     def success_result(self) -> ReadResult:
-        return ReadResult.success(
+        request = ReadRequest(
+            contract_id="trama.logseq.read/v1",
+            accepted_contract_major=1,
+            operation="graph.identify",
             request_id="r1",
+            graph_selector="fixture:og-minimal",
+        )
+        return ReadResult.success(
+            request=request,
+            contract_version="1.0.0",
+            graph_binding="fixture-digest:og-minimal",
+            producer="trama-logseq-og-adapter 1.0.0",
+            capabilities=("graph.identify",),
             payload={"operation": "graph.identify"},
             provenance=Provenance(
                 source_mode="og_markdown",
                 authority="logseq_og_markdown",
                 source_reference="fixture:og-minimal",
                 evidence_digest="a" * 64,
+                producer="trama-logseq-og-adapter 1.0.0",
+                exercised_capabilities=("graph.identify",),
             ),
         )
 
     def test_consumer_rejects_missing_provenance(self) -> None:
-        result = ReadResult.failure(Outcome.PROVENANCE_FAILURE, request_id="r1")
+        request = ReadRequest(
+            contract_id="trama.logseq.read/v1",
+            accepted_contract_major=1,
+            operation="graph.identify",
+            request_id="r1",
+            graph_selector="fixture:og-minimal",
+        )
+        result = ReadResult.failure(
+            Outcome.PROVENANCE_FAILURE,
+            request=request,
+            contract_version="1.0.0",
+            graph_binding="fixture-digest:og-minimal",
+            producer="trama-logseq-og-adapter 1.0.0",
+            capabilities=("graph.identify",),
+            payload={"reason": "missing provenance"},
+        )
         with self.assertRaisesRegex(ValueError, "provenance_failure"):
             accept_for_plumber(result, parser_version="1.8.2", plumber_version="2.0.0")
 
