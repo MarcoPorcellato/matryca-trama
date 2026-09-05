@@ -78,6 +78,4 @@ OK
 
 First focused `uv` attempt was blocked before test execution by sandbox access
 to default user cache; same offline command was repeated with approved access
-to existing cache. That access limitation is not test result. Full
-exact-head validation is recorded in final-fix report after complete gate family
-runs.
+to existing cache. That access limitation is not test result.

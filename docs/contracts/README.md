@@ -16,8 +16,9 @@ Plumber ADR and canonical contract remain unpublished.
 - [Plumber Compatibility](PLUMBER_COMPATIBILITY.md) records the historical
   consumer helper and a future publication gate for Matryca Plumber.
 - [Ecosystem Responsibility and Change Contract](ECOSYSTEM_RESPONSIBILITY_AND_CHANGE_CONTRACT.md)
-  assigns capabilities and interface authority across Trama, Parser, Plumber,
-  Brain, and Knowledge, and defines the anti-duplication delivery protocol.
+  is a superseded historical coordination draft. It assigns no current
+  authority. Current ownership direction is the separately proposed
+  [Plumber gateway migration](../superpowers/plans/2026-09-05-plumber-parser-trama-contract-migration.md), which remains non-operative and makes no runtime or acceptance claim.
 
 The historical line `trama.logseq.read/v1` exists in bounded source retained by
 the resolved `origin/main` merge parent

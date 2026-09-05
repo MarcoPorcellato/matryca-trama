@@ -52,6 +52,24 @@ allowed_internal = ["trama_contracts", "trama_core"]
 allowed_external = []
 """
 
+ROOT_PYPROJECT = """\
+[project]
+name = "fixture-workspace"
+version = "0.0.0"
+requires-python = ">=3.12"
+dependencies = []
+
+[tool.uv.workspace]
+members = ["packages/*"]
+
+[tool.uv.sources]
+trama-contracts = { workspace = true }
+trama-core = { workspace = true }
+trama-parser-bridge = { workspace = true }
+trama-logseq-og-adapter = { workspace = true }
+trama-plumber-bridge = { workspace = true }
+"""
+
 PACKAGES = {
     "trama-contracts": ("contracts", "trama_contracts", []),
     "trama-core": ("core", "trama_core", ["trama-contracts"]),
@@ -93,6 +111,7 @@ UNUSED_EXCEPTION = EXPIRED_EXCEPTION.replace('id = "old"', 'id = "unused"').repl
 
 def write_fixture(root: Path, sources: dict[str, str] | None = None) -> None:
     (root / "architecture.toml").write_text(ARCHITECTURE, encoding="utf-8")
+    (root / "pyproject.toml").write_text(ROOT_PYPROJECT, encoding="utf-8")
     for distribution, (directory, import_root, dependencies) in PACKAGES.items():
         package = root / "packages" / directory
         package.mkdir(parents=True)
@@ -201,6 +220,32 @@ class DependencyBoundaryTests(unittest.TestCase):
             (source / "__init__.py").write_text("", encoding="utf-8")
             self.assertIn("ARCH001", codes(root))
 
+    def test_realistic_workspace_members_and_sources_pass(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            write_fixture(root)
+            self.assertEqual(codes(root), [])
+
+    def test_workspace_members_must_include_each_package_directory(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            write_fixture(root)
+            (root / "pyproject.toml").write_text(
+                ROOT_PYPROJECT.replace('members = ["packages/*"]', 'members = ["packages/contracts"]'),
+                encoding="utf-8",
+            )
+            self.assertIn("ARCH006", codes(root))
+
+    def test_workspace_sources_must_bind_each_local_distribution(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            write_fixture(root)
+            (root / "pyproject.toml").write_text(
+                ROOT_PYPROJECT.replace('trama-core = { workspace = true }\n', ""),
+                encoding="utf-8",
+            )
+            self.assertIn("ARCH006", codes(root))
+
     def test_parser_bridge_cannot_import_parser_internal_module(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
@@ -249,6 +294,22 @@ class DependencyBoundaryTests(unittest.TestCase):
             })
             self.assertIn("ARCH005", codes(root))
 
+    def test_annotated_importlib_assignment_alias_is_rejected(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            write_fixture(root, {
+                "packages/contracts/src/trama_contracts/bad.py": "import importlib\nload: object = importlib.import_module\nload('trama_core')\n"
+            })
+            self.assertIn("ARCH005", codes(root))
+
+    def test_named_expression_importlib_alias_is_rejected(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            write_fixture(root, {
+                "packages/contracts/src/trama_contracts/bad.py": "import importlib\n(load := importlib.import_module)('trama_core')\n"
+            })
+            self.assertIn("ARCH005", codes(root))
+
     def test_sys_path_mutation_is_rejected(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
@@ -266,6 +327,22 @@ class DependencyBoundaryTests(unittest.TestCase):
             root = Path(directory)
             write_fixture(root, {
                 "packages/contracts/src/trama_contracts/bad.py": "import sys\nalias = sys.path\nalias.append('../sibling')\n"
+            })
+            self.assertIn("ARCH005", codes(root))
+
+    def test_annotated_sys_path_assignment_alias_is_rejected(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            write_fixture(root, {
+                "packages/contracts/src/trama_contracts/bad.py": "import sys\nalias: object = sys.path\nalias.append('../sibling')\n"
+            })
+            self.assertIn("ARCH005", codes(root))
+
+    def test_named_expression_sys_path_alias_is_rejected(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            write_fixture(root, {
+                "packages/contracts/src/trama_contracts/bad.py": "import sys\n(alias := sys.path).append('../sibling')\n"
             })
             self.assertIn("ARCH005", codes(root))
 

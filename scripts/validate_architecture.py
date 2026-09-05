@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import argparse
 import ast
+from fnmatch import fnmatchcase
 import re
 import sys
 import tomllib
@@ -181,6 +182,34 @@ def validate_declared_dependencies(
     return violations
 
 
+def validate_workspace(root: Path, rules: dict[str, PackageRule]) -> list[Violation]:
+    path = root / "pyproject.toml"
+    try:
+        with path.open("rb") as handle:
+            raw = tomllib.load(handle)
+    except (FileNotFoundError, tomllib.TOMLDecodeError, OSError) as error:
+        return [Violation(Path("pyproject.toml"), 0, "ARCH006", f"invalid workspace manifest: {error}")]
+
+    tool = raw.get("tool", {})
+    uv = tool.get("uv", {}) if isinstance(tool, dict) else {}
+    workspace = uv.get("workspace", {}) if isinstance(uv, dict) else {}
+    sources = uv.get("sources", {}) if isinstance(uv, dict) else {}
+    members = workspace.get("members", []) if isinstance(workspace, dict) else []
+    if not isinstance(members, list) or not all(isinstance(member, str) for member in members):
+        return [Violation(Path("pyproject.toml"), 0, "ARCH006", "workspace members must be a string list")]
+    if not isinstance(sources, dict):
+        return [Violation(Path("pyproject.toml"), 0, "ARCH006", "workspace sources must be a table")]
+
+    violations: list[Violation] = []
+    for distribution, rule in rules.items():
+        directory = rule.directory.as_posix()
+        if not any(fnmatchcase(directory, member) for member in members):
+            violations.append(Violation(Path("pyproject.toml"), 0, "ARCH006", f"workspace member missing: {directory}"))
+        if sources.get(distribution) != {"workspace": True}:
+            violations.append(Violation(Path("pyproject.toml"), 0, "ARCH006", f"workspace source binding invalid: {distribution}"))
+    return violations
+
+
 class ImportVisitor(ast.NodeVisitor):
     def __init__(
         self,
@@ -231,22 +260,33 @@ class ImportVisitor(ast.NodeVisitor):
                         if alias.name == "path":
                             self.sys_path_names.add(alias.asname or alias.name)
 
-        assignments = [node for node in ast.walk(tree) if isinstance(node, ast.Assign)]
+        assignments: list[tuple[set[str], ast.AST]] = []
+        for node in ast.walk(tree):
+            if isinstance(node, ast.Assign):
+                assignments.append((
+                    {target.id for target in node.targets if isinstance(target, ast.Name)},
+                    node.value,
+                ))
+            elif isinstance(node, ast.AnnAssign) and isinstance(node.target, ast.Name) and node.value is not None:
+                assignments.append(({node.target.id}, node.value))
+            elif isinstance(node, ast.NamedExpr) and isinstance(node.target, ast.Name):
+                assignments.append(({node.target.id}, node.value))
         changed = True
         while changed:
             changed = False
-            for node in assignments:
-                names = {target.id for target in node.targets if isinstance(target, ast.Name)}
-                if self.is_dynamic_import_callable(node.value):
+            for names, value in assignments:
+                if self.is_dynamic_import_callable(value):
                     before = len(self.dynamic_names)
                     self.dynamic_names.update(names)
                     changed = changed or len(self.dynamic_names) != before
-                elif self.is_sys_path(node.value):
+                elif self.is_sys_path(value):
                     before = len(self.sys_path_names)
                     self.sys_path_names.update(names)
                     changed = changed or len(self.sys_path_names) != before
 
     def is_dynamic_import_callable(self, node: ast.AST) -> bool:
+        if isinstance(node, ast.NamedExpr):
+            return self.is_dynamic_import_callable(node.value)
         if isinstance(node, ast.Name):
             return node.id in self.dynamic_names
         return (
@@ -298,6 +338,8 @@ class ImportVisitor(ast.NodeVisitor):
         self.generic_visit(node)
 
     def is_sys_path(self, node: ast.AST) -> bool:
+        if isinstance(node, ast.NamedExpr):
+            return self.is_sys_path(node.value)
         if isinstance(node, ast.Name):
             return node.id in self.sys_path_names
         if isinstance(node, ast.Attribute):
@@ -407,6 +449,7 @@ def validate_repository(root: Path) -> list[Violation]:
     rules, external, forbidden, exceptions, violations = read_config(root)
     if not rules:
         return sorted(violations)
+    violations.extend(validate_workspace(root, rules))
     declarations, manifest_violations = read_manifests(root, rules)
     violations.extend(manifest_violations)
     violations.extend(validate_declared_dependencies(root, declarations, rules, external))
