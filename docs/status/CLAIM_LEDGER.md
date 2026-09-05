@@ -14,6 +14,13 @@ evidence, and limitations.
 - These anchors are historical observations. Reverify live state before using
   them for delivery.
 
+- V0 anchor audit: candidate `2de8069ce450daa3b2f7ca591d09d73a951150f4`,
+  tree `7104e1bdf4a272a31128d01adb13bd3fc1e8d4e7`; remote-tracking `origin/main`
+  `9905e8a36acb83a17a33b702a5fa620d6bfed185`; baseline tree
+  `f1dacc9b30c993b2b69a48c20e73281732e781b3`. See
+  [the sanitized receipt](receipts/2026-09-05-v0-anchor-audit.md). Remote state
+  was refreshed successfully; current-head qualification remains blocked.
+
 ## Claims
 
 | Claim ID | Class | Claim and scope | Qualified revision | Evidence | Limitations / next action |
