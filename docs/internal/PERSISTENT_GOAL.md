@@ -5,12 +5,13 @@ recheck live remote heads, exact commit, branch base, worktree state, contracts,
 fixtures, checks, and evidence. Dated anchors are starting evidence, not current
 proof.
 
-The cross-repository roadmap is a maintainer-review proposal: Plumber becomes
-the sole Logseq gateway; Trama and Brain consume only published Plumber public
-contracts and remain unaware of Parser and source adapters. Do not implement or
-claim that decision until Plumber publishes its ADR and canonical contract.
-Until then, `trama.logseq.read/v1` is historical experimental source, not future
-contract authority.
+The accepted [Plumber gateway adoption](../decisions/ADR-0006-PLUMBER-GATEWAY-ADOPTION.md)
+makes Plumber the sole future Logseq gateway; Trama and Brain consume only
+published Plumber public contracts and remain unaware of Parser and source
+adapters. Do not implement or claim a consumer until Plumber publishes its
+canonical contract artifact and an immutable public profile. Until then,
+`trama.logseq.read/v1` is historical experimental source, not future contract
+authority.
 
 Preserve Clean Architecture R1 enforcement. Execute one cross-repository
 mutating slice at a time: owner first, then a separately pinned consumer branch.

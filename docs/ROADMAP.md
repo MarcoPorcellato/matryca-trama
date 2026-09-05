@@ -1,10 +1,11 @@
 # Matryca Trama Roadmap
 
-The [cross-repository contract roadmap](superpowers/specs/2026-09-05-cross-repository-contract-roadmap.md)
-is a proposed architecture for maintainer review. It proposes Matryca Plumber as
-the sole Logseq gateway: Trama and Brain consume only published Plumber public
-contracts and remain unaware of Parser and source adapters. This is not accepted
-until Plumber publishes its ADR and canonical contract.
+The accepted [Plumber gateway adoption](decisions/ADR-0006-PLUMBER-GATEWAY-ADOPTION.md)
+sets the future ownership direction: Trama and Brain consume only published
+Plumber public contracts and remain unaware of Parser and source adapters. The
+[cross-repository contract roadmap](superpowers/specs/2026-09-05-cross-repository-contract-roadmap.md)
+remains a migration plan; no canonical contract artifact or consumer profile is
+published by this decision.
 
 ## Current verified baseline
 
@@ -20,8 +21,9 @@ qualifies only its baseline profile:
 
 User graphs, Logseq DB, writes, events, DB-source Shadow, synchronization,
 export, recovery, app/UI/Nodi, distribution, performance, and network behavior
-remain unsupported by that evidence. The experimental contract is not a future
-authority while the proposed Plumber ADR and canonical contract are unpublished.
+remain unsupported by that evidence. The experimental contract is historical
+evidence only; a future consumer requires the separate Plumber contract and
+profile gates.
 
 ## Delivery rule
 
@@ -40,8 +42,8 @@ remain sequential.
 
 Maintain the public repository policy, PolyForm Noncommercial boundary,
 contributor licensing gate, architecture, ADRs, contracts, roadmap, and
-fork-safe CI. Reconcile stale planning surfaces; do not treat the proposed
-Plumber-gateway design as accepted.
+fork-safe CI. Reconcile stale planning surfaces; do not treat the accepted
+ownership decision as a runtime, host, or consumer-profile claim.
 
 Evidence: exact-head documentation checks; unambiguous ownership and authority;
 no private or Pro source; no unsupported runtime claim.

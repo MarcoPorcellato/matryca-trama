@@ -2,7 +2,8 @@
 
 > **Status:** historical experimental direct-Parser profile with bounded bridge
 > source. It does not qualify current-head or production interoperability. The
-> proposed Plumber-gateway design forbids future Trama-to-Parser integration.
+> accepted [Plumber gateway adoption](../decisions/ADR-0006-PLUMBER-GATEWAY-ADOPTION.md)
+> forbids future Trama-to-Parser integration.
 
 ## Purpose
 
@@ -53,6 +54,6 @@ result. It must not convert parse ambiguity into guessed graph content.
 Bounded bridge and synthetic fixtures exist before the resolved `origin/main`
 `70fc14c27b11e31e8f557fd70684b6a83933e7d6`; baseline evidence at `862c5c8`
 covers only initial synthetic OG operations and rejection cases. This document
-does not authorize a new Trama Parser profile. The future gateway, if accepted,
-belongs to Plumber and needs its published ADR, canonical contract, and its own
-exact-version evidence.
+does not authorize a new Trama Parser profile. The future gateway belongs to
+Plumber and needs its canonical contract artifact and its own exact-version
+evidence.

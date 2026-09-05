@@ -1,7 +1,10 @@
 # Python-First Read Contract Implementation Plan
 
-> **Historical plan:** checkboxes preserve the original planning and execution
-> record. Current status is governed by the
+> **Status: Superseded / Historical / Non-operative.** Checkboxes preserve the
+> original planning and execution record. It is not executable authority for a
+> future Trama source adapter. Future ownership is governed by
+> [ADR-0006](../../decisions/ADR-0006-PLUMBER-GATEWAY-ADOPTION.md); current
+> status is governed by the
 > [delivery program](../../specs/MATRYCA_TRAMA_DELIVERY_PROGRAM.md).
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use

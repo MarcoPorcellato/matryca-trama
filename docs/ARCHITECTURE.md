@@ -21,9 +21,10 @@ Current status is governed by the
 
 ## Future source-to-product boundary
 
-The [cross-repository contract roadmap](superpowers/specs/2026-09-05-cross-repository-contract-roadmap.md)
-is proposed pending Plumber's owner ADR and canonical public contract. It defines
-the future direction only; it does not alter or qualify current runtime code.
+The accepted [Plumber gateway adoption](decisions/ADR-0006-PLUMBER-GATEWAY-ADOPTION.md)
+defines the future ownership direction. The cross-repository migration plan does
+not alter or qualify current runtime code, publish a public contract artifact,
+or create a Trama client.
 
 ```text
 OG Markdown -> Parser -> Plumber -> Trama / Brain

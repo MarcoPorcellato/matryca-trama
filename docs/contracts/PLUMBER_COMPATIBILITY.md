@@ -2,15 +2,16 @@
 
 > **Status:** historical Trama-side synthetic helper and candidate consumer
 > profile. No live Trama--Plumber runtime, Plumber session port, or
-> cross-repository production integration is qualified. The proposed Plumber
-> gateway is not accepted until its ADR and canonical contract are published.
+> cross-repository production integration is qualified. The accepted
+> [Plumber gateway adoption](../decisions/ADR-0006-PLUMBER-GATEWAY-ADOPTION.md)
+> makes this reversed producer-consumer profile non-authorizing history.
 
 ## Purpose
 
-This profile defines the public consumer boundary between Matryca Trama and
-Matryca Plumber. Bounded Trama source produces read results through
-`trama.logseq.read/v1`; Plumber consumes only those declared public results and
-maps them to its own consumer-side ports and retrieval behavior.
+This profile records the historical reversed boundary in which bounded Trama
+source produced `trama.logseq.read/v1` results for a Plumber helper. It is not
+a public consumer boundary. Future Trama consumer work uses only a published
+Plumber-owned `plumber.*` contract.
 
 ## Candidate public version range
 
@@ -39,9 +40,12 @@ or partial result as a successful Trama graph read.
 
 ## Ownership and non-goals
 
-- Trama owns host-facing acquisition, capability detection, and provenance.
-- Plumber owns consumer mapping, retrieval, CLI/MCP runtime selection, and any
-  separately authorized derived projection.
+- The old Trama-host acquisition and Plumber-consumer mapping assignment is
+  superseded history; it grants no current authority.
+- Plumber owns future source selection, adapters, provenance normalization,
+  public `plumber.*` contracts, and CLI/MCP runtime selection.
+- Trama owns future product mapping, graph UI, intelligence, and Nodi over a
+  published Plumber contract.
 - Neither product imports the other's private implementation.
 - This profile does not authorize Plumber writes, Safe-Sync, Shadow
   acceleration, event subscriptions, synchronization, or concurrent mutation.
@@ -51,9 +55,10 @@ or partial result as a successful Trama graph read.
 
 Bounded local consumer tests predate the resolved `origin/main`
 `70fc14c27b11e31e8f557fd70684b6a83933e7d6`; baseline evidence at `862c5c8`
-covers those historical synthetic cases only. Plumber must first publish its
-ADR, canonical public contract, schemas, fixtures, and compatibility policy.
-A later suite must bind exact Plumber, Trama, Parser, profile, and fixture
-versions and prove version negotiation, provenance and authority rejection,
+covers those historical synthetic cases only. Plumber's authority ADR is
+accepted, but its canonical public contract artifact, schemas, fixtures,
+compatibility policy, and immutable consumer profile remain separate gates. A
+later suite must bind exact Plumber, Trama, Parser, profile, and fixture versions
+and prove version negotiation, provenance and authority rejection,
 complete-subtree preservation, and unchanged Plumber OG/Shadow behavior. This
 document does not claim that any such integration or qualification exists.

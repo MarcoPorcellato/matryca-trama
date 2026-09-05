@@ -5,11 +5,11 @@
 > not executable authority and must not be used to begin work, choose ownership,
 > or make a runtime claim.
 >
-> **Superseded by:** the proposed
-> [cross-repository contract roadmap](../specs/2026-09-05-cross-repository-contract-roadmap.md),
-> pending the owning Plumber ADR and canonical public contract. The superseding
-> direction reverses this plan's old Trama-producer premise: future source access
-> and canonical Logseq public contracts belong to Plumber; Trama is a consumer.
+> **Superseded by:** the accepted
+> [Plumber gateway adoption](../../decisions/ADR-0006-PLUMBER-GATEWAY-ADOPTION.md).
+> Its migration plan remains separately non-operative. The superseding direction
+> reverses this plan's old Trama-producer premise: future source access and
+> canonical Logseq public contracts belong to Plumber; Trama is a consumer.
 > The [delivery program](../../specs/MATRYCA_TRAMA_DELIVERY_PROGRAM.md) governs
 > current Trama delivery status.
 

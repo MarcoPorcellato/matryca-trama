@@ -15,7 +15,7 @@ Read only the authority matching the change:
 - Parser boundary: [Parser compatibility](../../../docs/contracts/PARSER_COMPATIBILITY.md);
 - Logseq read result, provenance, or source mode: [Logseq Read Contract v1](../../../docs/contracts/LOGSEQ_READ_CONTRACT_V1.md);
 - Plumber consumer boundary: [Plumber compatibility](../../../docs/contracts/PLUMBER_COMPATIBILITY.md);
-- cross-repository ownership: current [Plumber gateway proposal](../../../docs/superpowers/plans/2026-09-05-plumber-parser-trama-contract-migration.md); it is proposed and grants no runtime acceptance; [ecosystem draft](../../../docs/contracts/ECOSYSTEM_RESPONSIBILITY_AND_CHANGE_CONTRACT.md) is superseded historical record only;
+- cross-repository ownership: accepted [Plumber gateway adoption](../../../docs/decisions/ADR-0006-PLUMBER-GATEWAY-ADOPTION.md); it grants ownership only, not a runtime, package, canonical contract artifact, or consumer-profile claim; [ecosystem draft](../../../docs/contracts/ECOSYSTEM_RESPONSIBILITY_AND_CHANGE_CONTRACT.md) is superseded historical record only;
 - Brain, Pro, commercial use, or external contributions: [ADR-0002](../../../docs/decisions/ADR-0002-TRAMA_BRAIN_PRODUCT_BOUNDARY.md) and [ADR-0003](../../../docs/decisions/ADR-0003-SOURCE_AVAILABLE-COMMERCIAL_BOUNDARY.md).
 
 ## Change flow

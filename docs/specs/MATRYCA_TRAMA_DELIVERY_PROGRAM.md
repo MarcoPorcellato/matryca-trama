@@ -12,20 +12,21 @@ This document is a delivery contract, not a product announcement. It converts th
 current public Trama foundation into a sequence of bounded, falsifiable milestones.
 It never upgrades a planned boundary into an implemented or qualified feature.
 
-### Future cross-repository gateway direction
+### Accepted cross-repository gateway ownership
 
-The proposed cross-repository contract roadmap is not a runtime claim and remains
-subject to the owning Plumber ADR and canonical public contract. If accepted,
-**Matryca Plumber is the sole future Logseq gateway and canonical public-contract
-owner.** **Trama is a future Plumber consumer; it does not own future source
-adapters or Logseq wire contracts.** Parser remains the pure OG parsing provider
-behind Plumber; Brain is a separate Plumber consumer and does not know Parser.
+[ADR-0006](../decisions/ADR-0006-PLUMBER-GATEWAY-ADOPTION.md) adopts Plumber's
+accepted owner decision. **Matryca Plumber is the sole future Logseq gateway and
+canonical public-contract owner.** **Trama is a future Plumber consumer; it does
+not own future source adapters or Logseq wire contracts.** Parser remains the
+pure OG parsing provider behind Plumber; Brain is a separate Plumber consumer
+and does not know Parser.
 
 The historical Trama `trama.logseq.read/v1`, Parser/Plumber bridges, and synthetic
 OG adapter remain preserved source and evidence, not future authority. Historical
 experimental Trama adapters remain evidence only until a separately reviewed,
 repository-local deprecation or removal change. Nothing in this direction proves
-that a Plumber contract, host transport, DB capability, or Trama client exists.
+that a Plumber contract artifact, host transport, DB capability, or Trama client
+exists.
 
 ## 1. Claim discipline
 
