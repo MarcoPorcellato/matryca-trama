@@ -1,11 +1,11 @@
 # Parser Compatibility for Logseq Read Contract v1
 
-> **Status:** planned public compatibility profile. No Trama parser adapter is
-> implemented or qualified by this document.
+> **Status:** candidate public compatibility profile with bounded bridge source.
+> This document does not qualify current-head or production interoperability.
 
 ## Purpose
 
-This profile defines how a future Trama producer may use
+This profile defines how the bounded Trama producer may use
 `logseq-matryca-parser` for the OG Markdown branch of
 `trama.logseq.read/v1`. Parser output helps interpret authoritative Markdown;
 it does not transfer graph authority to Parser or create any DB capability.
@@ -16,9 +16,9 @@ The first candidate profile is:
 
 | Component | Candidate range | Status |
 | --- | --- | --- |
-| Logseq Matryca Parser | `>=1.7.1,<2.0.0` | planned; not yet qualified by Trama |
-| Contract line | `trama.logseq.read/v1` | planned |
-| Logseq source mode | `og_markdown` | planned read-only branch |
+| Logseq Matryca Parser | `>=1.7.1,<2.0.0` | candidate range; production interoperability unqualified |
+| Contract line | `trama.logseq.read/v1` | implemented bounded source; not published |
+| Logseq source mode | `og_markdown` | synthetic read-only profile only |
 
 Parser `v1.8.2` is a public release anchor, but this document does not claim
 that Trama has qualified it. Parser 2.x is outside the candidate range until a
@@ -46,9 +46,11 @@ result. It must not convert parse ambiguity into guessed graph content.
 - Parser use is read-only. It creates no write, synchronization, export, or DB
   mutation capability.
 
-## Future evidence gate
+## Evidence gate
 
-After ADR-0004 chooses package and test locations, public synthetic fixtures
-must prove the declared Parser range, accepted graph/page/subtree reads,
-source-location provenance, parse failure handling, and rejection of Parser
-versions outside the range. This document alone is not that evidence.
+Bounded bridge and synthetic fixtures exist at `9905e8a`; baseline evidence at
+`862c5c8` covers only the initial synthetic OG operations and rejection cases.
+Current-head and broader Parser qualification must bind exact Trama and Parser
+revisions, imported public symbols, accepted graph/page/subtree reads,
+source-location provenance, parse failure handling, and versions outside the
+range. This document alone is not that evidence.

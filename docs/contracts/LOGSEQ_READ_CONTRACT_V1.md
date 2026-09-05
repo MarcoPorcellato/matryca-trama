@@ -1,12 +1,12 @@
 # Logseq Read Contract v1
 
-> **Status:** planned public specification. This is not a published API or an
-> implementation-conformance claim.
+> **Status:** public specification with bounded Python reference source. This is
+> not a published API or a current-head conformance claim.
 
 ## Purpose
 
 `trama.logseq.read/v1` defines a minimal read-only interchange boundary between
-a future host-facing Matryca Trama producer and public consumers. It preserves
+a bounded Matryca Trama producer and public consumers. It preserves
 native Logseq source authority and makes incompatibility or missing provenance
 an explicit result rather than an inferred success.
 
@@ -17,7 +17,7 @@ projection is never a substitute authority.
 
 ## Contract status and scope
 
-The contract line is `trama.logseq.read/v1`. Every future concrete profile must
+The contract line is `trama.logseq.read/v1`. Every concrete profile must
 publish its semantic contract version, producer version or source revision,
 supported Logseq host version, and fixture set before it claims conformance.
 
@@ -154,8 +154,9 @@ An absent version, unselected host route, or unsupported source mode is
 
 ## Conformance gate
 
-This document becomes executable only after an accepted application-stack
-decision establishes public package and test locations. The first conformance
-suite must use synthetic fixtures and prove accepted reads plus rejection of an
-unknown version, missing provenance, wrong authority, incomplete subtree, and
-private dependency. Until then, this is a planned semantic contract only.
+The bounded Python source and synthetic conformance suite exist at `9905e8a`.
+The qualification record remains bound to `862c5c8` and proves only synthetic
+OG reads plus rejection cases for the three declared operations. It does not
+qualify the current head, user graphs, a Logseq host, DB, writes, events,
+Shadow, synchronization, export, recovery, UI, performance, distribution, or
+network behavior. Broader profiles require their own exact-version evidence.

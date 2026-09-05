@@ -1,12 +1,12 @@
 # Plumber Compatibility for Logseq Read Contract v1
 
-> **Status:** planned public consumer profile. No Trama--Plumber runtime
-> integration is implemented or qualified by this document.
+> **Status:** candidate public consumer profile with bounded local bridge tests.
+> No separately qualified cross-repository production integration is claimed.
 
 ## Purpose
 
-This profile defines the future public consumer boundary between Matryca Trama
-and Matryca Plumber. Trama produces host-facing read results through
+This profile defines the public consumer boundary between Matryca Trama and
+Matryca Plumber. Bounded Trama source produces read results through
 `trama.logseq.read/v1`; Plumber consumes only those declared public results and
 maps them to its own consumer-side ports and retrieval behavior.
 
@@ -16,8 +16,8 @@ maps them to its own consumer-side ports and retrieval behavior.
 | --- | --- | --- |
 | Matryca Plumber | `v2.0.0` | public stable anchor; Trama compatibility unqualified |
 | Logseq Matryca Parser | `>=1.7.1,<2.0.0` | Plumber-supported metadata range; Trama compatibility unqualified |
-| Contract line | `trama.logseq.read/v1` | planned |
-| Logseq source mode | `og_markdown` | planned initial consumer profile |
+| Contract line | `trama.logseq.read/v1` | implemented bounded source; not published |
+| Logseq source mode | `og_markdown` | synthetic initial consumer profile |
 
 Matryca Plumber development prereleases are not a compatibility claim. Native
 Logseq DB host support is also not a claim: a DB profile requires its own
@@ -43,11 +43,11 @@ or partial result as a successful Trama graph read.
   acceleration, event subscriptions, synchronization, or concurrent mutation.
 - When Tine may be active, the combined posture remains strict read-only.
 
-## Future evidence gate
+## Evidence gate
 
-After ADR-0004 selects the public package and test layout, a synthetic
-cross-repository suite must prove version negotiation, accepted provenance,
-unknown-version rejection, missing-provenance rejection, wrong-authority
-rejection, and complete-subtree preservation. It must bind every result to
-exact Trama, Plumber, Parser, and fixture versions. This document does not
-claim that those tests or an integration exist.
+Bounded local consumer tests exist at `9905e8a`; baseline evidence at `862c5c8`
+covers those local synthetic cases only. A separate cross-repository suite must
+prove version negotiation, accepted provenance, unknown-version rejection,
+missing-provenance rejection, wrong-authority rejection, and complete-subtree
+preservation. It must bind every result to exact Trama, Plumber, Parser, and
+fixture versions. This document does not claim that qualification exists.

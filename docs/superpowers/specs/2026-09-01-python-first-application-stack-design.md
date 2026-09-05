@@ -1,5 +1,9 @@
 # Python-First Application Stack Design
 
+> **Historical design record:** preserve its original decision-time language.
+> Current implementation and qualification status is governed by the
+> [delivery program](../../specs/MATRYCA_TRAMA_DELIVERY_PROGRAM.md).
+
 > **Status:** approved architecture direction; documentation-only design.
 > Runtime admission remains blocked by the qualification protocol.
 

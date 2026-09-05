@@ -1,5 +1,9 @@
 # Matryca Trama Public Foundation Implementation Plan
 
+> **Historical plan:** checkboxes preserve the original planning and execution
+> record. Current status is governed by the
+> [delivery program](../../specs/MATRYCA_TRAMA_DELIVERY_PROGRAM.md).
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use
 > `superpowers:subagent-driven-development` (recommended) or
 > `superpowers:executing-plans` to implement this plan task-by-task. Steps use

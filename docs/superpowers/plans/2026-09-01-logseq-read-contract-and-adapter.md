@@ -1,5 +1,9 @@
 # Logseq Read Contract and Adapter Implementation Plan
 
+> **Historical plan:** checkboxes preserve the original planning and execution
+> record. Current status is governed by the
+> [delivery program](../../specs/MATRYCA_TRAMA_DELIVERY_PROGRAM.md).
+
 > **Status:** planned; no runtime behavior is introduced by this document.
 >
 > **Source anchor:** `origin/main` at `cd9ec408ed9d4ece39d3eeaef506f4b172ab77d5`.

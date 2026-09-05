@@ -1,43 +1,21 @@
-# Persistent Goal: Matryca Trama Public Foundation
+# Persistent Goal: Matryca Trama Community Delivery
 
-## Objective
+Execute the delivery program defined in
+`docs/specs/MATRYCA_TRAMA_DELIVERY_PROGRAM.md`.
 
-Establish a trustworthy public source-available Community monorepo for Matryca
-Trama while preserving clean commercial, Pro, and Matryca Brain boundaries.
+Before each action, recheck the live anchor, exact commit, worktree, and
+evidence. Advance one vertical milestone at a time, deterministic-first, with
+Luna handling bounded checks and documentation, Terra coordinating scope, and
+Sol deciding only work beyond Terra's safe envelope.
 
-## Current scope
+Continue until every in-scope checklist item is proven or a named external gate
+is reached. Never redefine completion around partial progress. After each
+milestone, update the canonical claim ledger, record negative results and
+limitations, preserve a restart-safe checkpoint, and select only the next
+dependency-ready milestone.
 
-Complete the foundation specification, architecture, ADRs, roadmap, repository
-policy, and reviewable evidence. Public Parser/Plumber compatibility and the
-three-operation Logseq read contract are documented. The next gate is Python
-application-stack qualification is limited to synthetic OG contract tests for
-`graph.identify`, `page.read`, and complete ordered `block.subtree.read.complete`;
-do not infer a user-graph or host adapter. Do not add Pro source, Brain implementation,
-secrets, private dependencies, DB-host access, runtime adapters, or a write
-path outside its separate evidence gate. User graphs, DB, writes, events, Shadow,
-synchronization, export, recovery, UI/Nodi, distribution, performance, and
-network remain unsupported by this qualification.
-
-## Completion criteria
-
-- Public repository structure and licensing are unambiguous.
-- Parser, Plumber, OG, DB, and Nodi boundaries are documented.
-- Fork-safe CI and the temporary contributor licensing gate are defined.
-- Every later milestone has a testable evidence gate.
-- Public contract tests reject private Brain imports, unsupported versions, and
-  authority or provenance omissions.
-- The initial Logseq adapter scope remains read-only and independently usable
-  without a Brain service.
-- A future Pro decision is explicitly deferred rather than implied.
-
-## Stop conditions
-
-Stop before creating private integrations, changing licences again, accepting
-external copyright-bearing contributions, importing legacy history, selling a
-commercial licence, or publishing artifacts without the required separate
-authorization and review.
-
-Also stop before selecting a DB host surface without a focused compatibility
-spike, treating a Tine workflow as write authority, adding events or Shadow
-acceleration, or implementing any read or write adapter without an accepted
-contract and executable evidence.
+Hard-stop before Brain or Pro/private source, DB writes, events, Shadow,
+synchronization, export, recovery, commercial-rights decisions, releases, or
+external copyright-bearing contributions. Each needs an accepted contract,
+separate authorization, and executable evidence. External mutations (issues,
+PRs, pushes, publication, merges, or releases) require an explicit gate.

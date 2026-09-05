@@ -2,7 +2,9 @@
 
 Matryca Trama is a calm, local-first sidecar for understanding and safely improving Logseq graphs. It is designed for both Logseq OG and Logseq DB, with Nodi as its friendly companion layer.
 
-This public repository contains the Community foundation and shared contracts.
+This public repository contains the Community foundation, shared contracts, and
+a bounded Python reference implementation of the initial synthetic OG read
+profile.
 Its source is available under the PolyForm Noncommercial License 1.0.0:
 personal and other permitted noncommercial purposes are welcome, including the
 named noncommercial organisations described by the licence. Use for commercial
@@ -13,7 +15,14 @@ implementation details.
 
 ## Current status
 
-This repository is a document-first foundation. Architecture, contracts, threat boundaries, and contribution rules are established before implementation. Do not infer an available runtime or command-line interface from this README.
+At `9905e8a`, bounded Python source exists for synthetic OG fixtures and
+`graph.identify`, `page.read`, and complete ordered
+`block.subtree.read.complete`. Qualification remains a baseline record at
+`862c5c8`; no evidence record qualifies `9905e8a` as the current head. Source
+equality across commits does not replace exact-head qualification. This is not a
+published runtime or CLI, and it makes no user-graph, Logseq-host, DB, write,
+network, UI, performance, distribution, or release claim. See the
+[canonical delivery program](docs/specs/MATRYCA_TRAMA_DELIVERY_PROGRAM.md).
 
 ## Principles
 
@@ -28,10 +37,12 @@ This repository is a document-first foundation. Architecture, contracts, threat 
 ## Repository map
 
 - `docs/` — architecture, contracts, decisions, and roadmap.
-- `packages/` — future shared components and public interfaces.
+- `packages/` — bounded Python contracts, core, Parser and Plumber bridges, and
+  synthetic OG adapter.
 - `apps/` — future Trama applications and sidecar surfaces.
 
-These directories may be introduced incrementally. The documentation is the current source of truth for scope and status.
+Further directories are introduced only after their contract and evidence gate.
+The delivery program is the current source of truth for scope and status.
 
 ## Contributing and safety
 
