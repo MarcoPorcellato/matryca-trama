@@ -52,7 +52,7 @@ development skill, thin personal discovery, contributor guidance, and a
 reviewed exception process. The skill points to canonical policy and does not
 duplicate it.
 
-The R1 implementation exists on its local branch only. It becomes a repository
+The R1 executable projection is implemented. It becomes a repository
 qualification only after publication and fork-safe hosted CI records evidence
 for the exact published head.
 

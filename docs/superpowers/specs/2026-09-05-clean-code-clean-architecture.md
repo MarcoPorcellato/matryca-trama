@@ -128,13 +128,17 @@ Python ASTs under `packages/*/src`. It reports source path and line for every
 violation and exits nonzero when it finds:
 
 - an unregistered package;
+- a manifestless `packages/*/src` package tree;
+- a declared local or external dependency that is not allowed by the package
+  map, before source ASTs are scanned;
 - a forbidden dependency direction;
 - an undeclared internal or external dependency;
 - a private or product-boundary import;
 - a non-package-root Parser import;
 - direct Parser use outside the parser bridge;
-- `__import__`, `importlib.import_module`, or `sys.path` mutation in production
-  packages;
+- direct or aliased `builtins.__import__`, `importlib.import_module`, or
+  `sys.path` mutation, including deletion, in production packages; aliases are
+  collected independently of source order;
 - malformed, expired, or over-broad architecture exceptions.
 
 The validator does not infer architectural intent from directory names alone.
@@ -176,7 +180,10 @@ Each exception must include:
 - removal condition.
 
 The validator rejects missing fields, duplicate identifiers, expired entries,
-wildcard package/import roots, and entries that match no live violation.
+wildcard package/import roots, and entries that match no live violation. The
+issue URL must be an exact public
+`https://github.com/MarcoPorcellato/matryca-trama/issues/<positive-number>` URL;
+this deterministic offline rule does not fetch GitHub.
 Licensing, external-contribution rights, private Brain or Pro source, native
 source authority, write permission, secrets, and publication gates can never be
 waived through this registry.
@@ -207,6 +214,14 @@ Architecture behavior follows RED-GREEN-REFACTOR:
 3. the smallest validator behavior makes it pass;
 4. an allowed-edge fixture guards against over-rejection;
 5. current packages are scanned as an integration test.
+
+Future validator changes must retain this focused RED requirement. Historical
+bootstrap provenance is narrower: an aggregate missing-module RED was observed,
+but the original per-fixture RED sequence was not recorded because the initial
+tests and validator entered together. A one-time controller ruling accepts that
+deviation without retroactively claiming strict TDD; review-driven and final
+fix waves have focused RED/GREEN evidence in
+[`docs/quality/ARCHITECTURE_VALIDATOR_EVIDENCE.md`](../../quality/ARCHITECTURE_VALIDATOR_EVIDENCE.md).
 
 Required negative cases cover contracts importing core, core importing an
 adapter, OG adapter importing Parser directly, undeclared workspace dependency,
@@ -256,8 +271,9 @@ Pull requests record:
 R1 completes only when all are true:
 
 1. design, ADR, standard, and executable map agree;
-2. every required negative fixture has been observed failing before its
-   corresponding validator behavior;
+2. every future required negative fixture is observed failing before its
+   corresponding validator behavior; the one-time bootstrap deviation is
+   limited to the evidence record and does not waive later focused RED;
 3. all architecture tests and existing suites pass;
 4. current package manifests match real imports;
 5. OG adapter no longer imports Parser directly;

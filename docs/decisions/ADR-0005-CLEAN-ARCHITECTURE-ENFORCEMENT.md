@@ -1,6 +1,6 @@
 # ADR-0005: Clean Architecture Enforcement
 
-Status: Accepted — executable projection pending R1 tasks
+Status: Accepted — executable projection implemented; exact hosted/main qualification pending publication
 
 Date: 2026-09-05
 
@@ -33,6 +33,10 @@ readable dependency map as projections of policy. Validator must fail closed
 for mechanical violations, report source paths and lines, and run before
 behavioral contract tests in fork-safe CI. No third-party architecture linter
 is required for R1.
+
+The executable projection is implemented in repository history. Hosted and main
+qualification remain pending publication and fork-safe CI evidence for the
+exact published head; no branch label is qualification evidence.
 
 Initial exception registry is empty. Any future exception is temporary, narrow,
 reviewed, and validated against standard; it cannot waive source authority,
@@ -77,6 +81,11 @@ its owners accept it through their own decision process.
 - Community material remains PolyForm Noncommercial 1.0.0. External
   copyright-bearing contributions remain merge-blocked pending lawyer-reviewed
   contributor agreement or equivalent grant.
+- Future validator behavior changes require a focused controlled-fixture RED,
+  then the minimal GREEN change. The one-time bootstrap provenance deviation is
+  recorded in [architecture validator evidence](../quality/ARCHITECTURE_VALIDATOR_EVIDENCE.md):
+  only an aggregate missing-module RED is historical evidence for the original
+  validator; it is not evidence that every initial fixture was observed RED.
 
 ## Reversal
 

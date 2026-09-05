@@ -78,7 +78,7 @@ EXPIRED_EXCEPTION = (
     'package = "trama-contracts"\n'
     'import_root = "trama_core"\n'
     'path_glob = "packages/contracts/src/trama_contracts/bad.py"\n'
-    'issue = "https://example.test/issues/1"\n'
+    'issue = "https://github.com/MarcoPorcellato/matryca-trama/issues/1"\n'
     'owner = "maintainer"\n'
     'reason = "temporary"\n'
     'created = "2000-01-01"\n'
@@ -170,6 +170,37 @@ class DependencyBoundaryTests(unittest.TestCase):
             )
             self.assertIn("ARCH003", codes(root))
 
+    def test_manifest_only_forbidden_local_dependency_is_rejected(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            write_fixture(root)
+            (root / "packages/core/pyproject.toml").write_text(
+                '[project]\nname = "trama-core"\n'
+                'dependencies = ["trama-contracts", "trama-logseq-og-adapter"]\n',
+                encoding="utf-8",
+            )
+            self.assertIn("ARCH002", codes(root))
+
+    def test_manifest_only_forbidden_external_dependency_is_rejected(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            write_fixture(root)
+            (root / "packages/core/pyproject.toml").write_text(
+                '[project]\nname = "trama-core"\n'
+                'dependencies = ["trama-contracts", "logseq-matryca-parser"]\n',
+                encoding="utf-8",
+            )
+            self.assertIn("ARCH004", codes(root))
+
+    def test_manifestless_package_source_tree_is_rejected(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            write_fixture(root)
+            source = root / "packages/manifestless/src/manifestless"
+            source.mkdir(parents=True)
+            (source / "__init__.py").write_text("", encoding="utf-8")
+            self.assertIn("ARCH001", codes(root))
+
     def test_parser_bridge_cannot_import_parser_internal_module(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
@@ -194,6 +225,22 @@ class DependencyBoundaryTests(unittest.TestCase):
             write_fixture(root, {"packages/contracts/src/trama_contracts/bad.py": "from builtins import __import__ as load\nload('trama_core')\n"})
             self.assertIn("ARCH005", codes(root))
 
+    def test_direct_builtins_import_is_rejected(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            write_fixture(root, {
+                "packages/contracts/src/trama_contracts/bad.py": "import builtins\nbuiltins.__import__('trama_core')\n"
+            })
+            self.assertIn("ARCH005", codes(root))
+
+    def test_late_importlib_alias_is_rejected(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            write_fixture(root, {
+                "packages/contracts/src/trama_contracts/bad.py": "def load():\n    loader.import_module('trama_core')\n\nimport importlib as loader\n"
+            })
+            self.assertIn("ARCH005", codes(root))
+
     def test_sys_path_mutation_is_rejected(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
@@ -204,6 +251,14 @@ class DependencyBoundaryTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
             write_fixture(root, {"packages/contracts/src/trama_contracts/bad.py": "from sys import path as sibling_path\nsibling_path.insert(0, '../sibling')\n"})
+            self.assertIn("ARCH005", codes(root))
+
+    def test_delete_sys_path_entry_is_rejected(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            write_fixture(root, {
+                "packages/contracts/src/trama_contracts/bad.py": "import sys\ndel sys.path[0]\n"
+            })
             self.assertIn("ARCH005", codes(root))
 
     def test_allowed_same_package_stdlib_inward_and_parser_root_imports_pass(self) -> None:
@@ -225,6 +280,22 @@ class DependencyBoundaryTests(unittest.TestCase):
                     config.replace("exceptions = []", exceptions), encoding="utf-8"
                 )
                 self.assertIn("ARCH006", codes(root))
+
+    def test_exception_requires_public_repository_issue_url(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            write_fixture(root, {
+                "packages/contracts/src/trama_contracts/bad.py": "import trama_core\n"
+            })
+            config = (root / "architecture.toml").read_text(encoding="utf-8")
+            exception = UNUSED_EXCEPTION.replace(
+                'issue = "https://github.com/MarcoPorcellato/matryca-trama/issues/1"',
+                'issue = "https://example.test/issues/1"',
+            )
+            (root / "architecture.toml").write_text(
+                config.replace("exceptions = []", exception), encoding="utf-8"
+            )
+            self.assertIn("ARCH006", codes(root))
 
     def test_scoped_exception_suppresses_only_matching_source(self) -> None:
         with tempfile.TemporaryDirectory() as directory:

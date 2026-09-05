@@ -14,6 +14,10 @@ from pathlib import Path
 from typing import Any
 
 
+REPOSITORY_ISSUE_URL = re.compile(
+    r"https://github\.com/MarcoPorcellato/matryca-trama/issues/[1-9][0-9]*"
+)
+
 @dataclass(frozen=True, order=True)
 class Violation:
     path: Path
@@ -109,8 +113,10 @@ def read_config(root: Path) -> tuple[dict[str, PackageRule], dict[str, str], set
 def read_manifests(root: Path, rules: dict[str, PackageRule]) -> tuple[dict[str, set[str]], list[Violation]]:
     declarations: dict[str, set[str]] = {}
     violations: list[Violation] = []
+    manifest_directories: set[Path] = set()
     for manifest in sorted(root.glob("packages/*/pyproject.toml")):
         relative = manifest.relative_to(root)
+        manifest_directories.add(relative.parent)
         try:
             with manifest.open("rb") as handle:
                 project = tomllib.load(handle).get("project", {})
@@ -132,10 +138,47 @@ def read_manifests(root: Path, rules: dict[str, PackageRule]) -> tuple[dict[str,
             violations.append(Violation(relative, 0, "ARCH006", f"package directory mismatch: {distribution}"))
             continue
         declarations[distribution] = {dependency_name(item) for item in dependencies}
+    source_directories = {
+        source.relative_to(root).parent
+        for source in root.glob("packages/*/src")
+        if source.is_dir()
+    }
+    registered_directories = {rule.directory for rule in rules.values()}
+    for directory in sorted(source_directories):
+        if directory not in registered_directories:
+            violations.append(Violation(directory / "src", 0, "ARCH001", f"unregistered package source tree: {directory}"))
+        elif directory not in manifest_directories:
+            violations.append(Violation(directory / "src", 0, "ARCH006", f"package source tree has no manifest: {directory}"))
     for distribution, rule in rules.items():
-        if distribution not in declarations:
+        if distribution not in declarations and rule.directory not in source_directories:
             violations.append(architecture_error(root, f"registered package has no manifest: {distribution}"))
     return declarations, violations
+
+
+def validate_declared_dependencies(
+    root: Path,
+    declarations: dict[str, set[str]],
+    rules: dict[str, PackageRule],
+    external: dict[str, str],
+) -> list[Violation]:
+    internal_distributions = {dependency_name(rule.distribution): rule for rule in rules.values()}
+    external_distributions = {dependency_name(distribution): root_name for root_name, distribution in external.items()}
+    violations: list[Violation] = []
+    for distribution, dependencies in declarations.items():
+        rule = rules[distribution]
+        manifest = rule.directory / "pyproject.toml"
+        for dependency in sorted(dependencies):
+            internal = internal_distributions.get(dependency)
+            if internal is not None:
+                if internal.import_root not in rule.allowed_internal:
+                    violations.append(Violation(manifest, 0, "ARCH002", f"forbidden internal dependency: {internal.distribution}"))
+                continue
+            external_root = external_distributions.get(dependency)
+            if external_root is None:
+                violations.append(Violation(manifest, 0, "ARCH004", f"unmapped external dependency: {dependency}"))
+            elif external_root not in rule.allowed_external:
+                violations.append(Violation(manifest, 0, "ARCH004", f"forbidden external dependency: {external[external_root]}"))
+    return violations
 
 
 class ImportVisitor(ast.NodeVisitor):
@@ -159,8 +202,34 @@ class ImportVisitor(ast.NodeVisitor):
         self.findings: list[Finding] = []
         self.importlib_names = {"importlib"}
         self.dynamic_names = {"__import__"}
+        self.builtins_names = {"builtins"}
         self.sys_names = {"sys"}
         self.sys_path_names: set[str] = set()
+
+    def collect_aliases(self, tree: ast.AST) -> None:
+        for node in ast.walk(tree):
+            if isinstance(node, ast.Import):
+                for alias in node.names:
+                    root_name = alias.name.split(".", 1)[0]
+                    if root_name == "importlib":
+                        self.importlib_names.add(alias.asname or root_name)
+                    elif root_name == "builtins":
+                        self.builtins_names.add(alias.asname or root_name)
+                    elif root_name == "sys":
+                        self.sys_names.add(alias.asname or root_name)
+            elif isinstance(node, ast.ImportFrom) and not node.level:
+                if node.module == "importlib":
+                    for alias in node.names:
+                        if alias.name == "import_module":
+                            self.dynamic_names.add(alias.asname or alias.name)
+                elif node.module == "builtins":
+                    for alias in node.names:
+                        if alias.name == "__import__":
+                            self.dynamic_names.add(alias.asname or alias.name)
+                elif node.module == "sys":
+                    for alias in node.names:
+                        if alias.name == "path":
+                            self.sys_path_names.add(alias.asname or alias.name)
 
     def add(self, node: ast.AST, code: str, message: str, import_root: str | None) -> None:
         relative = self.path.relative_to(self.root)
@@ -192,29 +261,12 @@ class ImportVisitor(ast.NodeVisitor):
 
     def visit_Import(self, node: ast.Import) -> None:
         for alias in node.names:
-            root_name = alias.name.split(".", 1)[0]
-            if root_name == "importlib":
-                self.importlib_names.add(alias.asname or root_name)
-            if root_name == "sys":
-                self.sys_names.add(alias.asname or root_name)
             self.check_import(node, alias.name)
         self.generic_visit(node)
 
     def visit_ImportFrom(self, node: ast.ImportFrom) -> None:
         if node.level or node.module is None:
             return
-        if node.module == "importlib":
-            for alias in node.names:
-                if alias.name == "import_module":
-                    self.dynamic_names.add(alias.asname or alias.name)
-        if node.module == "builtins":
-            for alias in node.names:
-                if alias.name == "__import__":
-                    self.dynamic_names.add(alias.asname or alias.name)
-        if node.module == "sys":
-            for alias in node.names:
-                if alias.name == "path":
-                    self.sys_path_names.add(alias.asname or alias.name)
         self.check_import(node, node.module)
         self.generic_visit(node)
 
@@ -236,6 +288,13 @@ class ImportVisitor(ast.NodeVisitor):
             and function.attr == "import_module"
         ):
             self.add(node, "ARCH005", "dynamic import is forbidden", None)
+        elif (
+            isinstance(function, ast.Attribute)
+            and isinstance(function.value, ast.Name)
+            and function.value.id in self.builtins_names
+            and function.attr == "__import__"
+        ):
+            self.add(node, "ARCH005", "dynamic import is forbidden", None)
         if isinstance(function, ast.Attribute) and self.is_sys_path(function.value):
             self.add(node, "ARCH005", "sys.path mutation is forbidden", None)
         self.generic_visit(node)
@@ -247,6 +306,11 @@ class ImportVisitor(ast.NodeVisitor):
 
     def visit_AugAssign(self, node: ast.AugAssign) -> None:
         if self.is_sys_path(node.target):
+            self.add(node, "ARCH005", "sys.path mutation is forbidden", None)
+        self.generic_visit(node)
+
+    def visit_Delete(self, node: ast.Delete) -> None:
+        if any(self.is_sys_path(target) for target in node.targets):
             self.add(node, "ARCH005", "sys.path mutation is forbidden", None)
         self.generic_visit(node)
 
@@ -298,6 +362,9 @@ def validate_exceptions(
         if not all(isinstance(entry[field], str) and entry[field] for field in required - {"created", "expires"}):
             errors.append(architecture_error(root, f"exception {identifier} is incomplete"))
             continue
+        if not REPOSITORY_ISSUE_URL.fullmatch(entry["issue"]):
+            errors.append(architecture_error(root, f"exception {identifier} has invalid issue URL"))
+            continue
         try:
             expires = date.fromisoformat(str(entry["expires"]))
             date.fromisoformat(str(entry["created"]))
@@ -329,6 +396,7 @@ def validate_repository(root: Path) -> list[Violation]:
         return sorted(violations)
     declarations, manifest_violations = read_manifests(root, rules)
     violations.extend(manifest_violations)
+    violations.extend(validate_declared_dependencies(root, declarations, rules, external))
     internal_roots = {rule.import_root: rule for rule in rules.values()}
     findings: list[Finding] = []
     for distribution, rule in rules.items():
@@ -342,6 +410,7 @@ def validate_repository(root: Path) -> list[Violation]:
                 violations.append(Violation(path.relative_to(root), 0, "ARCH006", f"invalid source: {error}"))
                 continue
             visitor = ImportVisitor(root, path, rule, declarations[distribution], internal_roots, external, forbidden)
+            visitor.collect_aliases(tree)
             visitor.visit(tree)
             findings.extend(visitor.findings)
     findings, exception_violations = validate_exceptions(root, exceptions, rules, forbidden, findings)

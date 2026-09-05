@@ -43,9 +43,9 @@ These directories may be introduced incrementally. The documentation is the curr
 The accepted [Clean Architecture standard](docs/standards/CLEAN_ARCHITECTURE.md)
 is canonical for package boundaries. The repository-local
 [development skill](.agents/skills/trama-development/SKILL.md) routes changes
-to that policy and its checks. R1 enforcement is implemented on this local
-branch; it is not hosted or main-branch qualification until the exact published
-head has fork-safe CI evidence.
+to that policy and its checks. R1 enforcement is implemented; it is not hosted
+or main-branch qualification until fork-safe CI records evidence for the exact
+published head.
 
 ## Contributing and safety
 
