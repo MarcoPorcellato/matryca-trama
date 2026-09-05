@@ -1,9 +1,9 @@
 # Matryca Trama Delivery Program
 
-**Status:** canonical long-horizon delivery specification  
-**Live anchor:** `9905e8a36acb83a17a33b702a5fa620d6bfed185`  
-**Qualified baseline:** `862c5c89157f28c1985cde6145fc2c8af04a70b4`  
-**Owner:** Matryca maintainer; every milestone requires explicit review and an evidence record.  
+**Status:** canonical long-horizon delivery specification
+**Live anchor:** `9905e8a36acb83a17a33b702a5fa620d6bfed185`
+**Qualified baseline:** `862c5c89157f28c1985cde6145fc2c8af04a70b4`
+**Owner:** Matryca maintainer; every milestone requires explicit review and an evidence record.
 **Supersedes for current delivery status:**
 [`MATRYCA_TRAMA_PUBLIC_MONOREPO_FOUNDATION.md`](MATRYCA_TRAMA_PUBLIC_MONOREPO_FOUNDATION.md),
 which remains the historical Phase 0 authority.
