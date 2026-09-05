@@ -377,8 +377,8 @@ of V1.
 
 ## Plan self-review
 
-- [ ] V0 records anchors and contradictions without changing runtime scope.
-- [ ] Task 2 has explicit RED/GREEN coverage for the new policy paths.
+- [x] V0 records anchors and contradictions without changing runtime scope.
+- [x] Task 2 has explicit RED/GREEN coverage for the new policy paths.
 - [x] V1 binds local and hosted evidence to the exact tested revision.
 - [x] Evidence commits and tested revisions remain distinct when necessary.
 - [x] Push, PR, evidence publication, and merge remain explicit external gates.
