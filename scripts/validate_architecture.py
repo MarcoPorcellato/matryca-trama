@@ -298,6 +298,26 @@ class ImportVisitor(ast.NodeVisitor):
             )
         )
 
+    def is_dangerous_primitive_reference(self, node: ast.AST) -> bool:
+        """Recognize the primitives before aliases or containers can obscure them."""
+        return isinstance(node, ast.Attribute) and isinstance(node.value, ast.Name) and (
+            (node.value.id in self.importlib_names and node.attr == "import_module")
+            or (node.value.id in self.builtins_names and node.attr == "__import__")
+            or (node.value.id in self.sys_names and node.attr == "path")
+        )
+
+    def is_dangerous_primitive_alias_reference(self, node: ast.AST) -> bool:
+        return isinstance(node, ast.Name) and isinstance(node.ctx, ast.Load) and (
+            node.id in self.dynamic_names or node.id in self.sys_path_names
+        )
+
+    def contains_dangerous_primitive_reference(self, node: ast.AST) -> bool:
+        return any(
+            self.is_dangerous_primitive_reference(candidate)
+            or self.is_dangerous_primitive_alias_reference(candidate)
+            for candidate in ast.walk(node)
+        )
+
     def add(self, node: ast.AST, code: str, message: str, import_root: str | None) -> None:
         relative = self.path.relative_to(self.root)
         self.findings.append(
@@ -337,6 +357,18 @@ class ImportVisitor(ast.NodeVisitor):
         self.check_import(node, node.module)
         self.generic_visit(node)
 
+    def visit_Attribute(self, node: ast.Attribute) -> None:
+        if self.is_dangerous_primitive_reference(node):
+            message = "sys.path reference is forbidden" if node.attr == "path" else "dynamic import primitive reference is forbidden"
+            self.add(node, "ARCH005", message, None)
+        self.generic_visit(node)
+
+    def visit_Name(self, node: ast.Name) -> None:
+        if self.is_dangerous_primitive_alias_reference(node):
+            message = "sys.path reference is forbidden" if node.id in self.sys_path_names else "dynamic import primitive reference is forbidden"
+            self.add(node, "ARCH005", message, None)
+        self.generic_visit(node)
+
     def is_sys_path(self, node: ast.AST) -> bool:
         if isinstance(node, ast.NamedExpr):
             return self.is_sys_path(node.value)
@@ -348,24 +380,34 @@ class ImportVisitor(ast.NodeVisitor):
 
     def visit_Call(self, node: ast.Call) -> None:
         function = node.func
-        if self.is_dynamic_import_callable(function):
+        if self.is_dynamic_import_callable(function) and not self.contains_dangerous_primitive_reference(function):
             self.add(node, "ARCH005", "dynamic import is forbidden", None)
-        if isinstance(function, ast.Attribute) and self.is_sys_path(function.value):
+        if (
+            isinstance(function, ast.Attribute)
+            and self.is_sys_path(function.value)
+            and not self.contains_dangerous_primitive_reference(function.value)
+        ):
             self.add(node, "ARCH005", "sys.path mutation is forbidden", None)
         self.generic_visit(node)
 
     def visit_Assign(self, node: ast.Assign) -> None:
-        if any(self.is_sys_path(target) for target in node.targets):
+        if any(
+            self.is_sys_path(target) and not self.contains_dangerous_primitive_reference(target)
+            for target in node.targets
+        ) and not self.is_sys_path(node.value):
             self.add(node, "ARCH005", "sys.path mutation is forbidden", None)
         self.generic_visit(node)
 
     def visit_AugAssign(self, node: ast.AugAssign) -> None:
-        if self.is_sys_path(node.target):
+        if self.is_sys_path(node.target) and not self.contains_dangerous_primitive_reference(node.target):
             self.add(node, "ARCH005", "sys.path mutation is forbidden", None)
         self.generic_visit(node)
 
     def visit_Delete(self, node: ast.Delete) -> None:
-        if any(self.is_sys_path(target) for target in node.targets):
+        if any(
+            self.is_sys_path(target) and not self.contains_dangerous_primitive_reference(target)
+            for target in node.targets
+        ):
             self.add(node, "ARCH005", "sys.path mutation is forbidden", None)
         self.generic_visit(node)
 

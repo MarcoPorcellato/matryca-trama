@@ -310,6 +310,30 @@ class DependencyBoundaryTests(unittest.TestCase):
             })
             self.assertIn("ARCH005", codes(root))
 
+    def test_tuple_destructured_importlib_alias_is_rejected(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            write_fixture(root, {
+                "packages/contracts/src/trama_contracts/bad.py": "import importlib\n(load,) = (importlib.import_module,)\nload('trama_core')\n"
+            })
+            self.assertIn("ARCH005", codes(root))
+
+    def test_tuple_destructured_imported_dynamic_primitive_is_rejected(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            write_fixture(root, {
+                "packages/contracts/src/trama_contracts/bad.py": "from importlib import import_module\n(load,) = (import_module,)\nload('trama_core')\n"
+            })
+            self.assertIn("ARCH005", codes(root))
+
+    def test_dangerous_primitive_references_are_rejected(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            write_fixture(root, {
+                "packages/contracts/src/trama_contracts/bad.py": "import builtins\nimport importlib\nimport sys\ndynamic = importlib.import_module\nloader = builtins.__import__\npaths = sys.path\n"
+            })
+            self.assertEqual(codes(root).count("ARCH005"), 3)
+
     def test_sys_path_mutation_is_rejected(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
@@ -343,6 +367,22 @@ class DependencyBoundaryTests(unittest.TestCase):
             root = Path(directory)
             write_fixture(root, {
                 "packages/contracts/src/trama_contracts/bad.py": "import sys\n(alias := sys.path).append('../sibling')\n"
+            })
+            self.assertIn("ARCH005", codes(root))
+
+    def test_list_destructured_sys_path_alias_is_rejected(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            write_fixture(root, {
+                "packages/contracts/src/trama_contracts/bad.py": "import sys\n[alias] = [sys.path]\nalias.append('../sibling')\n"
+            })
+            self.assertIn("ARCH005", codes(root))
+
+    def test_list_destructured_imported_sys_path_is_rejected(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            write_fixture(root, {
+                "packages/contracts/src/trama_contracts/bad.py": "from sys import path\n[alias] = [path]\nalias.append('../sibling')\n"
             })
             self.assertIn("ARCH005", codes(root))
 
