@@ -1,12 +1,14 @@
 # Logseq Read Contract v1
 
-> **Status:** public specification with bounded Python reference source. This is
-> not a published API or a current-head conformance claim.
+> **Status:** historical experimental Trama specification and bounded Python
+> source. It is not a published API, current-head conformance claim, or the
+> authority for future integration. The proposed Plumber ADR and canonical
+> contract must be published before a future consumer contract exists.
 
 ## Purpose
 
 `trama.logseq.read/v1` defines a minimal read-only interchange boundary between
-a bounded Matryca Trama producer and public consumers. It preserves
+a historical bounded Matryca Trama producer and test consumers. It preserves
 native Logseq source authority and makes incompatibility or missing provenance
 an explicit result rather than an inferred success.
 
@@ -152,11 +154,17 @@ An absent version, unselected host route, or unsupported source mode is
 - Tine Direct Files context does not grant a second writer. A possibly active
   Tine session remains a strict read-only condition.
 
-## Conformance gate
+## Conformance evidence and next gate
 
-The bounded Python source and synthetic conformance suite exist at `9905e8a`.
-The qualification record remains bound to `862c5c8` and proves only synthetic
-OG reads plus rejection cases for the three declared operations. It does not
-qualify the current head, user graphs, a Logseq host, DB, writes, events,
-Shadow, synchronization, export, recovery, UI, performance, distribution, or
-network behavior. Broader profiles require their own exact-version evidence.
+The bounded Python source and synthetic conformance suite predate the resolved
+`origin/main` merge parent `70fc14c27b11e31e8f557fd70684b6a83933e7d6`. Exact hosted evidence
+at `862c5c89157f28c1985cde6145fc2c8af04a70b4` records only synthetic OG reads
+and rejection of unknown version, missing provenance, wrong authority,
+incomplete subtree, and private dependency. It does not qualify this head, a
+user graph, Logseq host, DB, writes, events, Shadow, synchronization, export,
+recovery, UI, performance, distribution, or network behavior.
+
+No new profile may treat this historical Trama line as the future contract. The
+proposed design requires a published Plumber ADR and canonical Plumber contract;
+then every new profile needs its own exact producer, consumer, host, Parser,
+fixture, and result evidence.

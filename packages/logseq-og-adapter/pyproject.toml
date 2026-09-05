@@ -6,7 +6,11 @@ build-backend = "hatchling.build"
 name = "trama-logseq-og-adapter"
 version = "0.0.0"
 requires-python = ">=3.12"
-dependencies = []
+dependencies = [
+    "trama-contracts",
+    "trama-core",
+    "trama-parser-bridge",
+]
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/trama_logseq_og_adapter"]

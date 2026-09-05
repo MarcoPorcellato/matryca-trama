@@ -15,14 +15,16 @@ implementation details.
 
 ## Current status
 
-At `9905e8a`, bounded Python source exists for synthetic OG fixtures and
-`graph.identify`, `page.read`, and complete ordered
-`block.subtree.read.complete`. Qualification remains a baseline record at
-`862c5c8`; no evidence record qualifies `9905e8a` as the current head. Source
-equality across commits does not replace exact-head qualification. This is not a
-published runtime or CLI, and it makes no user-graph, Logseq-host, DB, write,
-network, UI, performance, distribution, or release claim. See the
-[canonical delivery program](docs/specs/MATRYCA_TRAMA_DELIVERY_PROGRAM.md).
+The resolved `origin/main` merge parent is
+`70fc14c27b11e31e8f557fd70684b6a83933e7d6`. It contains
+bounded Python source for synthetic OG fixtures and `graph.identify`,
+`page.read`, and complete ordered `block.subtree.read.complete`. The historical
+qualification record remains `862c5c8`; it does not qualify this head. This
+experimental `trama.logseq.read/v1` source is neither a published runtime nor
+the authority for future integration. The proposed Plumber-gateway decision is
+not accepted until Plumber publishes its ADR and canonical contract. No
+user-graph, Logseq-host, DB, write, network, UI, performance, distribution, or
+release claim follows. See the [roadmap](docs/ROADMAP.md).
 
 ## Principles
 
@@ -38,11 +40,21 @@ network, UI, performance, distribution, or release claim. See the
 
 - `docs/` — architecture, contracts, decisions, and roadmap.
 - `packages/` — bounded Python contracts, core, Parser and Plumber bridges, and
-  synthetic OG adapter.
+  synthetic OG adapter; direct Parser use is historical experimental work, not a
+  future integration boundary.
 - `apps/` — future Trama applications and sidecar surfaces.
 
 Further directories are introduced only after their contract and evidence gate.
 The delivery program is the current source of truth for scope and status.
+
+## Architecture and review
+
+The accepted [Clean Architecture standard](docs/standards/CLEAN_ARCHITECTURE.md)
+is canonical for package boundaries. The repository-local
+[development skill](.agents/skills/trama-development/SKILL.md) routes changes
+to that policy and its checks. R1 enforcement is implemented; it is not hosted
+or main-branch qualification until fork-safe CI records evidence for the exact
+published head.
 
 ## Contributing and safety
 

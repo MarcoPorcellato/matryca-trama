@@ -18,3 +18,10 @@ Read the README and relevant `docs/` files before acting.
 ## Change discipline
 
 Prefer small changes. Explain scope, evidence, tests, and limitations. Update documentation and contracts when behavior changes. Never commit caches, generated audit data, vault contents, or credentials.
+
+For package, contract, adapter, or dependency work, route through
+[Clean Architecture standard](docs/standards/CLEAN_ARCHITECTURE.md) and
+[ADR-0005](docs/decisions/ADR-0005-CLEAN-ARCHITECTURE-ENFORCEMENT.md).
+Treat them as canonical policy; dependency maps, validators, CI, and skills are
+projections. Stop when projection disagrees, package lacks admission, or
+proposed cross-repository responsibility contract is treated as accepted.

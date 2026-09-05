@@ -1,7 +1,9 @@
 # Plumber Compatibility for Logseq Read Contract v1
 
-> **Status:** candidate public consumer profile with bounded local bridge tests.
-> No separately qualified cross-repository production integration is claimed.
+> **Status:** historical Trama-side synthetic helper and candidate consumer
+> profile. No live Trama--Plumber runtime, Plumber session port, or
+> cross-repository production integration is qualified. The proposed Plumber
+> gateway is not accepted until its ADR and canonical contract are published.
 
 ## Purpose
 
@@ -16,12 +18,14 @@ maps them to its own consumer-side ports and retrieval behavior.
 | --- | --- | --- |
 | Matryca Plumber | `v2.0.0` | public stable anchor; Trama compatibility unqualified |
 | Logseq Matryca Parser | `>=1.7.1,<2.0.0` | Plumber-supported metadata range; Trama compatibility unqualified |
-| Contract line | `trama.logseq.read/v1` | implemented bounded source; not published |
+| Contract line | `trama.logseq.read/v1` | historical bounded source; not published |
 | Logseq source mode | `og_markdown` | synthetic initial consumer profile |
 
-Matryca Plumber development prereleases are not a compatibility claim. Native
-Logseq DB host support is also not a claim: a DB profile requires its own
-official-host spike and exact-version evidence.
+Current Plumber source at
+`d347d43dad090586b10a77a53c4e0c8fd6da8e15` reports `2.0.1rc3`; the Trama
+helper accepts only `2.0.0`. The prerelease is therefore a separate,
+unqualified row. Native Logseq DB host support is also not a claim: a DB
+profile requires its own official-host spike and exact-version evidence.
 
 ## Consumer boundary
 
@@ -43,11 +47,13 @@ or partial result as a successful Trama graph read.
   acceleration, event subscriptions, synchronization, or concurrent mutation.
 - When Tine may be active, the combined posture remains strict read-only.
 
-## Evidence gate
+## Future cross-repository evidence gate
 
-Bounded local consumer tests exist at `9905e8a`; baseline evidence at `862c5c8`
-covers those local synthetic cases only. A separate cross-repository suite must
-prove version negotiation, accepted provenance, unknown-version rejection,
-missing-provenance rejection, wrong-authority rejection, and complete-subtree
-preservation. It must bind every result to exact Trama, Plumber, Parser, and
-fixture versions. This document does not claim that qualification exists.
+Bounded local consumer tests predate the resolved `origin/main`
+`70fc14c27b11e31e8f557fd70684b6a83933e7d6`; baseline evidence at `862c5c8`
+covers those historical synthetic cases only. Plumber must first publish its
+ADR, canonical public contract, schemas, fixtures, and compatibility policy.
+A later suite must bind exact Plumber, Trama, Parser, profile, and fixture
+versions and prove version negotiation, provenance and authority rejection,
+complete-subtree preservation, and unchanged Plumber OG/Shadow behavior. This
+document does not claim that any such integration or qualification exists.

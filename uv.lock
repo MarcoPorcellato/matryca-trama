@@ -214,6 +214,18 @@ source = { editable = "packages/core" }
 name = "trama-logseq-og-adapter"
 version = "0.0.0"
 source = { editable = "packages/logseq-og-adapter" }
+dependencies = [
+    { name = "trama-contracts" },
+    { name = "trama-core" },
+    { name = "trama-parser-bridge" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "trama-contracts", editable = "packages/contracts" },
+    { name = "trama-core", editable = "packages/core" },
+    { name = "trama-parser-bridge", editable = "packages/parser-bridge" },
+]
 
 [[package]]
 name = "trama-parser-bridge"
@@ -221,15 +233,25 @@ version = "0.0.0"
 source = { editable = "packages/parser-bridge" }
 dependencies = [
     { name = "logseq-matryca-parser" },
+    { name = "trama-core" },
 ]
 
 [package.metadata]
-requires-dist = [{ name = "logseq-matryca-parser", specifier = ">=1.7.1,<2.0.0" }]
+requires-dist = [
+    { name = "logseq-matryca-parser", specifier = ">=1.7.1,<2.0.0" },
+    { name = "trama-core", editable = "packages/core" },
+]
 
 [[package]]
 name = "trama-plumber-bridge"
 version = "0.0.0"
 source = { editable = "packages/plumber-bridge" }
+dependencies = [
+    { name = "trama-contracts" },
+]
+
+[package.metadata]
+requires-dist = [{ name = "trama-contracts", editable = "packages/contracts" }]
 
 [[package]]
 name = "typer"

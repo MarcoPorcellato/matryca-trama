@@ -9,7 +9,7 @@ import tempfile
 import unittest
 
 from trama_core import sha256_bytes
-from trama_parser_bridge import load_og_fixture
+from trama_parser_bridge import LogseqGraph, LogseqNode, LogseqPage, load_og_fixture
 
 
 FIXTURES_ROOT = Path(__file__).parents[1] / "fixtures"
@@ -17,6 +17,17 @@ FIXTURES_ROOT = Path(__file__).parents[1] / "fixtures"
 
 class ParserLoaderTests(unittest.TestCase):
     """The Parser boundary loads only verified synthetic fixtures."""
+
+    def test_bridge_makes_adapter_needed_parser_root_types_available(self) -> None:
+        """Adapter-facing Parser types must be available from the owned bridge boundary."""
+
+        graph = load_og_fixture(FIXTURES_ROOT, PurePosixPath("og-minimal"))
+        page = graph.get_page("Example")
+        node = graph.get_node_by_uuid("44ec97ef-0b49-5361-bdfb-54b1a4197531")
+
+        self.assertIsInstance(graph, LogseqGraph)
+        self.assertIsInstance(page, LogseqPage)
+        self.assertIsInstance(node, LogseqNode)
 
     def test_loader_returns_graph_for_synthetic_root(self) -> None:
         """Missing verified loader call leaves the fixture unreadable as a graph."""

@@ -6,7 +6,7 @@ build-backend = "hatchling.build"
 name = "trama-plumber-bridge"
 version = "0.0.0"
 requires-python = ">=3.12"
-dependencies = []
+dependencies = ["trama-contracts"]
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/trama_plumber_bridge"]

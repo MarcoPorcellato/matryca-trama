@@ -25,6 +25,8 @@ jobs:
       - run: python --version
       - run: uv --version
       - run: uv sync --locked --all-packages
+      - run: uv run --all-packages python scripts/validate_architecture.py
+      - run: uv run --all-packages python -m unittest discover -s tests/architecture -v
       - run: uv run --all-packages python -m unittest discover -s tests/contracts -v
       - run: uv run --all-packages python -m unittest discover -s tests/containment -v
       - run: uv run --all-packages python -m unittest tests.integration.test_plumber_consumer -v

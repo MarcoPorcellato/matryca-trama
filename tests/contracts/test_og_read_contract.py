@@ -1,6 +1,7 @@
 """Synthetic conformance tests for the read-only OG adapter."""
 
 from pathlib import Path, PurePosixPath
+import tomllib
 import unittest
 
 from trama_contracts import Outcome, ReadRequest
@@ -16,6 +17,9 @@ from trama_parser_bridge import load_og_fixture
 CONTRACT_ID = "trama.logseq.read/v1"
 FIXTURES_ROOT = Path(__file__).parents[1] / "fixtures"
 FIXTURE_MANIFEST = FIXTURES_ROOT / "fixture-manifest.json"
+ADAPTER_MANIFEST = (
+    Path(__file__).parents[2] / "packages" / "logseq-og-adapter" / "pyproject.toml"
+)
 FIXTURE_DIGEST = sha256_bytes(FIXTURE_MANIFEST.read_bytes())
 ROOT_BLOCK_ID = "44ec97ef-0b49-5361-bdfb-54b1a4197531"
 CHILD_BLOCK_ID = "c86abb84-fa33-5fec-bf6d-1b5c637ade7f"
@@ -90,6 +94,28 @@ class OgReadContractTests(unittest.TestCase):
         )
         self.assertEqual(result.provenance.source_reference, "fixture:og-minimal")
         self.assertEqual(result.provenance.exercised_capabilities, ("graph.identify",))
+
+    def test_identify_reports_distribution_version_as_producer(self) -> None:
+        """Producer identity must be exact package distribution name and version."""
+
+        result = self.adapter.identify(request("graph.identify"))
+
+        self.assertEqual(result.producer, "trama-logseq-og-adapter 0.0.0")
+        self.assertEqual(
+            result.provenance.producer,
+            "trama-logseq-og-adapter 0.0.0",
+        )
+
+    def test_identify_reports_producer_from_distribution_metadata(self) -> None:
+        """Producer identity must remain bound to the real distribution metadata."""
+
+        manifest = tomllib.loads(ADAPTER_MANIFEST.read_text(encoding="utf-8"))
+        project = manifest["project"]
+        expected_producer = f"{project['name']} {project['version']}"
+        result = self.adapter.identify(request("graph.identify"))
+
+        self.assertEqual(result.producer, expected_producer)
+        self.assertEqual(result.provenance.producer, expected_producer)
 
     def test_page_read_preserves_page_content_and_native_og_provenance(self) -> None:
         """Dropping page structure or authority would corrupt a successful read."""
