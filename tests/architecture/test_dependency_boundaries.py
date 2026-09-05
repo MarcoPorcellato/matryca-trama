@@ -334,6 +334,30 @@ class DependencyBoundaryTests(unittest.TestCase):
             })
             self.assertEqual(codes(root).count("ARCH005"), 3)
 
+    def test_module_to_module_aliases_are_rejected(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            write_fixture(root, {
+                "packages/contracts/src/trama_contracts/bad.py": "import importlib\nimport sys\nmod = importlib\nload = mod.import_module\nload('trama_core')\nalias = sys\nalias.path.append('../sibling')\n"
+            })
+            self.assertIn("ARCH005", codes(root))
+
+    def test_transitive_destructured_module_aliases_are_rejected(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            write_fixture(root, {
+                "packages/contracts/src/trama_contracts/bad.py": "import importlib\nimport sys\nannotated: object = importlib\n(walrus := annotated)\n(tuple_mod,) = (walrus,)\nload = tuple_mod.import_module\nload('trama_core')\n[list_mod] = [sys]\nlist_mod.path.append('../sibling')\n"
+            })
+            self.assertIn("ARCH005", codes(root))
+
+    def test_benign_module_aliases_are_allowed(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            write_fixture(root, {
+                "packages/contracts/src/trama_contracts/allowed.py": "import pathlib\nmodule = pathlib\npath = module.Path('.')\n"
+            })
+            self.assertEqual(codes(root), [])
+
     def test_reflective_dangerous_primitive_references_are_rejected(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)

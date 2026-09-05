@@ -260,29 +260,66 @@ class ImportVisitor(ast.NodeVisitor):
                         if alias.name == "path":
                             self.sys_path_names.add(alias.asname or alias.name)
 
-        assignments: list[tuple[set[str], ast.AST]] = []
+        assignments: list[tuple[str, ast.AST]] = []
         for node in ast.walk(tree):
             if isinstance(node, ast.Assign):
-                assignments.append((
-                    {target.id for target in node.targets if isinstance(target, ast.Name)},
-                    node.value,
-                ))
+                for target in node.targets:
+                    assignments.extend(self.assignment_pairs(target, node.value))
             elif isinstance(node, ast.AnnAssign) and isinstance(node.target, ast.Name) and node.value is not None:
-                assignments.append(({node.target.id}, node.value))
+                assignments.append((node.target.id, node.value))
             elif isinstance(node, ast.NamedExpr) and isinstance(node.target, ast.Name):
-                assignments.append(({node.target.id}, node.value))
+                assignments.append((node.target.id, node.value))
         changed = True
         while changed:
             changed = False
-            for names, value in assignments:
-                if self.is_dynamic_import_callable(value):
-                    before = len(self.dynamic_names)
-                    self.dynamic_names.update(names)
-                    changed = changed or len(self.dynamic_names) != before
+            for name, value in assignments:
+                if self.is_importlib_module(value):
+                    changed = self.add_alias(self.importlib_names, name) or changed
+                elif self.is_builtins_module(value):
+                    changed = self.add_alias(self.builtins_names, name) or changed
+                elif self.is_sys_module(value):
+                    changed = self.add_alias(self.sys_names, name) or changed
+                elif self.is_dynamic_import_callable(value):
+                    changed = self.add_alias(self.dynamic_names, name) or changed
                 elif self.is_sys_path(value):
-                    before = len(self.sys_path_names)
-                    self.sys_path_names.update(names)
-                    changed = changed or len(self.sys_path_names) != before
+                    changed = self.add_alias(self.sys_path_names, name) or changed
+
+    @staticmethod
+    def assignment_pairs(target: ast.AST, value: ast.AST) -> list[tuple[str, ast.AST]]:
+        if isinstance(target, ast.Name):
+            return [(target.id, value)]
+        if (
+            isinstance(target, (ast.Tuple, ast.List))
+            and isinstance(value, (ast.Tuple, ast.List))
+            and len(target.elts) == len(value.elts)
+        ):
+            pairs: list[tuple[str, ast.AST]] = []
+            for nested_target, nested_value in zip(target.elts, value.elts, strict=True):
+                pairs.extend(ImportVisitor.assignment_pairs(nested_target, nested_value))
+            return pairs
+        return []
+
+    @staticmethod
+    def add_alias(aliases: set[str], name: str) -> bool:
+        if name in aliases:
+            return False
+        aliases.add(name)
+        return True
+
+    @staticmethod
+    def is_module_alias(node: ast.AST, aliases: set[str]) -> bool:
+        if isinstance(node, ast.NamedExpr):
+            return ImportVisitor.is_module_alias(node.value, aliases)
+        return isinstance(node, ast.Name) and node.id in aliases
+
+    def is_importlib_module(self, node: ast.AST) -> bool:
+        return self.is_module_alias(node, self.importlib_names)
+
+    def is_builtins_module(self, node: ast.AST) -> bool:
+        return self.is_module_alias(node, self.builtins_names)
+
+    def is_sys_module(self, node: ast.AST) -> bool:
+        return self.is_module_alias(node, self.sys_names)
 
     def is_dynamic_import_callable(self, node: ast.AST) -> bool:
         if isinstance(node, ast.NamedExpr):

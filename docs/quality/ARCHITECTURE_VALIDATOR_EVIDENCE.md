@@ -16,11 +16,13 @@ hosted/main result. Active registry remains zero exceptions.
 
 The validator rejects only declared, high-signal static AST patterns. These
 include direct and imported aliases of `importlib.import_module`,
-`builtins.__import__`, and `sys.path`, plus the explicit reflective forms
-`getattr(module, "primitive")` and `module.__dict__["primitive"]` for those
-same module/primitive pairs. It is not a soundness proof for Python. Deliberate
-reflection or obfuscation outside those declared patterns remains
-review-required; it must not be described as universally rejected.
+`builtins.__import__`, and `sys.path`; transitive dangerous-module aliases via
+simple, annotated, named-expression, and shape-matched tuple/list assignments;
+and the explicit reflective forms `getattr(module, "primitive")` and
+`module.__dict__["primitive"]` for those same module/primitive pairs. It is
+not a soundness proof for Python. Deliberate reflection or obfuscation outside
+those declared patterns remains review-required; it must not be described as
+universally rejected.
 
 ## Bootstrap provenance deviation
 
@@ -117,3 +119,33 @@ The checker now fails closed for those explicit `getattr` and `__dict__`
 literal-key patterns. This receipt is deliberately bounded by the static
 coverage policy above; it does not claim universal rejection of Python
 reflection or obfuscation.
+
+## Release review: transitive module aliases
+
+The following direct bypasses initially produced no `ARCH005`:
+
+```python
+mod = importlib
+load = mod.import_module
+load("trama_core")
+
+alias = sys
+alias.path.append("../sibling")
+```
+
+Focused TDD evidence:
+
+```text
+$ rtk uv run --all-packages python -m unittest tests.architecture.test_dependency_boundaries -v
+Ran 41 tests in 0.268s
+FAILED (failures=2)
+
+$ rtk uv run --all-packages python -m unittest tests.architecture.test_dependency_boundaries -v
+Ran 41 tests in 0.261s
+OK
+```
+
+The collector now reaches a fixed point over dangerous `importlib`,
+`builtins`, and `sys` module aliases. It pairs recursive shape-matched
+tuple/list assignments, and retains benign-module controls. This remains the
+bounded static coverage stated above.
