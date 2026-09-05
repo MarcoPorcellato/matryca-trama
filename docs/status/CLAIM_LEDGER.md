@@ -18,8 +18,9 @@ evidence, and limitations.
   tree `7104e1bdf4a272a31128d01adb13bd3fc1e8d4e7`; remote-tracking `origin/main`
   `9905e8a36acb83a17a33b702a5fa620d6bfed185`; baseline tree
   `f1dacc9b30c993b2b69a48c20e73281732e781b3`. See
-  [the sanitized receipt](receipts/2026-09-05-v0-anchor-audit.md). Remote state
-  was refreshed successfully; current-head qualification remains blocked.
+  [the sanitized receipt](receipts/2026-09-05-v0-anchor-audit.md). Initial
+  sandbox fetch was blocked; the coordinator subsequently refreshed remote state
+  with one elevated fetch (exit 0). Current-head qualification remains blocked.
 
 ## Claims
 
