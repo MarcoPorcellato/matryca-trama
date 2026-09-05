@@ -311,10 +311,38 @@ class ImportVisitor(ast.NodeVisitor):
             node.id in self.dynamic_names or node.id in self.sys_path_names
         )
 
+    def is_dangerous_reflection(self, node: ast.AST) -> bool:
+        module: ast.AST
+        attribute: ast.AST
+        if (
+            isinstance(node, ast.Call)
+            and isinstance(node.func, ast.Name)
+            and node.func.id == "getattr"
+            and len(node.args) >= 2
+        ):
+            module, attribute = node.args[:2]
+        elif (
+            isinstance(node, ast.Subscript)
+            and isinstance(node.value, ast.Attribute)
+            and isinstance(node.value.value, ast.Name)
+            and node.value.attr == "__dict__"
+        ):
+            module, attribute = node.value.value, node.slice
+        else:
+            return False
+        if not isinstance(module, ast.Name) or not isinstance(attribute, ast.Constant) or not isinstance(attribute.value, str):
+            return False
+        return (
+            (module.id in self.importlib_names and attribute.value == "import_module")
+            or (module.id in self.builtins_names and attribute.value == "__import__")
+            or (module.id in self.sys_names and attribute.value == "path")
+        )
+
     def contains_dangerous_primitive_reference(self, node: ast.AST) -> bool:
         return any(
             self.is_dangerous_primitive_reference(candidate)
             or self.is_dangerous_primitive_alias_reference(candidate)
+            or self.is_dangerous_reflection(candidate)
             for candidate in ast.walk(node)
         )
 
@@ -369,6 +397,11 @@ class ImportVisitor(ast.NodeVisitor):
             self.add(node, "ARCH005", message, None)
         self.generic_visit(node)
 
+    def visit_Subscript(self, node: ast.Subscript) -> None:
+        if self.is_dangerous_reflection(node):
+            self.add(node, "ARCH005", "reflective dangerous primitive reference is forbidden", None)
+        self.generic_visit(node)
+
     def is_sys_path(self, node: ast.AST) -> bool:
         if isinstance(node, ast.NamedExpr):
             return self.is_sys_path(node.value)
@@ -380,7 +413,9 @@ class ImportVisitor(ast.NodeVisitor):
 
     def visit_Call(self, node: ast.Call) -> None:
         function = node.func
-        if self.is_dynamic_import_callable(function) and not self.contains_dangerous_primitive_reference(function):
+        if self.is_dangerous_reflection(node):
+            self.add(node, "ARCH005", "reflective dangerous primitive reference is forbidden", None)
+        elif self.is_dynamic_import_callable(function) and not self.contains_dangerous_primitive_reference(function):
             self.add(node, "ARCH005", "dynamic import is forbidden", None)
         if (
             isinstance(function, ast.Attribute)

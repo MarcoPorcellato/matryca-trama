@@ -334,6 +334,14 @@ class DependencyBoundaryTests(unittest.TestCase):
             })
             self.assertEqual(codes(root).count("ARCH005"), 3)
 
+    def test_reflective_dangerous_primitive_references_are_rejected(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            write_fixture(root, {
+                "packages/contracts/src/trama_contracts/bad.py": "import importlib\nimport sys\ndynamic = getattr(importlib, 'import_module')\nby_dict = importlib.__dict__['import_module']\npaths = getattr(sys, 'path')\npath_by_dict = sys.__dict__['path']\n"
+            })
+            self.assertEqual(codes(root).count("ARCH005"), 4)
+
     def test_sys_path_mutation_is_rejected(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)

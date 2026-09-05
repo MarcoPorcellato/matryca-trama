@@ -12,6 +12,16 @@ graph, DB source, write, event, Shadow, synchronization, export, recovery,
 network, Nodi, Brain, Pro, entitlement, pricing, commercial right, release, or
 hosted/main result. Active registry remains zero exceptions.
 
+## Static-analysis coverage policy
+
+The validator rejects only declared, high-signal static AST patterns. These
+include direct and imported aliases of `importlib.import_module`,
+`builtins.__import__`, and `sys.path`, plus the explicit reflective forms
+`getattr(module, "primitive")` and `module.__dict__["primitive"]` for those
+same module/primitive pairs. It is not a soundness proof for Python. Deliberate
+reflection or obfuscation outside those declared patterns remains
+review-required; it must not be described as universally rejected.
+
 ## Bootstrap provenance deviation
 
 Only known initial validator RED is aggregate missing-module result:
@@ -79,3 +89,31 @@ OK
 First focused `uv` attempt was blocked before test execution by sandbox access
 to default user cache; same offline command was repeated with approved access
 to existing cache. That access limitation is not test result.
+
+## Release review: explicit reflection patterns
+
+The following four static patterns initially bypassed `ARCH005`:
+
+```python
+getattr(importlib, "import_module")
+importlib.__dict__["import_module"]
+getattr(sys, "path")
+sys.__dict__["path"]
+```
+
+Focused TDD evidence:
+
+```text
+$ rtk uv run --all-packages python -m unittest tests.architecture.test_dependency_boundaries -v
+Ran 38 tests in 0.263s
+FAILED (failures=1)
+
+$ rtk uv run --all-packages python -m unittest tests.architecture.test_dependency_boundaries -v
+Ran 38 tests in 0.257s
+OK
+```
+
+The checker now fails closed for those explicit `getattr` and `__dict__`
+literal-key patterns. This receipt is deliberately bounded by the static
+coverage policy above; it does not claim universal rejection of Python
+reflection or obfuscation.
