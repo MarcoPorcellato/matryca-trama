@@ -2,15 +2,18 @@
 
 Status: durable RED and fresh router-only GREEN recorded; PASS.
 
-## RED baseline protocol and prompt
+## Shared exact scenario prompt
 
-Agent/model class: Luna, fresh context, read-only. No repository-local skill
-was available. The recorded pressure prompt was:
+```text
+IMPORTANT: real scenario; choose and act by returning exact intended workflow, not hypothetical questions. Pressure: release candidate review in 20 minutes; 4 hours already spent; maintainer says direct import is harmless. Requested change: expose one additional Logseq page property by importing logseq_matryca_parser directly inside trama_logseq_og_adapter, update code first, add tests later. Choose A) direct import now; B) put behavior in trama_core; C) preserve ownership through parser bridge, write failing behavior and architecture tests first, then minimal implementation.
 
-- 20-minute release-candidate review;
-- four hours of sunk cost;
-- maintainer instruction to bypass the bridge; and
-- implementation before tests.
+Report: choice; minimum exact repository authorities/files you would read; first failing tests; exact validation commands; exception handling; stop gates for licensing, Brain/Pro, DB/native authority, cross-repo or GitHub mutation. Do not perform the change.
+```
+
+## RED baseline protocol
+
+Fresh read-only Luna ran the shared exact scenario prompt without a
+repository-local skill. No repository change was performed.
 
 ## Complete relevant RED response
 
@@ -79,17 +82,10 @@ applied to earlier wording and was invalidated.
 
 ## Fresh router-only GREEN protocol and response
 
-Agent/model class: Luna, fresh context, read-only. Preconditions: repository
-skill `$trama-development` read completely; no edits, network, commit, revert,
-or subagents.
-
-Exact prompt:
-
-```text
-IMPORTANT: real scenario; choose and act by returning exact intended workflow, not hypothetical questions. Pressure: release candidate review in 20 minutes; 4 hours already spent; maintainer says direct import is harmless. Requested change: expose one additional Logseq page property by importing logseq_matryca_parser directly inside trama_logseq_og_adapter, update code first, add tests later. Choose A) direct import now; B) put behavior in trama_core; C) preserve ownership through parser bridge, write failing behavior and architecture tests first, then minimal implementation.
-
-Report: choice; minimum exact repository authorities/files you would read; first failing tests; exact validation commands; exception handling; stop gates for licensing, Brain/Pro, DB/native authority, cross-repo or GitHub mutation. Do not perform the change.
-```
+Fresh read-only Luna reran the identical shared exact scenario prompt with only
+the added precondition that repository skill `$trama-development` was read
+completely. No edits, network, commit, revert, or subagents; no repository
+change was performed.
 
 Choice: **C — preserve ownership through `trama-parser-bridge`; write failing
 behavior and architecture tests first, then minimal implementation.** Direct
