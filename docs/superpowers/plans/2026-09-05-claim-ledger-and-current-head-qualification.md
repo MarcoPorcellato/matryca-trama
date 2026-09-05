@@ -290,18 +290,18 @@ Expected: receipt refers to the preceding tested revision as
 - Produces: terminal hosted evidence for the exact PR head, not merely for a
   local ancestor or merge base.
 
-- [ ] **Step 1: Request explicit push and PR authorization**
+- [x] **Step 1: Request explicit push and PR authorization**
 
 Do not push, create a PR, or rerun a workflow without the maintainer's separate
 authorization. Reverify `origin/main`, PR base, selected head, checks, and
 review requirements immediately before the mutation.
 
-- [ ] **Step 2: Push the selected source revision and open one PR**
+- [x] **Step 2: Push the selected source revision and open one PR**
 
 Expected: the PR targets current `main`, has a narrow V0/V1 description, and
 does not claim a release, DB, user-graph, or production integration.
 
-- [ ] **Step 3: Wait for terminal checks on the exact PR head**
+- [x] **Step 3: Wait for terminal checks on the exact PR head**
 
 Required named checks:
 
@@ -314,7 +314,7 @@ python-contracts
 Expected: every check is terminal and successful on the exact `headRefOid`.
 Cancelled, skipped, or ancestor results block V1.
 
-- [ ] **Step 4: Preserve durable public evidence**
+- [x] **Step 4: Preserve durable public evidence**
 
 Use a maintainer-approved append-only evidence branch or immutable attestation
 keyed by the qualified `headRefOid`. Record check URLs, workflow names, run IDs,
@@ -322,7 +322,7 @@ revision/tree, lock digest, fixture digest, platform/runtime, counts, and
 limitations. Never put raw logs, local paths, vault data, credentials, or
 machine identifiers in public evidence.
 
-- [ ] **Step 5: Stop at the merge gate**
+- [x] **Step 5: Stop at the merge gate**
 
 After evidence verification, report the exact qualified revision, evidence
 reference, checks, residual unsupported scope, and merge decision. Do not merge
@@ -341,7 +341,7 @@ without a separate explicit authorization.
 - Produces: a claim only for the exact merged main revision and its terminal
 push workflow, preserving the PR-head evidence separately.
 
-- [ ] **Step 1: Fetch and bind merged `origin/main`**
+- [x] **Step 1: Fetch and bind merged `origin/main`**
 
 Run:
 
@@ -354,13 +354,14 @@ git show --no-patch --format=fuller origin/main
 Expected: recorded main revision is the selected merge result, not an assumed
 local branch tip.
 
-- [ ] **Step 2: Verify push-workflow evidence for that exact revision**
+- [x] **Step 2: Verify push-workflow evidence for that exact revision**
 
-Expected: terminal Foundation, dependency-review, and Python-contract checks
-are attached to the exact merged main revision. If none exists, leave
-`V1-CURRENT-001` blocked.
+Expected: terminal Foundation and Python-contract push checks are attached to
+the exact merged main revision. Dependency Review stays PR-scoped and remains
+bound to the exact PR base/head; an identical PR-head/main tree corroborates
+provenance only. If push evidence is absent, leave `V1-CURRENT-001` blocked.
 
-- [ ] **Step 3: Add a new ledger entry; do not rewrite history**
+- [x] **Step 3: Add a new ledger entry; do not rewrite history**
 
 Use this shape:
 
@@ -368,7 +369,7 @@ Use this shape:
 | `V1-CURRENT-<sequence>` | Qualified current head | Synthetic OG scope only. | `<merged SHA>` | `<immutable hosted evidence URL>` | `<all unsupported profiles>` |
 ```
 
-- [ ] **Step 4: Stop before V2 execution**
+- [x] **Step 4: Stop before V2 execution**
 
 V2 needs a separate approved implementation plan. Do not broaden Parser,
 Plumber, OG, DB, Nodi, agent, distribution, or release claims as a side effect
@@ -376,10 +377,10 @@ of V1.
 
 ## Plan self-review
 
-- [ ] V0 records anchors and contradictions without changing runtime scope.
-- [ ] Task 2 has explicit RED/GREEN coverage for the new policy paths.
-- [ ] V1 binds local and hosted evidence to the exact tested revision.
-- [ ] Evidence commits and tested revisions remain distinct when necessary.
-- [ ] Push, PR, evidence publication, and merge remain explicit external gates.
-- [ ] No task introduces a DB, write, user-graph, network, UI, commercial, or
+- [x] V0 records anchors and contradictions without changing runtime scope.
+- [x] Task 2 has explicit RED/GREEN coverage for the new policy paths.
+- [x] V1 binds local and hosted evidence to the exact tested revision.
+- [x] Evidence commits and tested revisions remain distinct when necessary.
+- [x] Push, PR, evidence publication, and merge remain explicit external gates.
+- [x] No task introduces a DB, write, user-graph, network, UI, commercial, or
   private-source claim.
