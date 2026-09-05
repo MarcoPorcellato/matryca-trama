@@ -18,8 +18,8 @@ FIXTURES_ROOT = Path(__file__).parents[1] / "fixtures"
 class ParserLoaderTests(unittest.TestCase):
     """The Parser boundary loads only verified synthetic fixtures."""
 
-    def test_bridge_exports_only_adapter_needed_parser_root_objects(self) -> None:
-        """Adapter-facing Parser types must come from the owned bridge boundary."""
+    def test_bridge_makes_adapter_needed_parser_root_types_available(self) -> None:
+        """Adapter-facing Parser types must be available from the owned bridge boundary."""
 
         graph = load_og_fixture(FIXTURES_ROOT, PurePosixPath("og-minimal"))
         page = graph.get_page("Example")
