@@ -1,0 +1,37 @@
+exceptions = []
+
+[external]
+logseq_matryca_parser = "logseq-matryca-parser"
+
+[forbidden]
+roots = ["matryca_brain", "trama_brain", "trama_pro"]
+
+[packages."trama-contracts"]
+directory = "packages/contracts"
+import_root = "trama_contracts"
+allowed_internal = []
+allowed_external = []
+
+[packages."trama-core"]
+directory = "packages/core"
+import_root = "trama_core"
+allowed_internal = ["trama_contracts"]
+allowed_external = []
+
+[packages."trama-parser-bridge"]
+directory = "packages/parser-bridge"
+import_root = "trama_parser_bridge"
+allowed_internal = ["trama_contracts", "trama_core"]
+allowed_external = ["logseq_matryca_parser"]
+
+[packages."trama-logseq-og-adapter"]
+directory = "packages/logseq-og-adapter"
+import_root = "trama_logseq_og_adapter"
+allowed_internal = ["trama_contracts", "trama_core", "trama_parser_bridge"]
+allowed_external = []
+
+[packages."trama-plumber-bridge"]
+directory = "packages/plumber-bridge"
+import_root = "trama_plumber_bridge"
+allowed_internal = ["trama_contracts", "trama_core"]
+allowed_external = []

@@ -1,0 +1,1 @@
+"""Architecture validator behavior tests."""
