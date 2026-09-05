@@ -26,19 +26,26 @@ workspace sources bind local distributions.
 | `trama-logseq-og-adapter` | Python standard library; contracts; core; parser bridge | direct Parser imports after R1 migration; DB or Shadow implementations; Plumber; Brain; Pro; apps; Nodi; network clients |
 | `trama-plumber-bridge` | Python standard library; contracts; core when needed | Plumber implementation imports; Parser; host adapters; Brain; Pro; apps; Nodi |
 
-Future packages require separate admission before they exist. A DB adapter may
-use contracts, core, and a separately selected official-host port; it never
-opens Logseq internal SQLite or falls back to OG Markdown. Nodi may use contracts,
-core, and use-case ports, never concrete adapters, bridges, host SDKs, network
-clients, Brain, or Pro. Apps compose public providers and use cases; business
-and domain logic stay below apps.
+The current Parser bridge, OG adapter, and Plumber bridge are historical
+experimental packages retained for their bounded synthetic evidence. Their
+admissions do not authorize future extension. Future packages require separate
+admission before they exist. A future Trama consumer may use an internal domain
+port and a published Plumber public contract, but it must not add a Logseq DB or
+OG source adapter, open internal SQLite, or fall back to OG Markdown. Nodi may
+use contracts, core, and use-case ports, never concrete adapters, bridges, host
+SDKs, network clients, Brain, or Pro. Apps compose public providers and use
+cases; business and domain logic stay below apps.
 
 Cross-repository use needs released public dependency or exact source-bound
 contract profile. Reject sibling-repository path injection, private or internal
 module imports, copied wire DTOs or owner semantics, schema-less generated
-bindings, undeclared dependencies, and dynamic-import bypasses. Parser owns
-documented package-root API; Trama does not accept proposed cross-repository
-responsibility contract merely by referencing it.
+bindings, undeclared dependencies, and dynamic-import bypasses. Parser owns its
+documented package-root API. Plumber owns the future `plumber.*` contract
+families, source selection, the OG Parser adapter, any qualified official
+DB-host adapter, and provenance normalization. Trama owns product mapping,
+graph UI, intelligence, Nodi, and application composition over published
+Plumber contracts. Historical `trama.logseq.read/v1` material is not future
+authority.
 
 ## Source and product boundaries
 

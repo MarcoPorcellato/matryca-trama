@@ -52,10 +52,9 @@ The skill and checker never become independent policy sources. If prose and an
 executable projection disagree, work stops until the policy and projection are
 reviewed together.
 
-The proposed cross-repository responsibility contract informs coordination but
-does not become accepted merely because R1 references it. Until that proposal is
-accepted, R1 enforces only rules already supported by accepted Trama decisions,
-public contracts, and current package ownership.
+ADR-0006 adopts the accepted Plumber gateway ownership decision. R1 keeps the
+historical package admissions only for existing bounded evidence; it does not
+turn them into future source-adapter authority or a runtime integration.
 
 ## Layer and dependency rules
 
@@ -70,11 +69,12 @@ library modules, and only the internal or external roots listed below.
 | `trama-logseq-og-adapter` | Python standard library; contracts; core; parser bridge | direct Parser imports after R1 migration; DB or Shadow implementations; Plumber; Brain; Pro; apps; Nodi; network clients |
 | `trama-plumber-bridge` | Python standard library; contracts; core when needed | Plumber implementation imports; Parser; host adapters; Brain; Pro; apps; Nodi |
 
-Future packages are not required until they exist. When admitted:
+The Parser bridge, OG adapter, and Plumber bridge are retained historical
+packages. Future packages are not required until they exist. When admitted:
 
-- a DB adapter may depend on contracts, core, and its separately selected
-  official-host port; it never opens Logseq internal SQLite directly and never
-  falls back to OG Markdown;
+- a future Trama consumer may depend on an internal domain port and a published
+  Plumber public contract; it does not add a DB or OG source adapter, open
+  Logseq internal SQLite, or fall back to OG Markdown;
 - Nodi may depend on contracts, core, and use-case ports, never concrete
   adapters, bridges, host SDKs, network clients, Brain, or Pro;
 - apps compose public providers and use cases; business and domain logic do not
@@ -83,10 +83,13 @@ Future packages are not required until they exist. When admitted:
 ## Cross-repository rules
 
 Parser owns parsing, its public intermediate representation, source locations,
-diagnostics, and documented package-root API. Trama owns the
-`trama.logseq.read/v1` envelope, Logseq adapters, provenance, Nodi, and
-application composition. Plumber owns its downstream mapping, orchestration,
-and consumer evidence.
+diagnostics, and documented package-root API. Plumber owns the future
+`plumber.*` contract families, source selection, OG Parser adapter, qualified
+official DB-host adapter, provenance normalization, and public transport
+semantics. Trama owns product mapping, graph UI, intelligence, Nodi, and
+application composition over published Plumber contracts. Historical
+`trama.logseq.read/v1` material and its adapter packages are not future
+authority.
 
 Cross-repository use requires a released public dependency or an exact
 source-bound contract profile. The following fail closed:

@@ -8,7 +8,8 @@ Owner: Marco Porcellato
 
 Supersedes: None
 
-Superseded by: None
+Superseded in part by: ADR-0006 for Parser/Plumber integration and Logseq
+adapter responsibility; the product-separation decision remains accepted.
 
 ## Context
 
@@ -20,6 +21,13 @@ Keep Trama and Brain as distinct products and repositories. Trama owns the
 Community sidecar, Parser and Plumber integrations, OG/DB adapters, and Nodi.
 Brain may provide separately governed capabilities through versioned public
 contracts; Trama never imports Brain-private source.
+
+The Parser/Plumber integration and OG/DB adapter responsibility in the preceding
+historical decision text is superseded by
+[ADR-0006](ADR-0006-PLUMBER-GATEWAY-ADOPTION.md). Trama remains the Community
+sidecar and Nodi owner; future Logseq source selection and adapters belong to
+Plumber. Brain remains a distinct product that consumes Plumber public contracts
+without knowing Parser.
 
 ## Consequences
 

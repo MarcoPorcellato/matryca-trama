@@ -2,8 +2,10 @@
 
 > **Status:** historical experimental Trama specification and bounded Python
 > source. It is not a published API, current-head conformance claim, or the
-> authority for future integration. The proposed Plumber ADR and canonical
-> contract must be published before a future consumer contract exists.
+> authority for future integration. [ADR-0006](../decisions/ADR-0006-PLUMBER-GATEWAY-ADOPTION.md)
+> assigns future public contract ownership to Plumber. A canonical Plumber
+> contract artifact and immutable consumer profile must still be published
+> before a future Trama consumer exists.
 
 ## Purpose
 
@@ -19,7 +21,8 @@ projection is never a substitute authority.
 
 ## Contract status and scope
 
-The contract line is `trama.logseq.read/v1`. Every concrete profile must
+The historical contract line is `trama.logseq.read/v1`. Every concrete profile
+recorded here must
 publish its semantic contract version, producer version or source revision,
 supported Logseq host version, and fixture set before it claims conformance.
 

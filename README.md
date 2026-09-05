@@ -21,10 +21,12 @@ bounded Python source for synthetic OG fixtures and `graph.identify`,
 `page.read`, and complete ordered `block.subtree.read.complete`. The historical
 qualification record remains `862c5c8`; it does not qualify this head. This
 experimental `trama.logseq.read/v1` source is neither a published runtime nor
-the authority for future integration. The proposed Plumber-gateway decision is
-not accepted until Plumber publishes its ADR and canonical contract. No
-user-graph, Logseq-host, DB, write, network, UI, performance, distribution, or
-release claim follows. See the [roadmap](docs/ROADMAP.md).
+the authority for future integration. The accepted [Plumber authority
+decision](docs/decisions/ADR-0006-PLUMBER-GATEWAY-ADOPTION.md) makes Plumber
+the future sole Logseq gateway; it does not publish a Plumber contract or a
+Trama consumer profile. No user-graph, Logseq-host, DB, write, network, UI,
+performance, distribution, or release claim follows. See the
+[roadmap](docs/ROADMAP.md).
 
 ## Principles
 

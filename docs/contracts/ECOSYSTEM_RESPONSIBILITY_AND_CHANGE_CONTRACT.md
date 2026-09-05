@@ -7,6 +7,14 @@
 > must not override accepted ADRs, repository-local contracts, or current
 > owner-controlled work.
 
+> **Historical authority redirect:** This document's ownership table, diagrams,
+> C1--C4 catalogue, and normative language record the superseded Trama-host
+> proposal only. They are non-authorizing history. For future ownership use
+> [ADR-0006](../decisions/ADR-0006-PLUMBER-GATEWAY-ADOPTION.md) and the Plumber
+> [gateway authority decision](https://github.com/MarcoPorcellato/matryca-plumber/pull/563)
+> merged at `0646f349572d9a5dfaf37e936f5162b6212dc194`. Neither decision
+> publishes a runtime contract, consumer profile, or DB capability.
+
 ## Purpose
 
 This contract assigns one owner to each product capability and one authority to
