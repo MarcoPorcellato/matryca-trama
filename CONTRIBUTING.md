@@ -15,6 +15,14 @@ Keep pull requests small and focused. Documentation and contract changes should 
 
 Describe what changed, why it matters, affected boundaries, tests or checks performed, and any known limitations. Add focused tests for behavior changes. Preserve Markdown authority, deterministic behavior, explicit write consent, and safe handling of untrusted vault content.
 
+For package or boundary changes, read the canonical [Clean Architecture
+standard](docs/standards/CLEAN_ARCHITECTURE.md) and use the repository-local
+[development skill](.agents/skills/trama-development/SKILL.md). Record affected
+packages, boundary impact, architecture-validator result, approved exception
+identifiers or `none`, OG Markdown/native DB source-authority impact, tests,
+and known limits in the pull request. The policy and skill define package rules;
+this guide does not duplicate them.
+
 Maintainers may request an architectural decision record before accepting a cross-cutting change. A review approval does not grant permission to access private repositories, user vaults, or secrets.
 
 ## Licensing

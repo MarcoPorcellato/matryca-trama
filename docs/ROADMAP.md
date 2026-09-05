@@ -52,6 +52,10 @@ development skill, thin personal discovery, contributor guidance, and a
 reviewed exception process. The skill points to canonical policy and does not
 duplicate it.
 
+The R1 implementation exists on its local branch only. It becomes a repository
+qualification only after publication and fork-safe hosted CI records evidence
+for the exact published head.
+
 Evidence: forbidden dependency fixtures fail; allowed dependency fixtures pass;
 the skill is tested; fork-safe CI enforces the stack-independent rules.
 

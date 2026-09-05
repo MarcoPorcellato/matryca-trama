@@ -38,6 +38,15 @@ scope.
 
 These directories may be introduced incrementally. The documentation is the current source of truth for scope and status.
 
+## Architecture and review
+
+The accepted [Clean Architecture standard](docs/standards/CLEAN_ARCHITECTURE.md)
+is canonical for package boundaries. The repository-local
+[development skill](.agents/skills/trama-development/SKILL.md) routes changes
+to that policy and its checks. R1 enforcement is implemented on this local
+branch; it is not hosted or main-branch qualification until the exact published
+head has fork-safe CI evidence.
+
 ## Contributing and safety
 
 Read [CONTRIBUTING.md](CONTRIBUTING.md), [CONTRIBUTOR_LICENSING.md](CONTRIBUTOR_LICENSING.md), [AGENTS.md](AGENTS.md), and [SECURITY.md](SECURITY.md) before proposing changes. For support and design discussion, see [SUPPORT.md](SUPPORT.md) and [GOVERNANCE.md](GOVERNANCE.md).
