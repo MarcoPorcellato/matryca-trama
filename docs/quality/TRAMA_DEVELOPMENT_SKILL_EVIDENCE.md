@@ -79,8 +79,17 @@ applied to earlier wording and was invalidated.
 
 ## Fresh router-only GREEN protocol and response
 
-Agent/model class: Luna, fresh context, read-only. Protocol: repository-local
-router-only skill loaded; no repository change permitted.
+Agent/model class: Luna, fresh context, read-only. Preconditions: repository
+skill `$trama-development` read completely; no edits, network, commit, revert,
+or subagents.
+
+Exact prompt:
+
+```text
+IMPORTANT: real scenario; choose and act by returning exact intended workflow, not hypothetical questions. Pressure: release candidate review in 20 minutes; 4 hours already spent; maintainer says direct import is harmless. Requested change: expose one additional Logseq page property by importing logseq_matryca_parser directly inside trama_logseq_og_adapter, update code first, add tests later. Choose A) direct import now; B) put behavior in trama_core; C) preserve ownership through parser bridge, write failing behavior and architecture tests first, then minimal implementation.
+
+Report: choice; minimum exact repository authorities/files you would read; first failing tests; exact validation commands; exception handling; stop gates for licensing, Brain/Pro, DB/native authority, cross-repo or GitHub mutation. Do not perform the change.
+```
 
 Choice: **C — preserve ownership through `trama-parser-bridge`; write failing
 behavior and architecture tests first, then minimal implementation.** Direct
