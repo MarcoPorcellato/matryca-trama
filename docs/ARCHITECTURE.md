@@ -4,6 +4,19 @@ Matryca Trama is a public source-available Community monorepo for a Logseq
 sidecar. Its architecture keeps source authority, product boundaries, licensing,
 and optional integrations explicit.
 
+## Current implementation status
+
+At `9905e8a`, bounded Python source exists for contracts, core behavior, Parser
+and Plumber bridges, and a synthetic OG adapter. Qualification remains bound to
+the `862c5c8` baseline and only to synthetic fixtures plus
+`graph.identify`, `page.read`, and complete ordered
+`block.subtree.read.complete`. No evidence record qualifies `9905e8a` as the
+current head; matching runtime source does not replace exact-head evidence.
+`apps`, Nodi UI, a DB adapter, writes, events, Shadow, synchronization, export,
+recovery, distribution, and network behavior remain unimplemented or
+unsupported. Current status is governed by the
+[delivery program](specs/MATRYCA_TRAMA_DELIVERY_PROGRAM.md).
+
 ## Layers
 
 ```text

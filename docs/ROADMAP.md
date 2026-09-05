@@ -1,60 +1,34 @@
 # Matryca Trama Roadmap
 
-## Phase 0 — Public foundation
+This roadmap summarizes the canonical
+[delivery program](specs/MATRYCA_TRAMA_DELIVERY_PROGRAM.md). Status is
+evidence-bound: `origin/main` was `9905e8a` when this roadmap was prepared,
+while the existing qualification record binds `862c5c8`. Reverify both before
+delivery. PR #14 is a mutable DB-boundary proposal, not evidence until its live
+head is reviewed and integrated.
 
-Deliver the public repository policy, PolyForm Noncommercial licence map,
-commercial-use boundary, contributor licensing gate, CODEOWNERS, CI separation,
-clean history, architecture, and contributor guide. Evidence: green policy and
-documentation checks on the foundation commit.
+| Milestone | Outcome | Current status |
+|---|---|---|
+| V0 — Truth reconciliation | One claim ledger reconciles code, contracts, docs, evidence, and unsupported behavior. | **Next.** Bounded Python source exists, but current docs and evidence require reconciliation. |
+| V1 — Current-head qualification | Locked local and hosted suites qualify one exact head without circular evidence claims. | **Blocked by V0.** Baseline evidence exists only for `862c5c8`. |
+| V2 — Contract freeze | `trama.logseq.read/v1`, version ranges, provenance, errors, and fixture ownership become stable. | **Partially implemented; not frozen.** |
+| V3 — Parser public profile | Exact public Parser versions and package-root APIs are qualified. | **Planned.** No production interoperability claim. |
+| V4 — Plumber consumer profile | Exact Trama, Parser, and Plumber revisions pass public-envelope consumer tests. | **Partially implemented locally; cross-repository qualification absent.** |
+| V5 — Operational OG profile | Sanitized OG fixture classes prove contained, deterministic reads beyond the minimal vectors. | **Not started.** No user-vault claim. |
+| V6 — Logseq DB read-only profile | One official versioned host route supplies capability-probed native DB reads. | **Blocked.** No DB host surface selected or qualified. |
+| V7 — Nodi vertical slice | Truthful deterministic state and accessible offline experience. | **Not started.** |
+| V8 — Agent and plugin safety | Default-deny capabilities, provenance, previews, recovery, and adversarial evaluations. | **Not started.** |
+| V9 — Reproducible distribution | Repeatable Community artifacts, SBOM, checksums, attestations, support matrix, and rollback rehearsal. | **Not started.** |
+| V10 — Community release | Publish only qualified profiles and platforms under explicit maintainer authority. | **Blocked by V0–V9 and separate release approval.** |
 
-## Phase 1 — Shared contracts
+## Deferred capabilities
 
-Define versioned contracts for Parser and Plumber, provenance fields,
-compatibility rules, error semantics, and fixture ownership. The contract set
-must publish a compatibility matrix for Trama, Parser, Plumber, and the
-supported Logseq host surface; canonical contract identifiers and semantic
-version ranges; accepted and rejected profiles; and sanitized fixture
-ownership. Every result must carry producer identity and version, source mode
-and binding, capability set, and fixture or result digest. Evidence: contract
-tests run without private dependencies and reject unsupported versions.
+Writes, events, Shadow acceleration, synchronization, export, recovery,
+commercial entitlements, Pro, Brain, hosted services, and external
+copyright-bearing contributions remain outside current delivery. Each requires
+its own ADR or contract, threat and rights review, executable evidence, and
+explicit authorization.
 
-## Phase 2 — Community core
-
-Build the smallest deterministic Trama core around the public Parser capability. Preserve bounded filesystem behavior, stable identifiers, source locations, and reproducible outputs. Evidence: unit, integration, and reproducibility checks.
-
-ADR-0004 selects Python 3.12+ with `uv` for the first Community implementation
-direction. Runtime packages, contract tests, and platform support remain blocked
-until the application-stack qualification protocol records exact-commit evidence.
-
-## Phase 3 — Logseq adapters
-
-Add an OG adapter and an initially read-only DB adapter with capability
-detection, documented limitations, and authority-preserving fixtures. The
-initial contract covers only graph identification, one page read, and one
-complete ordered block-subtree read. The DB adapter selects no host surface
-until a focused compatibility spike establishes an official, versioned
-read-only route. Current qualification applies only to synthetic OG fixtures for
-`graph.identify`, `page.read`, and complete ordered `block.subtree.read.complete`.
-User graphs, DB, writes, events, Shadow, synchronization, export, recovery,
-UI/Nodi, distribution, performance, and network remain unsupported. Evidence:
-supported and unsupported cases are tested,
-provenance is retained, and no DB write path exists without a later accepted
-ADR.
-
-## Phase 4 — Nodi
-
-Implement Nodi as a central Trama experience: identity, state, accessible presentation, and knowledge-growth signals derived from user-authorized data. Evidence: deterministic fixtures, accessibility checks, and no private-service dependency.
-
-## Phase 5 — Distribution and community
-
-Publish reproducible Community artifacts, provenance, examples, onboarding,
-and release documentation. Evidence: clean release rehearsal and fork-safe CI.
-
-## Deferred decision track
-
-Define the commercial agreement, pricing model, entitlement, contributor
-agreement, and Pro packaging only after the Community boundary is stable. Public
-prices are optional; self-service and private-quote sales remain valid future
-options. A separate decision must choose between visible commercial source in a
-mixed-license area and a private sibling repository. No Pro source, entitlement
-mechanism, or Brain implementation enters this repository by implication.
+Work proceeds through one reviewable vertical milestone at a time. Every status
+change binds an exact revision, scope, command, platform, result, limitation,
+and durable evidence location.

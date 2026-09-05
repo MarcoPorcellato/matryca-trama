@@ -1,6 +1,6 @@
 # ADR-0004: Python-First Community Application Stack
 
-Status: Accepted — runtime admission pending qualification
+Status: Accepted — bounded slice implemented; current-head qualification pending
 
 Date: 2026-09-01
 
@@ -12,8 +12,9 @@ Superseded by: None
 
 ## Context
 
-Matryca Trama has an accepted public foundation and a planned read contract, but
-it has no application source, package layout, or executable contract suite.
+At decision time, Matryca Trama had an accepted public foundation and a planned
+read contract, but no application source, package layout, or executable contract
+suite.
 The first implementation must stay useful without private services, preserve
 Logseq source authority, integrate only through public Parser and Plumber
 contracts, and provide a small path to synthetic conformance evidence.
@@ -27,9 +28,9 @@ evolve independently.
 ## Decision
 
 Adopt Python 3.12+ with `uv` as the first Community runtime and packaging
-stack. Use a root `uv` workspace only when the first executable slice is
-admitted. Keep business behavior in small public packages; applications remain
-thin compositions and are not created by this decision.
+stack. The resulting root `uv` workspace now contains the bounded first
+executable slice. Business behavior stays in small public packages;
+applications remain thin compositions and are not created by this decision.
 
 The intended first package boundaries are:
 
@@ -47,16 +48,18 @@ tests/
 ```
 
 `logseq-db-adapter`, `apps/`, Nodi UI code, and all user-facing packaging stay
-absent until their own decisions and evidence exist. The first executable slice
-may create only the packages and tests necessary for the three-operation
-read-only contract.
+absent until their own decisions and evidence exist. The implemented first slice
+contains only packages and tests needed for the three-operation read-only
+contract.
 
 ## Qualification boundary
 
-This ADR accepts the architecture direction, not a supported runtime or Logseq
-host claim. Runtime admission remains blocked until the qualification protocol
-in [Application Stack Qualification](../spikes/APPLICATION_STACK_QUALIFICATION.md)
-records exact-commit evidence for its mandatory gates.
+This ADR accepts the architecture direction and records the implemented bounded
+slice, not a published runtime or Logseq host claim. The existing qualification
+record binds `862c5c8` only. At `9905e8a`, matching bounded source exists, but no
+evidence record qualifies that commit as the current head. Fresh exact-head
+evidence remains required by
+[Application Stack Qualification](../spikes/APPLICATION_STACK_QUALIFICATION.md).
 
 No package may claim support for an operating system, a Logseq DB host, Parser
 or Plumber integration, performance, accessibility, distribution, or mutation
