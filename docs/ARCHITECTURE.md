@@ -68,3 +68,8 @@ Community core stays lightweight.
 ## Change rules
 
 Changes crossing a package boundary require contract tests and an ADR or an update to the relevant ADR. Hub changes require impact analysis. Every behavior change adds focused regression coverage; documentation changes must preserve the same terminology and boundaries.
+
+Canonical dependency directions, exception policy, Clean Code review boundary,
+and stop gates are in [Clean Architecture standard](standards/CLEAN_ARCHITECTURE.md).
+Its authority is accepted by [ADR-0005](decisions/ADR-0005-CLEAN-ARCHITECTURE-ENFORCEMENT.md);
+executable dependency map and repository-local skill only project that policy.
