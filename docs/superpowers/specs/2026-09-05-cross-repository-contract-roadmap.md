@@ -1,347 +1,742 @@
-# Matryca Trama Cross-Repository Contract Roadmap
+# Matryca Plumber Gateway and Cross-Repository Boundary Design
 
-> **Status:** proposed long-horizon execution authority for maintainer review.
-> **Canonical responsibility contract:**
-> [`docs/contracts/ECOSYSTEM_RESPONSIBILITY_AND_CHANGE_CONTRACT.md`](../../contracts/ECOSYSTEM_RESPONSIBILITY_AND_CHANGE_CONTRACT.md)
+> **Status:** proposed architectural specification for maintainer review
+>
+> **Decision owner:** Marco Porcellato
+>
+> **Scope:** Logseq Matryca Parser, Matryca Plumber, and Matryca Trama;
+> Matryca Brain is considered only as a separate downstream consumer.
+>
+> **Supersedes when accepted:** the unmerged direction that assigns Logseq host
+> acquisition, OG/DB adapters, or `trama.logseq.read/v1` production to Trama.
 
-## Outcome
+## 1. Purpose and falsifiable outcome
 
-Deliver the best evidence-backed Community roadmap for Matryca Trama while
-keeping Parser, Plumber, Brain, and Knowledge responsibilities separate. The
-programme succeeds when Trama has a useful, independently operable,
-architecture-enforced read-only Community vertical, or when an honest
-capability result proves that the selected Logseq DB route is currently a
-NO-GO or upstream-blocked.
+This design gives each public repository one clear product responsibility and
+one dependency direction. It prevents Parser, Plumber, and Trama from growing
+parallel Logseq adapters, duplicate user interfaces, or incompatible graph
+contracts.
 
-No milestone may obtain a green result by duplicating another repository's
-implementation, weakening native source authority, importing private code, or
-turning a planned report into a runtime claim.
+The design succeeds when all of the following are true:
 
-## Verified starting point — 2026-09-05
+1. Logseq OG data reaches every downstream product only through Parser and
+   Plumber.
+2. Logseq DB data reaches every downstream product only through a qualified
+   official Logseq adapter owned by Plumber.
+3. Trama and Brain can use Plumber without importing Parser or knowing which
+   source adapter produced a normalized graph result.
+4. Parser remains a protocol-neutral parsing library without a product user
+   interface.
+5. Plumber retains a small operator console for monitoring, configuration, and
+   governed maintenance operations.
+6. Trama owns graph exploration, user-facing intelligence, analysis, and the
+   full knowledge experience.
+7. Contract, compatibility, provenance, and failure behavior are tested from
+   exact released versions without private imports or copied implementations.
 
-| Repository | Verified `origin/main` | Relevant observed state |
+This document defines architecture and migration intent. It does not claim that
+the new contracts, adapters, UI boundaries, Logseq DB support, performance, or
+distribution are implemented or qualified.
+
+## 2. Verified starting anchors
+
+The following remote anchors were fetched and verified on 2026-09-05:
+
+| Repository | `origin/main` | Relevant observed state |
 | --- | --- | --- |
-| Matryca Trama | `9905e8a36acb83a17a33b702a5fa620d6bfed185` | `trama.logseq.read/v1` and synthetic OG packages exist; exact hosted evidence qualifies only three read operations over owned synthetic fixtures |
-| Matryca Plumber | `d347d43dad090586b10a77a53c4e0c8fd6da8e15` | DB compatibility execution plan is current; consumer evidence policy remains unchecked and its files are absent |
-| Logseq Matryca Parser | `65e8e64f7f0227bcae8235069fbc3da834652744` | public package-root API is stable; version source reports `1.8.2` |
-| Matryca Brain | `e69a97a8c702a773c9a3ce8307b5a667ed2be1dd` | separate product; optional Trama boundary remains research/strategy, not a runtime claim |
-| Matryca Knowledge | `52500d623feecd2ec156e653be9d521383740ddb` | read-only coordination projection; Trama is not a managed source and direct source remains authoritative |
+| Matryca Trama | `70fc14c27b11e31e8f557fd70684b6a83933e7d6` | Contains the experimental `trama.logseq.read/v1` producer, Parser bridge, OG adapter, and Plumber consumer helper. These are not published production interfaces. |
+| Matryca Plumber | `af9b1dfb1cf89e2a4160020ce565be3f617be16a` | Already owns the OG Parser-backed runtime, CLI, MCP, daemon, Shadow read path, and Sovereign UI. Its current DB plan incorrectly assigns Logseq host acquisition to Trama. No Logseq DB execution or support claim exists. |
+| Logseq Matryca Parser | `65e8e64f7f0227bcae8235069fbc3da834652744` | Owns the stable package-root parsing API and still exposes LENS through documentation and the `visualize` CLI. |
 
-Live planning surfaces were also checked. Trama issues #2, #4, and #9,
-Plumber issues #490 and #491, and Brain issue #430 were open. Issue state is
-mutable and MUST be reverified before any issue or milestone update.
+Matryca Knowledge observed Brain public source at
+`e69a97a8c702a773c9a3ce8307b5a667ed2be1dd`. This is a coordination reference,
+not an implementation anchor for this three-repository programme. Brain state
+must be fetched and reverified before M7 begins.
 
-## Reconciled facts, proposals, and unknowns
+The active Trama design worktree is clean at
+`a0699e4db6fd49a5413207afd70fce006c377e85` before this specification edit.
+It is based on an older Trama main and must be reconciled with the verified
+remote anchor before publication. Existing local work and commits must not be
+reset, rewritten, or discarded during that reconciliation.
 
-### Facts
+## 3. Accepted product topology
 
-- The exact Trama qualification commit is
-  `862c5c89157f28c1985cde6145fc2c8af04a70b4`, tree
-  `f1dacc9b30c993b2b69a48c20e73281732e781b3`.
-- It qualifies only `graph.identify`, `page.read`, and complete ordered
-  `block.subtree.read.complete` for synthetic OG fixtures.
-- The lock contains Parser `1.8.2`, within Trama and Plumber's declared Parser
-  range `>=1.7.1,<2.0.0`.
-- Trama's reference Plumber admission helper accepts Plumber `2.0.0`; current
-  Plumber source reports `2.0.1rc3`. Cross-repository compatibility with that
-  prerelease is unproven.
-- No user graph, Logseq DB host, app, Nodi UI, event stream, DB-source Shadow,
-  synchronization, write path, distribution, performance, or network behavior
-  is qualified by the Trama evidence.
-- External copyright-bearing contributions remain merge-blocked until a
-  lawyer-reviewed contributor agreement or equivalent grant exists.
-
-### Proposals
-
-- The current Plumber plan proposes a consumer evidence profile first, then a
-  Trama official-host capability spike, followed by a transport decision.
-- The product strategy proposes Community, later Pro, separate Brain, and later
-  Teams. It is not pricing, entitlement, source-location, or bundle authority.
-- Nodi is the intended central Trama experience, but its presentation-state
-  contract and runtime remain to be designed and qualified.
-
-### Unknowns that block claims
-
-- Whether one exact official Logseq host surface can preserve graph identity
-  and return a complete ordered subtree without forbidden state change.
-- Which Plumber release or prerelease should become the first supported Trama
-  consumer profile.
-- Whether a future Trama--Brain connection should exist and, if so, its public
-  authentication, consent, revocation, data-flow, and entitlement semantics.
-- The Community/Pro feature boundary, commercial terms, and source/package
-  location for Pro.
-
-## Execution model
-
-There is one active cross-repository mutating lane. The owner change merges
-before the dependent consumer branch starts. Separate repositories never share
-a working branch or PR.
+### 3.1 Data flow
 
 ```text
-R0 contract authority
-  -> R1 Clean Architecture enforcement
-  -> R2 Plumber consumer evidence policy
-  -> R3 Trama official-host capability spike
-  -> D1 transport selection or stop
-  -> R4 contract/profile freeze
-  -> R5 Trama adapter and companion shell
-  -> R6 Plumber session consumer
-  -> R7 exact-version qualification
-  -> R8 Nodi read-only vertical
-  -> R9 Community distribution
+Logseq OG Markdown
+        |
+        v
+Logseq Matryca Parser
+        |
+        v
+Matryca Plumber
+        +-------------------+
+        |                   |
+        v                   v
+Matryca Trama          Matryca Brain
+
+Logseq DB official host surface
+        |
+        v
+Matryca Plumber
+        +-------------------+
+        |                   |
+        v                   v
+Matryca Trama          Matryca Brain
 ```
 
-Read-only research, report inventory, and non-overlapping documentation MAY run
-in parallel. Schema, transport, adapter, session-routing, authority, and product
-changes remain serial.
+### 3.2 Compile-time and runtime dependency direction
 
-## Milestones
+```text
+Trama -----> Plumber public contracts
+Brain -----> Plumber public contracts
+Plumber ---> Parser public API                 (OG only)
+Plumber ---> qualified official Logseq surface (DB only)
+```
 
-### R0 — Accept ownership and roadmap authority
+The following dependencies are forbidden:
 
-**Owner:** Matryca Trama.
-**Tracking:** Trama #2, #8, #9.
-**Scope:** this roadmap, the responsibility contract, current-state corrections,
-and the restart-safe persistent goal.
+- Trama to Parser;
+- Brain to Parser;
+- Trama to Logseq storage or host APIs;
+- Brain to Logseq storage or host APIs;
+- Parser to Plumber, Trama, or Brain;
+- Plumber to Trama or Brain implementation code.
 
-Exit evidence:
+An invocation starts with Trama, Brain, CLI, MCP, or the Plumber Operator
+Console and enters Plumber. For an OG session, Plumber selects its Parser
+adapter. For a DB session, Plumber selects its official-host adapter. The
+consumer sees only Plumber's stable result and never selects or invokes Parser.
+Parser identity, exception types, and internal diagnostics must not leak through
+public consumer DTOs or error codes.
 
-- one canonical owner for every shared contract;
-- accepted anti-duplication and change protocol;
-- current source anchors and known drift recorded;
-- `docs/ROADMAP.md`, contract index, and persistent goal point here;
-- documentation and whitespace checks pass.
+## 4. Repository responsibilities
 
-Stop before commit, push, issue mutation, PR, or merge unless separately
-authorized.
+### 4.1 Logseq Matryca Parser
 
-### R1 — Make Clean Architecture enforceable
+Parser owns:
 
-**Owner:** Matryca Trama.
-**Tracking:** Trama #9.
-**Dependency:** R0 accepted.
+- deterministic Logseq OG Markdown parsing;
+- AST, block hierarchy, page identity, references, properties, diagnostics,
+  serialization, and source locations;
+- bounded filesystem discovery and parsing rules;
+- a stable, documented package-root Python API;
+- Parser-owned conformance fixtures and semantic-version policy.
 
-Deliver a focused design and implementation plan for stack-independent and
-Python-specific rules. Then add, in small PRs:
+Parser does not own:
 
-- repository-owned architecture and coding standards;
-- deterministic dependency/import boundary checks;
-- contract and negative tests for public boundaries;
-- a repository-local development skill that points to canonical documents;
-- a thin personal discovery skill that locates the repository skill without
-  copying policy;
-- contributor and review guidance, with documented, time-bounded exceptions.
+- native Logseq DB access;
+- MCP, network, daemon, or product orchestration;
+- Plumber configuration or maintenance policy;
+- Trama or Brain intelligence;
+- a long-term end-user graph interface.
 
-The design MUST update issue #9's stale statement that the application stack is
-unselected: ADR-0004 and Python packages now exist. The enforcement may not
-change runtime behavior or widen supported scope.
+LENS remains historical Parser functionality during a deprecation window. It
+must not be copied into Trama. Its CLI and optional dependencies require a
+separate compatibility, provenance, and semantic-version review before removal.
 
-Exit evidence: exact-head checks reject at least one fixture for each forbidden
-dependency direction; the repository-local skill passes its tests; public CI is
-fork-safe; documentation contains no duplicate normative policy.
+### 4.2 Matryca Plumber
 
-### R2 — Freeze Plumber consumer evidence policy
+Plumber is the sole Logseq gateway for Matryca products. It owns:
 
-**Owner:** Matryca Plumber.
-**Tracking:** Plumber #490 and #491.
-**Dependency:** R1 architecture rules accepted; exact live heads reverified.
+- source-session selection and graph binding;
+- the OG adapter that invokes Parser through its public API;
+- the DB adapter that invokes only a qualified official Logseq host surface;
+- normalization from source-specific representations into Plumber contracts;
+- read, topology, navigation, control, and later mutation use cases;
+- CLI, MCP, daemon, safety, OCC, locks, Shadow, and receipts;
+- a small Operator Console for health, configuration, jobs, and governed
+  maintenance options;
+- canonical public schemas, fixtures, version policy, and compatibility tests
+  for Plumber contracts.
 
-Execute Task 3 of Plumber's current DB compatibility plan. Create only the
-outer consumer admission profile, unverified and negative fixtures, tests, and
-baseline report. Reference exact Trama `trama.logseq.read/v1`; do not copy its
-wire schema, import Trama source, or claim DB support.
+Plumber does not own:
 
-Exit evidence: malformed, unpinned, incomplete, direct-database, mutating,
-foreign-session, stale-session, and unbounded evidence fails closed; focused
-tests and Plumber's full CI pass; the baseline labels DB capability unverified.
+- Trama's graph-exploration experience;
+- semantic explanations or knowledge intelligence presented to users;
+- Nodi;
+- Brain's private reasoning, RAG, or workspace implementation;
+- an alternative visualization product competing with Trama.
 
-### R3 — Execute official-host capability spike
+### 4.3 Matryca Trama
 
-**Owner:** Matryca Trama.
-**Tracking:** Trama #4 and Plumber #491.
-**Dependency:** R2 merged and pinned.
+Trama owns:
 
-Use a disposable synthetic DB graph. Probe only a documented, exact official
-host artifact. Candidate order is bundled CLI, official plugin SDK, then MCP
-stdio. A candidate advances only when the previous candidate fails a required
-contract property. MCP HTTP is outside this plan.
+- the approachable end-user knowledge application;
+- graph visualization, exploration, filtering, and navigation;
+- semantic analysis, intelligence, explanations, and knowledge workflows;
+- Nodi and Trama presentation state;
+- preview and approval experiences for intelligent gardening suggestions;
+- an internal domain port implemented by a Plumber client adapter;
+- future desktop composition and distribution decisions.
 
-Required proof:
+Trama does not own:
 
-- exact artifact, embedded revision, platform, fixture, command, and evidence
-  digests;
-- explicit graph selection and stable DB binding;
-- app-open and app-closed parity without current-graph switching;
-- exact page identity and complete ordered descendant structure;
-- bounded output, timeout, stderr, and process lifecycle;
-- unchanged graph, configuration, and server ownership fingerprints;
-- no user graph, internal `db.sqlite`, mutation, sync, import, export, arbitrary
-  query, or automatic server replacement.
+- Parser integration;
+- Logseq OG filesystem access;
+- native Logseq DB access;
+- Plumber daemon, safety, Shadow, configuration, or receipts;
+- public Plumber transport schemas.
 
-Running a downloaded host artifact is a separate authorization gate. A
-synthetic unit test is not host qualification.
+### 4.4 Matryca Brain
 
-### D1 — Select transport or stop
+Brain remains a separate product and repository. It may later consume released
+Plumber contracts directly. It must not depend on Trama or Parser to obtain a
+Logseq graph. Brain-specific authentication, consent, entitlements, caches, and
+release behavior remain separate decisions.
 
-**Decision owner:** primary maintainer workflow.
-**Dependency:** R2 and R3 terminal evidence.
+## 5. Clean Architecture inside Plumber
 
-Valid outcomes:
+Plumber separates driving adapters, application use cases, internal ports, and
+source adapters:
 
-- `cli_supported`;
-- `plugin_sdk_supported`;
-- `mcp_stdio_supported`;
-- `capability_no_go`;
-- `upstream_blocked`.
+```text
+Driving adapters
+  CLI | MCP | Operator Console | public local transport endpoints
+                         |
+                         v
+Application use cases
+  identify | read | topology | navigate | control | maintain
+                         |
+                         v
+Internal source ports
+  GraphSourceReadPort | HostNavigationPort | GraphMutationPort
+                         |
+              +----------+----------+
+              |                     |
+              v                     v
+   OgParserSourceAdapter      LogseqDbHostAdapter
+              |                     |
+              v                     v
+      Parser public API       official Logseq API
+```
 
-No production adapter branch starts before D1. The selected outcome and exact
-evidence MUST be recorded in Trama and referenced by Plumber. A NO-GO is a valid
-terminal result and MUST NOT be bypassed with a partial adapter.
+The public `GraphSessionReadPort` is a Plumber application boundary exposed to
+consumers. It is not implemented by Trama. Source-specific adapters implement
+smaller internal Plumber ports and remain invisible to consumers.
 
-### R4 — Freeze selected contract and security profiles
+Trama and Brain client adapters remain in their respective repositories. They
+call Plumber's public local endpoints; they are not Plumber-owned driving
+adapters or modules.
 
-**Owner sequence:** Trama contract first; Plumber consumer/security profile
-second in a separate PR.
-**Tracking:** Trama #2; Plumber #493.
-**Dependency:** a supported D1 outcome.
+The existing filesystem `GraphReadPort` and Shadow behavior must first be
+characterized. They may be adapted behind the new application boundary, but
+must not be widened casually to accept DB sessions or made dependent on UI or
+transport types.
 
-Prefer a backward-compatible source-mode profile under
-`trama.logseq.read/v1`. Introduce a new major only if semantics break v1.
-Freeze graph/session identity, page and subtree fields, capabilities,
-provenance, bounds, errors, pairing if applicable, scopes, revocation, and
-privacy-safe receipts. Each consumer pins the exact owner commit and fixture
-digest.
+## 6. Clean Architecture inside Trama
 
-Exit evidence: owner and consumer suites accept the same positive vectors and
-reject unknown versions, missing provenance, bad digests, incomplete subtrees,
-foreign bindings, stale sessions, and unsupported capabilities.
+Trama keeps Plumber outside its domain:
 
-### R5 — Build the single Trama read-only adapter and shell
+```text
+Tauri or other application shell
+              |
+              v
+Trama use cases and domain
+              |
+              v
+KnowledgeGraphGateway                    internal Trama port
+              |
+              v
+PlumberClientAdapter                     replaceable outer adapter
+              |
+              v
+Plumber public contracts
+```
 
-**Owner:** Matryca Trama.
-**Tracking:** Trama #4.
-**Dependency:** R4 merged.
+Trama domain models may differ from Plumber DTOs. Mapping belongs in
+`PlumberClientAdapter`; the domain must not import Plumber runtime modules or
+source-specific Parser types.
 
-Implement only the selected official host adapter and a thin dual-mode
-Community composition shell. Preserve the existing synthetic OG behavior. Do
-not implement Plumber services, Brain connectivity, events, Shadow, or writes.
+## 7. Contract ownership and packaging
 
-Exit evidence: deterministic OG/DB mode detection, graph identity, page and
-complete-subtree reads, explicit unsupported results, content-free health, no
-private imports, and unchanged source authority.
+Matryca Plumber is the sole canonical owner of every `plumber.*` contract.
+Canonical artifacts live in the Plumber repository and include:
 
-### R6 — Add Plumber's session consumer
+- human-readable normative Markdown;
+- language-neutral JSON Schema;
+- positive and negative synthetic fixtures;
+- stable error codes and compatibility tables;
+- fixture and schema digests;
+- a lightweight Python binding with no daemon, UI, model, or Logseq dependency;
+- a Compatibility Test Kit that consumers can run offline.
 
-**Owner:** Matryca Plumber.
-**Tracking:** Plumber #17 and #493.
-**Dependency:** exact R5 Trama artifact/profile.
+The preferred distribution is a lightweight contract artifact produced from
+the Plumber repository, provisionally named `matryca-plumber-contracts`. The
+implementation plan must verify whether Plumber's present package layout can
+publish this safely without importing the full runtime. If not, the first
+release may expose schemas and generated bindings from the same repository,
+provided generation is deterministic and every consumer pins the owner commit,
+contract version, schema digest, and fixture digest.
 
-Add a transport-neutral `GraphSessionReadPort` and session routing. Keep the
-filesystem `GraphReadPort`, OG/Shadow selection, daemon, CLI, and MCP behavior
-unchanged. Route graph identity first, one page second, and one complete subtree
-third as independent reviewable slices.
+The schema bundle is transport-neutral. CLI, MCP, local IPC, and any later
+embedded transport adapt the same semantic contract; none becomes contract
+authority merely because it serializes the payload.
 
-Exit evidence: every slice passes fail-closed session tests and existing
-OG/Shadow regression gates. A DB graph never falls back to Markdown.
+No fourth source repository is created. Consumers must not hand-maintain a
+second normative schema.
 
-### R7 — Publish exact experimental compatibility
+## 8. Contract families
 
-**Owner sequence:** Trama evidence first, then Plumber consumer evidence.
-**Tracking:** Trama #2/#4; Plumber #490/#491.
-**Dependency:** R5 and R6.
+Each family is versioned independently, but Matryca Plumber is the sole
+authority for all of them. A capability in one family does not grant access to
+another.
 
-Publish one exact-version matrix for host artifact, Trama, Parser, Plumber,
-contract/profile, fixtures, platforms, limitations, and evidence digests.
-Stable `2.0.0` and prerelease `2.0.1rc3` remain separate rows.
+### 8.1 `plumber.graph.read/v1`
 
-Exit evidence: clean-install and hosted gates are terminal green at unchanged
-commits; documentation labels support experimental and names exclusions.
+Purpose: normalized, bounded, source-independent reads for Trama, Brain, CLI,
+and MCP.
 
-### R8 — Deliver the first Nodi read-only vertical
+Initial operations:
 
-**Owner:** Matryca Trama.
-**Tracking:** Trama #5.
-**Dependency:** qualified Community core and read adapters.
-
-Define C5 before UI implementation. Deliver one small end-to-end experience
-using only user-authorized read data and deterministic presentation states.
-Nodi must remain useful without Brain, Pro, network services, or telemetry.
-
-Exit evidence: deterministic state fixtures, accessibility checks, explicit
-empty/loading/unsupported/error states, and no concrete host dependency in the
-presentation model.
-
-### R9 — Community distribution
-
-**Owner:** Matryca Trama.
-**Tracking:** Trama #6.
-**Dependency:** R8 and exact supported-platform evidence.
-
-Prepare reproducible Community artifacts, provenance, examples, onboarding,
-support matrix, and release documentation. Publication, tags, packages, and
-releases remain separate external authorization gates.
-
-## Deferred programmes and re-entry gates
-
-| Programme | Re-entry gate |
+| Operation | Successful result |
 | --- | --- |
-| Events and convergence | R7 complete; accepted cursor/gap/order/reconnect/resync contract |
-| DB-source Shadow | snapshot and event semantics qualified; accepted generation/freshness/rebuild/fallback design |
-| Host-authoritative DB writes | official expected-revision or equivalent atomic conflict evidence; accepted preview/recovery/undo ADR |
-| Optional Brain connection | Community standalone; compatible released contracts; accepted ADR-0002 profile; explicit auth/consent/revocation/data-flow/licensing tests |
-| Pro/commercial packaging | separate product and legal decisions; no implicit source or entitlement placement |
-| External copyright-bearing contributions | lawyer-reviewed contributor agreement or equivalent grant active |
+| `session.open` | Authenticates or binds one local client, selects one source and graph under explicit policy, and returns a scoped session binding. |
+| `graph.identify` | Identifies the selected graph, source mode, native authority, session binding, and supported capabilities. |
+| `page.read` | Returns one requested page with ordered block content and complete provenance. |
+| `block.subtree.read.complete` | Returns one root block and every descendant in declared order, explicitly marked complete. |
+| `session.close` | Revokes the caller's session binding and prevents later reuse. |
 
-These tracks are not autonomous implementation authority.
+Every request includes:
 
-## Issue and roadmap hygiene
+- exact `contract_id` and accepted major;
+- operation and opaque request ID;
+- operation-specific page or block reference when required;
+- declared size, depth, and timeout bounds where applicable.
 
-After R0 is accepted and GitHub mutation is explicitly authorized:
+`session.open` additionally includes a declared client identity, requested
+capabilities, an opaque source and graph selector, and an authentication-context
+reference defined by the selected local transport. Its success returns:
 
-1. update Trama #9 to acknowledge ADR-0004 and the current Python packages;
-2. update #2 and #4 acceptance text to distinguish the already-qualified
-   synthetic OG slice from still-unqualified cross-repository and DB work;
-3. assign #2--#6 and #9 to dependency-ordered milestones or a project view;
-4. cross-link Plumber #490/#491/#493/#17 without duplicating their bodies;
-5. keep Brain #430 deferred and non-blocking;
-6. close an issue only when its documented exit evidence is terminal.
+- opaque session and graph bindings;
+- authenticated principal class and granted capability scope;
+- native source mode and authority;
+- graph-lock or graph-switch policy;
+- issue and expiry times;
+- source generation or revision, or explicit `revision_unavailable`;
+- producer version and build identity.
 
-## Autonomous execution boundary
+`graph.identify` and every later read must send the returned session and graph
+bindings. They may not request an implicit current graph, silently reopen a
+session, extend expiry, widen capabilities, or switch graphs. A graph switch
+requires closing the old session and opening a new one. Transport authentication
+details remain outside payloads, but their policy identifier and result class
+are part of qualification evidence.
 
-Autonomous work MAY perform read-only verification, maintain this plan, create
-bounded public synthetic fixtures, add local tests and documentation, and run
-safe repository-local checks when the current milestone authorizes them.
+Every result includes:
 
-Stop for explicit authority before:
+- exact contract version and operation;
+- matching request ID plus session and graph bindings when safely established;
+- `success` or one explicit failure outcome;
+- Plumber producer identity and version;
+- Plumber build or artifact digest when an executable profile is qualified;
+- advertised and exercised capabilities;
+- mode-correct provenance;
+- source generation or revision when the selected host can state it safely;
+- deterministic result digest for qualified fixtures;
+- completeness and ordering facts where required.
 
-- commit, push, PR, issue/milestone/project mutation, merge, tag, release, or
-  package publication;
-- external download or execution of a Logseq artifact;
-- user-graph, private-data, credential, or network-service access;
-- DB writes, graph mutation, events, Shadow ingestion, or recovery actions;
-- Brain integration, Pro/commercial source, entitlement, pricing, or licence
-  changes;
-- acceptance of external copyright-bearing contributions.
+Public provenance states only source mode and native authority:
 
-## Restart checkpoint
+| Source mode | Native authority |
+| --- | --- |
+| `og_markdown` | `logseq_og_markdown` |
+| `db_native` | `logseq_db_native` through the selected official host surface |
 
-At every interruption record:
+Parser identity and version remain Plumber-internal operational evidence. They
+may appear in Plumber diagnostics and qualification receipts, but they are not
+required public fields and consumers must not branch on them.
 
-- repository, worktree, branch, exact HEAD/base, and dirty state;
-- current milestone and owning repository;
-- exact source, artifact, fixture, profile, and evidence digests;
-- focused and full checks with terminal outcomes;
-- unproven claims and the next dependency;
-- whether an external authorization gate is pending.
+If the selected official source cannot provide a safe generation or revision,
+the result states `revision_unavailable`. Such results may be returned for a
+qualified bounded read, but they must not be reused from a public-result cache.
 
-Never infer completion from branch names, reports, cached indexes, or delegated
-summaries. Reverify exact bytes and live planning state.
+### 8.2 `plumber.graph.topology/v1`
 
-## Source anchors
+Purpose: graph visualization without transferring source authority to Trama.
 
-- `matryca-trama@9905e8a36acb83a17a33b702a5fa620d6bfed185:docs/spikes/evidence/python-read-contract-v1/862c5c89157f28c1985cde6145fc2c8af04a70b4.md`
-- `matryca-trama@9905e8a36acb83a17a33b702a5fa620d6bfed185:docs/ROADMAP.md`
-- `matryca-plumber@d347d43dad090586b10a77a53c4e0c8fd6da8e15:docs/superpowers/plans/2026-09-01-logseq-db-read-only-compatibility.md`
-- `logseq-matryca-parser@65e8e64f7f0227bcae8235069fbc3da834652744:docs/reference/API_STABILITY.md`
-- `Matryca-per-Delineat@e69a97a8c702a773c9a3ce8307b5a667ed2be1dd:docs/MATRYCA_TRAMA_BRAIN_PORTFOLIO_STRATEGY.md`
-- `Matryca-knowledge@52500d623feecd2ec156e653be9d521383740ddb:README.md`
+Initial scope:
+
+- bounded snapshot identity;
+- paginated nodes and edges;
+- stable opaque entity references;
+- source generation and graph binding;
+- explicit truncation and continuation;
+- deterministic ordering for identical source generation and options.
+
+Events, live deltas, watchers, and convergence are separate future contracts.
+Trama must never reconstruct a complete graph from an explicitly incomplete
+snapshot without telling the user.
+
+### 8.3 `plumber.control/v1`
+
+Purpose: Plumber Operator Console and external operator automation.
+
+Permitted scope:
+
+- read-only `control.status` for runtime and adapter health;
+- selected source mode and graph identity;
+- explicitly authorized daemon lifecycle commands;
+- queue, job, cache, and receipt state;
+- explicitly authorized technical configuration;
+- deterministic gardening options and governed maintenance job commands.
+
+Excluded scope:
+
+- semantic interpretation of note content;
+- user-facing knowledge recommendations;
+- graph exploration;
+- Trama intelligence or Nodi presentation behavior.
+
+`plumber.control/v1` never carries graph mutation payloads and never grants
+vault-write authority. When the Operator Console starts a gardening job, the
+job must enter Plumber's separately governed maintenance and write use cases.
+Existing internal OG write behavior retains its current safety contract; a
+future external Trama or Brain mutation route still requires
+`plumber.graph.mutate/v1`.
+
+Every command, unlike `control.status`, requires an authenticated operator
+principal, role, explicit consent or approval reference, bounded target scope,
+idempotency key, receipt identifier, cancellation behavior, and disconnect
+semantics. External clients receive no operator role by default.
+
+A useful boundary test is: Plumber's console should remain useful when all note
+text is hidden and only operational metadata is available.
+
+### 8.4 `plumber.host.navigate/v1`
+
+Purpose: let Trama request that the active Logseq host open or focus one entity
+without learning source-specific host details.
+
+The contract uses an opaque entity reference obtained from a Plumber read or
+topology result. Plumber validates graph and session binding, then delegates to
+a supported host capability. Unsupported navigation fails explicitly. Trama
+must not guess a `logseq://` URI, filesystem path, DB identifier, or host API
+fallback.
+
+Navigation is a user-authorized command even though it does not edit graph
+content. Each request binds the authenticated principal, explicit user intent,
+session, graph, entity, permitted host action, target window or host scope,
+receipt, cancellation, and disconnect behavior. Background analysis cannot
+silently trigger navigation.
+
+### 8.5 `plumber.graph.mutate/v1`
+
+Status: deferred public contract.
+
+Plumber already has governed OG mutation behavior, but no Trama or Brain
+mutation permission follows from the read, topology, navigation, or control
+contracts. A public mutation contract requires a separate ADR covering:
+
+- explicit user intent and authorization;
+- preview and bounded target set;
+- expected source revision;
+- conflict rejection and idempotency;
+- atomicity, timeout reconciliation, recovery, and undo;
+- mode-specific authority for OG and DB;
+- audit receipt and revocation.
+
+DB mutation remains blocked until an official host route proves required
+conflict and recovery semantics. Direct mutation of Logseq's internal database
+is forbidden.
+
+## 9. Common failure semantics
+
+Every family fails closed. Initial shared outcomes are:
+
+- `unsupported`;
+- `incompatible`;
+- `invalid_request`;
+- `not_found`;
+- `authority_unavailable`;
+- `provenance_failure`;
+- `stale_session`;
+- `foreign_graph`;
+- `incomplete_result`;
+- `limit_exceeded`;
+- `timeout`;
+- `internal_failure`.
+
+Failures include a stable namespaced code and documented retryability. They do
+not contain absolute paths, credentials, unbounded vault content, raw database
+queries, Parser exceptions, or private implementation details.
+
+No consumer may convert failure into success using a cache, export, similarly
+named page, different graph, Markdown mirror, source-mode fallback, or silent
+session rebind.
+
+Any derived cache key used for a public result must include at least contract
+major, graph binding, source generation or revision, and provenance digest. A
+cache miss or stale entry cannot change source mode or native authority.
+When source revision is unavailable, public-result cache reuse is prohibited.
+
+## 10. UI boundary
+
+### Plumber Operator Console
+
+The existing React/FastAPI UI remains in Plumber and evolves into a deliberately
+small operator console. It may monitor and control Plumber, but it must not
+become a second Trama.
+
+### Trama Knowledge Workspace
+
+Trama owns full graph interaction, analysis, intelligence, explanations,
+insight discovery, and user-facing gardening recommendations. It may display a
+summary of Plumber health by consuming `plumber.control/v1`; it must not copy
+Plumber configuration state or implement a second daemon control plane.
+
+### Parser LENS
+
+LENS is deprecated as a product direction. Migration rules are:
+
+1. inventory public CLI, Python API, optional dependencies, documentation,
+   examples, tests, vendored assets, and contributor provenance;
+2. announce deprecation for at least one compatible release unless the public
+   API policy proves immediate removal is permitted;
+3. keep historical source and licence notices intact;
+4. remove LENS only in the version allowed by Parser's semantic-version policy;
+5. build Trama's graph explorer independently from
+   `plumber.graph.topology/v1`, without copying LENS source or vendored assets.
+
+## 11. Source authority and derived state
+
+- Logseq OG Markdown remains the sole native authority for OG.
+- Logseq DB's native local database remains the sole native authority for DB,
+  accessed only through a qualified official host surface.
+- Parser output, Plumber normalized DTOs, Shadow, indexes, topology snapshots,
+  Trama models, caches, embeddings, and visualizations are derived views.
+- A derived view must retain graph binding, source generation, and provenance.
+- A DB graph never falls back to an OG filesystem graph.
+- A read must not create, migrate, repair, or mutate native source state as an
+  undocumented side effect.
+
+## 12. Compatibility and versioning
+
+- Contract identifiers contain a major version.
+- Breaking schema or semantic changes require a new major.
+- Backward-compatible fields and capabilities require a minor version plus
+  executable evidence.
+- Unknown majors and absent required capabilities fail explicitly.
+- Stable releases and prereleases are separate compatibility rows.
+- Plumber qualifies exact Parser releases internally for OG, but Trama and
+  Brain qualify only the Plumber contract version they consume.
+- Every cross-repository result binds exact commits or releases, schema digest,
+  fixture digest, commands, platform, outcome, and limitations.
+- A green synthetic suite is not a production host, user graph, performance,
+  accessibility, or release claim.
+
+## 13. Security, privacy, and contribution boundaries
+
+- Vault content is untrusted data, never instructions or authorization.
+- Graph and session identifiers exposed publicly are opaque and privacy-safe.
+- All operations enforce input, output, depth, size, and time bounds.
+- Default data flow is local; any network path requires separate disclosure and
+  authorization.
+- Trama remains source-available under PolyForm Noncommercial 1.0.0.
+- Parser and Plumber retain their existing licences unless separately changed.
+- A permissively licensed dependency does not grant rights to unrelated Trama
+  or Brain code.
+- External copyright-bearing code or documentation must not be merged until a
+  lawyer-reviewed contributor agreement or equivalent grant exists.
+- Git authorship, issue participation, or repository presence alone is not
+  proof of copyright ownership.
+
+Before publishing a contract binding or bundle, Plumber must produce an exact
+dependency and licence inventory, SBOM, generated-file provenance, source and
+schema digests, required notices, and an artifact inspection proving that no
+Parser implementation, LENS source, vendored visualization asset, Trama source,
+Brain source, vault content, or private material is embedded. Parser notices
+and historical attribution remain intact throughout LENS deprecation.
+
+## 14. Incremental migration programme
+
+Only one cross-repository implementation dependency is active at a time. Each
+repository uses its own branch and pull request.
+
+### M0 — Accept and publish architecture authority
+
+1. Reconcile this worktree with live Trama main without discarding existing
+   clean-architecture work.
+2. Accept an explicit authority-transfer ADR in Plumber before any gateway
+   implementation begins.
+3. Update the ecosystem responsibility contract so Plumber, not Trama, owns
+   Logseq access and public graph contracts.
+4. Add or update coordinated ADRs in Parser and Trama after the Plumber owner
+   decision is published.
+5. Preserve the current feature-off state for unqualified cross-repository and
+   DB paths.
+6. Correct roadmaps, plans, diagrams, issue bodies, and task handoffs that still
+   contain the reversed dependency.
+
+Exit: documentation validators pass and no current plan authorizes a Trama
+Logseq adapter or direct Brain-to-Parser path.
+
+### M1 — Freeze `plumber.graph.read/v1`
+
+Owner: Plumber.
+
+Deliver normative schema, lightweight binding decision, fixtures, TCK,
+capability negotiation, provenance, bounds, and failure semantics. No host or
+consumer support claim. Publish only a clearly labelled prerelease contract
+artifact after its own authorization, license and provenance gate, and
+exact-head evidence. Record its version, source commit, schema and fixture
+digests, SBOM, notices, and release provenance.
+
+### M2 — Adapt the existing OG path
+
+Owner: Plumber.
+
+Characterize current `GraphReadPort`, Parser integration, Shadow fallback, CLI,
+MCP, and daemon behavior. Implement the smallest adapter into
+`plumber.graph.read/v1` without changing OG authority or Parser semantics.
+
+### M3 — Convert Trama into a consumer
+
+Owner: Trama, after M2 merges and an exact Plumber contract artifact is
+published.
+
+- retire the experimental `trama.logseq.read/v1` producer;
+- remove direct Parser dependency and the Trama OG adapter;
+- replace `trama_plumber_bridge` consumer admission helper with a real outer
+  `PlumberClientAdapter`;
+- keep Trama domain models behind `KnowledgeGraphGateway`;
+- pin exact contract version, artifact digest, schema digest, fixture digest,
+  and release provenance;
+- run Plumber's published TCK vectors without redeclaring their semantics;
+- prove that Trama has no Parser or Logseq storage import.
+
+Initial vertical: identify one graph, read one page, and read one complete
+ordered subtree through Plumber.
+
+### M4 — Deprecate Parser LENS
+
+Owner: Parser, independent after boundary docs are accepted.
+
+Publish compatibility-safe deprecation, redirect product documentation toward
+Trama, and remove visualization only at the correct semantic-version boundary.
+Parsing, graph semantics, exports, and developer APIs remain supported.
+
+### M5 — Add topology and navigation
+
+Owner sequence: Plumber contract and implementation first, Trama consumer
+second.
+
+Deliver a bounded graph snapshot and one qualified open-in-Logseq action before
+building Trama's full graph explorer. Unsupported OG/DB host capabilities stay
+visible and must not be guessed.
+
+### M6 — Qualify Logseq DB reads in Plumber
+
+Owner: Plumber.
+
+Select and qualify one official host surface. Prove graph identity, page read,
+complete subtree, lifecycle, bounds, zero forbidden state change, and explicit
+failure. Existing Trama DB-probe plans are superseded; Trama receives DB data
+through the same Plumber contract as OG.
+
+### M7 — Add Brain as a separate consumer
+
+Owner: Brain, only after compatible Plumber contracts are released.
+
+Brain consumes Plumber directly. No Brain change is required for Trama's
+Community delivery and no Parser dependency is added.
+
+Before any Brain integration claim:
+
+1. fetch and record Brain's live head and dirty state;
+2. characterize and track any legacy direct Parser, graph-path, sibling-source,
+   or shared-cache coupling without silently deleting it;
+3. add import and dependency tests that forbid new direct Parser or Logseq
+   access;
+4. pin one exact published Plumber contract profile and all required digests;
+5. run accepted and rejected TCK fixtures with integration feature-off;
+6. prove Brain's document RAG, Ladybug, databases, scores, and caches remain
+   independent from Plumber's Logseq retrieval state;
+7. enable an exact profile only through a separate Brain authorization and
+   qualification gate.
+
+### M8 — Evaluate Trama desktop distribution
+
+Owner: Trama, separate ADR and evidence programme.
+
+Evaluate a Python-first domain runtime, Nuitka distribution, and Tauri desktop
+shell with measured cold start, idle memory, graph rendering, artifact size,
+accessibility, updates, signing, and platform support. Nuitka or Tauri selection
+does not by itself prove performance relative to Logseq or Electron.
+
+## 15. Test and enforcement strategy
+
+Repository-local boundary tests must prove:
+
+### Parser
+
+- no dependency on Plumber, Trama, Brain, MCP, or native Logseq DB;
+- package-root API compatibility for the exact Plumber-supported range;
+- LENS deprecation and removal do not change parser semantics.
+
+### Plumber
+
+- public contracts import no daemon, UI, model, Parser, or Logseq adapter;
+- OG adapter depends only on Parser's documented package-root API;
+- DB adapter cannot access internal Logseq database files;
+- both source adapters satisfy identical Plumber contract vectors;
+- Operator Console depends on control use cases, not domain-private state;
+- Shadow and other derived stores never become native authority;
+- graph switching, cancellation, disconnect, and concurrent sessions cannot
+  leak a graph binding, cache result, or provenance record across sessions.
+
+### Trama
+
+- no import or dependency on Parser;
+- no direct filesystem or native Logseq DB access;
+- domain and use cases do not import Plumber transport types;
+- only the outer Plumber adapter maps contract DTOs;
+- graph, error, and disconnected states remain deterministic and truthful;
+- integration remains feature-off until its exact Plumber profile is qualified.
+
+### Cross-repository qualification
+
+- exact owner and consumer versions use identical accepted fixtures;
+- consumers depend on an exact published contract artifact with verified
+  schema, fixture, artifact, SBOM, notice, and release-provenance records;
+- negative fixtures reject version skew, missing provenance, stale sessions,
+  foreign graph bindings, incomplete results, unsupported operations, and
+  excess bounds;
+- public CI is fork-safe and uses no private source, credentials, or user
+  vaults;
+- documentation and compatibility matrices match executable results.
+
+## 16. Delivery and authorization rules
+
+1. Reverify complete remote heads and working-tree state before each slice.
+2. Change and merge the owning repository first.
+3. Start each dependent branch from newly fetched `origin/main`.
+4. One pull request changes one repository and one reviewable concern.
+5. Run focused tests before full repository gates.
+6. Record unsupported and negative outcomes; do not redefine success.
+7. Treat commit, push, pull request, issue or project mutation, merge, package
+   publication, and release as separate authorization gates.
+8. Preserve dirty or divergent work. Never reset, stash, clean, or overwrite it
+   merely to simplify migration.
+
+## 17. Completion checklist
+
+- [ ] Coordinated ADRs assign all Logseq access to Plumber.
+- [ ] Every diagram shows OG through Parser and Plumber before Trama or Brain.
+- [ ] Every diagram shows DB through Plumber before Trama or Brain.
+- [ ] `plumber.graph.read/v1` has one canonical schema and fixture authority.
+- [ ] Plumber's existing OG behavior passes through the new boundary unchanged.
+- [ ] Trama imports neither Parser nor a Logseq adapter.
+- [ ] Brain integration documentation names Plumber as its Logseq gateway.
+- [ ] Brain has an exact live anchor, legacy-coupling inventory, direct-Parser
+      dependency ban, feature-off TCK parity, and independent-cache evidence
+      before any integration claim.
+- [ ] Parser LENS has a provenance-reviewed deprecation and removal path.
+- [ ] Plumber Operator Console remains operational and bounded.
+- [ ] Trama owns graph exploration and intelligence without Plumber UI overlap.
+- [ ] DB support remains unclaimed until official-host evidence passes.
+- [ ] PolyForm commercial boundaries and contributor-agreement gate remain
+      explicit.
+- [ ] Exact-version compatibility tests pass in every affected repository.
+- [ ] No performance, distribution, or platform claim exceeds measured evidence.
