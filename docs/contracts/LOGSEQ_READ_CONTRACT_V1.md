@@ -1,12 +1,13 @@
 # Logseq Read Contract v1
 
-> **Status:** planned public specification. This is not a published API or an
-> implementation-conformance claim.
+> **Status:** implemented and qualified only for the exact owned synthetic OG
+> profile recorded below. No user graph, Logseq DB host, or broader runtime is
+> qualified.
 
 ## Purpose
 
 `trama.logseq.read/v1` defines a minimal read-only interchange boundary between
-a future host-facing Matryca Trama producer and public consumers. It preserves
+a host-facing Matryca Trama producer and public consumers. It preserves
 native Logseq source authority and makes incompatibility or missing provenance
 an explicit result rather than an inferred success.
 
@@ -17,7 +18,7 @@ projection is never a substitute authority.
 
 ## Contract status and scope
 
-The contract line is `trama.logseq.read/v1`. Every future concrete profile must
+The contract line is `trama.logseq.read/v1`. Every concrete profile must
 publish its semantic contract version, producer version or source revision,
 supported Logseq host version, and fixture set before it claims conformance.
 
@@ -152,10 +153,15 @@ An absent version, unselected host route, or unsupported source mode is
 - Tine Direct Files context does not grant a second writer. A possibly active
   Tine session remains a strict read-only condition.
 
-## Conformance gate
+## Conformance evidence and next gate
 
-This document becomes executable only after an accepted application-stack
-decision establishes public package and test locations. The first conformance
-suite must use synthetic fixtures and prove accepted reads plus rejection of an
-unknown version, missing provenance, wrong authority, incomplete subtree, and
-private dependency. Until then, this is a planned semantic contract only.
+The public Python packages and conformance suite implement this contract for
+owned synthetic OG fixtures. Exact hosted evidence at commit
+`862c5c89157f28c1985cde6145fc2c8af04a70b4` records accepted reads and
+rejection of unknown version, missing provenance, wrong authority, incomplete
+subtree, and private dependency.
+
+That evidence does not qualify a user graph, Logseq DB host, new consumer
+version, application, or platform not recorded there. Every new profile must
+repeat the applicable positive and negative gates and bind exact producer,
+consumer, host, Parser, fixture, and result identities.

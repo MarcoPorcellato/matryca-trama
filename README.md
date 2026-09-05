@@ -13,7 +13,12 @@ implementation details.
 
 ## Current status
 
-This repository is a document-first foundation. Architecture, contracts, threat boundaries, and contribution rules are established before implementation. Do not infer an available runtime or command-line interface from this README.
+This repository remains contract-first. It now contains a bounded Python
+implementation of `trama.logseq.read/v1`, qualified only for owned synthetic OG
+fixtures and three read operations. No user graph, Logseq DB host, application,
+Nodi UI, distribution artifact, or command-line interface is qualified by this
+README. See the [roadmap](docs/ROADMAP.md) for the exact supported and deferred
+scope.
 
 ## Principles
 
@@ -28,8 +33,8 @@ This repository is a document-first foundation. Architecture, contracts, threat 
 ## Repository map
 
 - `docs/` — architecture, contracts, decisions, and roadmap.
-- `packages/` — future shared components and public interfaces.
-- `apps/` — future Trama applications and sidecar surfaces.
+- `packages/` — shared contracts, core behavior, bridges, and bounded adapters.
+- `apps/` — future Trama applications and sidecar composition roots.
 
 These directories may be introduced incrementally. The documentation is the current source of truth for scope and status.
 

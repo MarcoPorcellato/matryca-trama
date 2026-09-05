@@ -1,43 +1,49 @@
-# Persistent Goal: Matryca Trama Public Foundation
+# Persistent Goal: Matryca Trama Contract-Driven Community Roadmap
 
-## Objective
+Deliver one evidence-backed terminal outcome for the canonical
+[cross-repository contract roadmap](../superpowers/specs/2026-09-05-cross-repository-contract-roadmap.md).
+Success is a useful, independently operable, architecture-enforced read-only
+Trama Community vertical. An honest `capability_no_go` or `upstream_blocked`
+result for Logseq DB is also valid when the roadmap's gates prove it.
 
-Establish a trustworthy public source-available Community monorepo for Matryca
-Trama while preserving clean commercial, Pro, and Matryca Brain boundaries.
+Before every milestone, reverify live source heads, issue state, branch base,
+dirty state, exact contracts, versions, fixtures, artifacts, checks, and
+evidence. Dated anchors and reports are starting evidence, not permanent truth.
 
-## Current scope
+Execute one cross-repository mutating slice at a time. The owning repository
+changes and merges first; each consumer follows in a separate short-lived
+branch pinned to the exact owner commit, contract/profile version, and fixture
+digest. Read-only research and disjoint documentation may run in parallel.
 
-Complete the foundation specification, architecture, ADRs, roadmap, repository
-policy, and reviewable evidence. Public Parser/Plumber compatibility and the
-three-operation Logseq read contract are documented. The next gate is Python
-application-stack qualification is limited to synthetic OG contract tests for
-`graph.identify`, `page.read`, and complete ordered `block.subtree.read.complete`;
-do not infer a user-graph or host adapter. Do not add Pro source, Brain implementation,
-secrets, private dependencies, DB-host access, runtime adapters, or a write
-path outside its separate evidence gate. User graphs, DB, writes, events, Shadow,
-synchronization, export, recovery, UI/Nodi, distribution, performance, and
-network remain unsupported by this qualification.
+Preserve the
+[ecosystem responsibility contract](../contracts/ECOSYSTEM_RESPONSIBILITY_AND_CHANGE_CONTRACT.md):
+Trama owns Community product, Nodi, public DTOs, host lifecycle, and OG/DB host
+adapters; Parser owns deterministic Markdown semantics and its package-root
+API; Plumber owns memory/search, daemon and agent surfaces, existing OG/Shadow
+behavior, and the consumer session port; Brain remains a separate optional
+product; Knowledge is a read-only projection, never runtime authority.
 
-## Completion criteria
+Proceed in this order: accept contract authority; make Clean Architecture
+enforceable under issue #9; freeze Plumber's consumer evidence policy; execute
+the Trama official-host capability spike; record D1 transport or stop; freeze
+contract/security profiles; implement the single Trama adapter and shell; add
+Plumber's separate session consumer; qualify exact versions; deliver one Nodi
+read-only vertical; prepare Community distribution.
 
-- Public repository structure and licensing are unambiguous.
-- Parser, Plumber, OG, DB, and Nodi boundaries are documented.
-- Fork-safe CI and the temporary contributor licensing gate are defined.
-- Every later milestone has a testable evidence gate.
-- Public contract tests reject private Brain imports, unsupported versions, and
-  authority or provenance omissions.
-- The initial Logseq adapter scope remains read-only and independently usable
-  without a Brain service.
-- A future Pro decision is explicitly deferred rather than implied.
+The current proven scope remains the exact synthetic OG qualification at
+commit `862c5c89157f28c1985cde6145fc2c8af04a70b4`: graph identification, one
+page read, and one complete ordered subtree. Do not infer user-graph, DB-host,
+UI/Nodi, distribution, performance, network, event, Shadow, synchronization,
+write, export, or recovery support.
 
-## Stop conditions
+Stop for explicit authority before commit, push, PR, issue/milestone/project
+mutation, merge, release, publication, external artifact download/execution,
+user or private data access, graph/DB writes, events, DB-source Shadow, Brain
+integration, Pro/commercial source, entitlement, pricing, or licence changes.
+External copyright-bearing contributions remain merge-blocked until a
+lawyer-reviewed contributor agreement or equivalent grant exists.
 
-Stop before creating private integrations, changing licences again, accepting
-external copyright-bearing contributions, importing legacy history, selling a
-commercial licence, or publishing artifacts without the required separate
-authorization and review.
-
-Also stop before selecting a DB host surface without a focused compatibility
-spike, treating a Tine workflow as write authority, adding events or Shadow
-acceleration, or implementing any read or write adapter without an accepted
-contract and executable evidence.
+At every interruption, record repository/worktree, branch, exact HEAD and base,
+dirty state, milestone owner, checks, digests, negative results, unproven claims,
+next dependency, and pending authorization. This goal points to the canonical
+roadmap and must never redefine or weaken it.

@@ -1,11 +1,12 @@
 # Parser Compatibility for Logseq Read Contract v1
 
-> **Status:** planned public compatibility profile. No Trama parser adapter is
-> implemented or qualified by this document.
+> **Status:** implemented for the bounded synthetic OG slice. Exact hosted
+> qualification uses Parser `1.8.2`; no user graph, DB, or broader Parser
+> compatibility is claimed.
 
 ## Purpose
 
-This profile defines how a future Trama producer may use
+This profile defines how a Trama producer may use
 `logseq-matryca-parser` for the OG Markdown branch of
 `trama.logseq.read/v1`. Parser output helps interpret authoritative Markdown;
 it does not transfer graph authority to Parser or create any DB capability.
@@ -16,20 +17,21 @@ The first candidate profile is:
 
 | Component | Candidate range | Status |
 | --- | --- | --- |
-| Logseq Matryca Parser | `>=1.7.1,<2.0.0` | planned; not yet qualified by Trama |
-| Contract line | `trama.logseq.read/v1` | planned |
-| Logseq source mode | `og_markdown` | planned read-only branch |
+| Logseq Matryca Parser | `>=1.7.1,<2.0.0` | accepted range; exact synthetic qualification uses `1.8.2` |
+| Contract line | `trama.logseq.read/v1` | implemented for the bounded synthetic slice |
+| Logseq source mode | `og_markdown` | qualified only for owned synthetic fixtures |
 
-Parser `v1.8.2` is a public release anchor, but this document does not claim
-that Trama has qualified it. Parser 2.x is outside the candidate range until a
-new compatibility decision and evidence are published.
+Parser `v1.8.2` is the locked public artifact in the exact synthetic
+qualification. This does not qualify every version in the declared range.
+Parser 2.x is outside the range until a new compatibility decision and evidence
+are published.
 
 ## Public API boundary
 
-Only Parser's documented package-root stable API may be used. A future profile
-must name every imported public symbol, its Parser range, and the exact fixture
-set that exercises it. Internal Parser symbols, copied parser internals, and
-undocumented behavior are not a compatibility surface.
+Only Parser's documented package-root stable API may be used. Each qualified
+profile must name every imported public symbol, its Parser version, and the
+exact fixture set that exercises it. Internal Parser symbols, copied parser
+internals, and undocumented behavior are not a compatibility surface.
 
 The producer must preserve enough public Parser-derived location and diagnostic
 information to report source provenance and an explicit unsupported or failure
@@ -46,9 +48,11 @@ result. It must not convert parse ambiguity into guessed graph content.
 - Parser use is read-only. It creates no write, synchronization, export, or DB
   mutation capability.
 
-## Future evidence gate
+## Evidence and future gate
 
-After ADR-0004 chooses package and test locations, public synthetic fixtures
-must prove the declared Parser range, accepted graph/page/subtree reads,
-source-location provenance, parse failure handling, and rejection of Parser
-versions outside the range. This document alone is not that evidence.
+The evidence record under
+`docs/spikes/evidence/python-read-contract-v1/862c5c89157f28c1985cde6145fc2c8af04a70b4.md`
+binds the current synthetic OG qualification. A new Parser version or broader
+input profile must separately prove accepted graph/page/subtree reads,
+source-location provenance, parse failure handling, determinism, containment,
+and rejection outside its declared range.
