@@ -1,6 +1,7 @@
 # ADR-0005: Clean Architecture Enforcement
 
-Status: Accepted — executable projection implemented; exact hosted/main qualification pending publication
+Status: Accepted — executable projection implemented; exact published-head
+qualification requires hosted CI evidence
 
 Date: 2026-09-05
 
@@ -35,8 +36,8 @@ behavioral contract tests in fork-safe CI. No third-party architecture linter
 is required for R1.
 
 The executable projection is implemented in repository history. Hosted and main
-qualification remain pending publication and fork-safe CI evidence for the
-exact published head; no branch label is qualification evidence.
+qualification require fork-safe CI evidence for the exact published head; no
+branch label is qualification evidence.
 
 Initial exception registry is empty. Any future exception is temporary, narrow,
 reviewed, and validated against standard; it cannot waive source authority,
