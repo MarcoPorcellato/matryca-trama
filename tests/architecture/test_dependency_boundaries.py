@@ -241,6 +241,14 @@ class DependencyBoundaryTests(unittest.TestCase):
             })
             self.assertIn("ARCH005", codes(root))
 
+    def test_importlib_import_module_assignment_alias_is_rejected(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            write_fixture(root, {
+                "packages/contracts/src/trama_contracts/bad.py": "import importlib\nload = importlib.import_module\nload('trama_core')\n"
+            })
+            self.assertIn("ARCH005", codes(root))
+
     def test_sys_path_mutation_is_rejected(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
@@ -251,6 +259,14 @@ class DependencyBoundaryTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
             write_fixture(root, {"packages/contracts/src/trama_contracts/bad.py": "from sys import path as sibling_path\nsibling_path.insert(0, '../sibling')\n"})
+            self.assertIn("ARCH005", codes(root))
+
+    def test_sys_path_assignment_alias_mutation_is_rejected(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            write_fixture(root, {
+                "packages/contracts/src/trama_contracts/bad.py": "import sys\nalias = sys.path\nalias.append('../sibling')\n"
+            })
             self.assertIn("ARCH005", codes(root))
 
     def test_delete_sys_path_entry_is_rejected(self) -> None:

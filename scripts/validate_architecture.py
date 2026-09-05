@@ -231,6 +231,33 @@ class ImportVisitor(ast.NodeVisitor):
                         if alias.name == "path":
                             self.sys_path_names.add(alias.asname or alias.name)
 
+        assignments = [node for node in ast.walk(tree) if isinstance(node, ast.Assign)]
+        changed = True
+        while changed:
+            changed = False
+            for node in assignments:
+                names = {target.id for target in node.targets if isinstance(target, ast.Name)}
+                if self.is_dynamic_import_callable(node.value):
+                    before = len(self.dynamic_names)
+                    self.dynamic_names.update(names)
+                    changed = changed or len(self.dynamic_names) != before
+                elif self.is_sys_path(node.value):
+                    before = len(self.sys_path_names)
+                    self.sys_path_names.update(names)
+                    changed = changed or len(self.sys_path_names) != before
+
+    def is_dynamic_import_callable(self, node: ast.AST) -> bool:
+        if isinstance(node, ast.Name):
+            return node.id in self.dynamic_names
+        return (
+            isinstance(node, ast.Attribute)
+            and isinstance(node.value, ast.Name)
+            and (
+                (node.value.id in self.importlib_names and node.attr == "import_module")
+                or (node.value.id in self.builtins_names and node.attr == "__import__")
+            )
+        )
+
     def add(self, node: ast.AST, code: str, message: str, import_root: str | None) -> None:
         relative = self.path.relative_to(self.root)
         self.findings.append(
@@ -279,21 +306,7 @@ class ImportVisitor(ast.NodeVisitor):
 
     def visit_Call(self, node: ast.Call) -> None:
         function = node.func
-        if isinstance(function, ast.Name) and function.id in self.dynamic_names:
-            self.add(node, "ARCH005", "dynamic import is forbidden", None)
-        elif (
-            isinstance(function, ast.Attribute)
-            and isinstance(function.value, ast.Name)
-            and function.value.id in self.importlib_names
-            and function.attr == "import_module"
-        ):
-            self.add(node, "ARCH005", "dynamic import is forbidden", None)
-        elif (
-            isinstance(function, ast.Attribute)
-            and isinstance(function.value, ast.Name)
-            and function.value.id in self.builtins_names
-            and function.attr == "__import__"
-        ):
+        if self.is_dynamic_import_callable(function):
             self.add(node, "ARCH005", "dynamic import is forbidden", None)
         if isinstance(function, ast.Attribute) and self.is_sys_path(function.value):
             self.add(node, "ARCH005", "sys.path mutation is forbidden", None)

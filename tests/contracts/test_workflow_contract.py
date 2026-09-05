@@ -35,6 +35,7 @@ jobs:
       - run: uv --version
       - run: uv sync --locked --all-packages
       - run: uv run --all-packages python scripts/validate_architecture.py
+      - run: uv run --all-packages python -m unittest discover -s tests/architecture -v
       - run: uv run --all-packages python -m unittest discover -s tests/contracts -v
       - run: uv run --all-packages python -m unittest discover -s tests/containment -v
       - run: uv run --all-packages python -m unittest tests.integration.test_plumber_consumer -v
@@ -58,6 +59,7 @@ class WorkflowContractTests(unittest.TestCase):
             "uv --version",
             "uv sync --locked --all-packages",
             "uv run --all-packages python scripts/validate_architecture.py",
+            "uv run --all-packages python -m unittest discover -s tests/architecture -v",
             "uv run --all-packages python -m unittest discover -s tests/contracts -v",
             "uv run --all-packages python -m unittest discover -s tests/containment -v",
             "uv run --all-packages python -m unittest tests.integration.test_plumber_consumer -v",
@@ -83,6 +85,21 @@ class WorkflowContractTests(unittest.TestCase):
         self.assertIn(architecture_validation, workflow)
         self.assertLess(workflow.index(locked_install), workflow.index(architecture_validation))
         self.assertLess(workflow.index(architecture_validation), workflow.index(contract_suite))
+
+    def test_workflow_runs_architecture_suite_before_contract_suites(self) -> None:
+        workflow = self.workflow()
+
+        architecture_suite = (
+            "- run: uv run --all-packages python -m unittest discover "
+            "-s tests/architecture -v"
+        )
+        contract_suite = (
+            "- run: uv run --all-packages python -m unittest discover "
+            "-s tests/contracts -v"
+        )
+
+        self.assertIn(architecture_suite, workflow)
+        self.assertLess(workflow.index(architecture_suite), workflow.index(contract_suite))
 
     def test_workflow_uses_reviewed_full_action_pins(self) -> None:
         workflow = self.workflow()
@@ -141,6 +158,7 @@ class WorkflowContractTests(unittest.TestCase):
                 "uv --version",
                 "uv sync --locked --all-packages",
                 "uv run --all-packages python scripts/validate_architecture.py",
+                "uv run --all-packages python -m unittest discover -s tests/architecture -v",
                 "uv run --all-packages python -m unittest discover -s tests/contracts -v",
                 "uv run --all-packages python -m unittest discover -s tests/containment -v",
                 "uv run --all-packages python -m unittest tests.integration.test_plumber_consumer -v",

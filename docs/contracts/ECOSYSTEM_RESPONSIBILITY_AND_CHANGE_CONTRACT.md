@@ -1,8 +1,11 @@
 # Matryca Ecosystem Responsibility and Change Contract
 
-> **Status:** proposed coordination authority for maintainer review. Existing
-> accepted ADRs and repository-local contracts remain authoritative until this
-> document is accepted and merged.
+> **Status:** superseded historical coordination draft; non-operative.
+> This preserves the 2026-09-05 proposal for review history only. It grants no
+> cross-repository authority, runtime acceptance, compatibility claim, or
+> delivery authorization. Its normative wording records the old proposal and
+> must not override accepted ADRs, repository-local contracts, or current
+> owner-controlled work.
 
 ## Purpose
 
