@@ -45,6 +45,9 @@ Actions.
 - Every result and failure is session- and graph-bound, bounded, source-mode
   correct, explicit, deterministic for qualified fixtures, and privacy-safe.
   A `revision_unavailable` result is never reusable from public-result cache.
+- Every v1 session is also bound internally to one authenticated transport
+  subject and one authorized transport connection. Those opaque bindings never
+  serialize; v1 has no reconnect or resume capability.
 - Preserve existing OG, Shadow, CLI, MCP, daemon, Operator Console, Parser
   parsing, and LENS behavior unless the focused slice explicitly changes it.
 - Plumber's Operator Console remains operational metadata/control only; it must
@@ -434,6 +437,8 @@ def test_binding_has_no_runtime_or_source_adapter_imports() -> None:
 def test_tck_rejects_foreign_graph_and_revision_unavailable_cache_reuse() -> None:
     assert run_vector("foreign-graph") == "foreign_graph"
     assert run_vector("revision-unavailable-cache") == "provenance_failure"
+    assert run_vector("cross-principal-read") == "session_subject_mismatch"
+    assert run_vector("unauthorized-reconnect") == "session_connection_mismatch"
 ```
 
 - [ ] **Step 2: Run contract tests and observe RED**
@@ -462,7 +467,8 @@ ERROR_CODES = frozenset({
     "unsupported", "incompatible", "invalid_request", "not_found",
     "authority_unavailable", "provenance_failure", "stale_session",
     "foreign_graph", "incomplete_result", "limit_exceeded", "timeout",
-    "cancelled", "internal_failure",
+    "cancelled", "session_subject_mismatch", "session_connection_mismatch",
+    "internal_failure",
 })
 ```
 
@@ -479,11 +485,14 @@ success/failure. `session.open` accepts only this registered-source selector:
 payload never contains a filesystem path, DB identifier, ambient/current graph
 selector, or host endpoint. The schema requires transport-supplied
 `auth_policy_id`, `auth_result_class`, and `principal_class` in the result
-evidence, but never a credential or raw principal identifier. It rejects parser
-fields, absolute paths, raw queries, ambient graph selection, and unbounded
-payloads. The manifest hashes every fixture and schema using lowercase SHA-256.
-The runner validates positive and negative vectors offline; it never opens a
-vault, host, network connection, or cache.
+evidence, but never a credential, raw principal identifier,
+`authenticated_subject_binding`, or `transport_connection_binding`. The two
+bindings are transport-derived opaque internal state, never request/result JSON
+or public fixture fields. It rejects parser fields, absolute paths, raw queries,
+ambient graph selection, and unbounded payloads. The manifest hashes every
+fixture and schema using lowercase SHA-256. The runner validates positive and
+negative vectors offline; it never opens a vault, host, network connection, or
+cache.
 
 Set `contracts/python/pyproject.toml` package version to `0.1.0`, declare only
 its own test dependency group, and create its `uv.lock`. Add this exact root
@@ -586,6 +595,17 @@ def test_service_and_mcp_transport_match_owner_tck() -> None:
     for vector in load_tck_vectors():
         assert service_result(vector) == expected_canonical_result(vector)
         assert mcp_result_json(vector) == expected_canonical_json(vector)
+
+def test_session_rejects_other_authenticated_subject() -> None:
+    session = open_session(subject_binding="subject-a", connection_binding="connection-a")
+    result = read_session(session, subject_binding="subject-b", connection_binding="connection-b")
+    assert result.error_code == "session_subject_mismatch"
+
+def test_session_rejects_unauthorized_reconnect_and_preserves_owner_session() -> None:
+    session = open_session(subject_binding="subject-a", connection_binding="connection-a")
+    result = close_session(session, subject_binding="subject-a", connection_binding="connection-b")
+    assert result.error_code == "session_connection_mismatch"
+    assert session_is_open(session)
 ```
 
 Use the repository's real fixture/monkeypatch style in the second test; do not
@@ -641,6 +661,8 @@ class TransportAuthContext:
     policy_id: str
     result_class: str
     principal_class: str
+    authenticated_subject_binding: str
+    transport_connection_binding: str
 ```
 
 `RegisteredSourceSelector` parses only the Task 4 grammar, and
@@ -651,19 +673,27 @@ opens a default/ambient graph. `graph_read_v1_config.py` reads
 defaults it to `false`, documents it in `.env.example`, and returns
 `unsupported` before source resolution when disabled. `TransportAuthContext` is
 created by the local transport from authenticated connection state, not from
-caller JSON; service results carry only `policy_id`, `result_class`, and
-`principal_class`.
+caller JSON. `authenticated_subject_binding` and `transport_connection_binding`
+are opaque, non-serialized bindings derived by that transport. The service
+stores both at `session.open`; public results carry only `policy_id`,
+`result_class`, and `principal_class`.
 
 `PlumberGraphReadService` owns opaque bindings, expiry, graph lock, granted
 capabilities, request limit checks, source-revision/cache rule, error mapping,
 and receipt metadata. It accepts an explicit `TransportAuthContext` with every
-call and cannot reopen, extend, widen, or switch a session. `OgParserSourceAdapter`
-receives only a resolved bounded selected Markdown root, calls Parser
-package-root API, and maps public Parser values to Plumber DTOs. Parser
-exception classes, paths, and raw diagnostics never leave the adapter. Session
-reuse after close/expiry returns `stale_session`; using a different graph
-binding returns `foreign_graph`; oversized request/result returns
-`limit_exceeded`; no cache reuse occurs when revision is unavailable.
+call and cannot reopen, extend, widen, or switch a session. Every `read` and
+`session.close` compares both bindings with the stored values before dispatch:
+a different subject returns `session_subject_mismatch`; same subject on an
+unapproved replacement connection returns `session_connection_mismatch`; neither
+operation changes session state. A reconnect/resume path is not in v1
+operations, capabilities, schema, or feature flag. It may be proposed only as
+a separate future capability with explicit reauthentication and session-transfer
+semantics. `OgParserSourceAdapter` receives only a resolved bounded selected
+Markdown root, calls Parser package-root API, and maps public Parser values to
+Plumber DTOs. Parser exception classes, paths, and raw diagnostics never leave
+the adapter. Session reuse after close/expiry returns `stale_session`; using a
+different graph binding returns `foreign_graph`; oversized request/result
+returns `limit_exceeded`; no cache reuse occurs when revision is unavailable.
 
 - [ ] **Step 4: Add additive MCP/local transport adapter**
 
@@ -704,9 +734,10 @@ rtk git diff --check
 ```
 
 Expected: service and transport each execute the owner TCK accepted vectors
-and reject stale, foreign, feature-disabled, unregistered-source, unsupported,
-malformed, missing-provenance, incomplete-subtree, and excessive-limit vectors
-with the canonical code; pre-existing OG/Shadow tests remain green.
+and reject stale, foreign, cross-principal, unauthorized-reconnect,
+feature-disabled, unregistered-source, unsupported, malformed,
+missing-provenance, incomplete-subtree, and excessive-limit vectors with the
+canonical code; pre-existing OG/Shadow tests remain green.
 
 - [ ] **Step 6: Commit OG vertical**
 
