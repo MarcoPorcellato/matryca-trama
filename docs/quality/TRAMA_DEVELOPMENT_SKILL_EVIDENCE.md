@@ -1,7 +1,6 @@
 # Trama Development Skill Evidence
 
-Status: durable RED recorded; prior GREEN invalidated by router revision; fresh
-independent GREEN pending.
+Status: durable RED and fresh router-only GREEN recorded; PASS.
 
 ## RED baseline protocol and prompt
 
@@ -71,10 +70,68 @@ It assembled thirteen policy or contract sources; found no repository-local
 skill; named no executable architecture or exception-registry check; and
 omitted foundation validation and package-metadata coverage.
 
-## Router correction and GREEN status
+## Router correction
 
 Review found prior skill text duplicated the canonical Parser/package rule and
 an exhaustive product/legal/publication stop list. This revision removes those
 rules and routes agents to canonical authorities instead. The prior GREEN test
-applies to earlier wording and is invalidated. A controller-owned fresh
-independent repeat is required before PASS may be recorded.
+applied to earlier wording and was invalidated.
+
+## Fresh router-only GREEN protocol and response
+
+Agent/model class: Luna, fresh context, read-only. Protocol: repository-local
+router-only skill loaded; no repository change permitted.
+
+Choice: **C — preserve ownership through `trama-parser-bridge`; write failing
+behavior and architecture tests first, then minimal implementation.** Direct
+import is an explicit R1 violation. `trama-logseq-og-adapter` may depend on
+`trama-parser-bridge`, but must not import `logseq_matryca_parser` directly.
+The page-property behavior belongs at the bridge/contract translation boundary,
+not `trama-core`.
+
+Minimum authorities selected:
+
+- `docs/standards/CLEAN_ARCHITECTURE.md` and ADR-0005;
+- Parser and Logseq read contracts; Plumber when consumer behavior changes;
+  proposed ecosystem contract with its status distinguished;
+- ADR-0002, ADR-0003, and `CONTRIBUTOR_LICENSING.md`; and
+- affected package manifests/source plus architecture and focused contract
+  tests.
+
+First tests selected:
+
+1. OG page property survives Parser, bridge, adapter, and page-read payload
+   with independently expected value.
+2. Direct Parser import inside OG adapter yields `ARCH004`.
+3. Parser root imports remain allowed only in parser bridge.
+4. Provenance/read-only behavior remains OG authoritative and deterministic.
+
+Exact validation commands selected:
+
+```text
+rtk uv sync --locked --all-packages
+rtk uv run --all-packages python scripts/validate_architecture.py
+rtk uv run --all-packages python -m unittest tests.architecture.test_dependency_boundaries -v
+rtk uv run --all-packages python -m unittest tests.contracts.test_og_read_contract tests.contracts.test_parser_loader tests.contracts.test_read_only_posture -v
+rtk uv run --all-packages python -m unittest discover -s tests/architecture -v
+rtk uv run --all-packages python -m unittest discover -s tests/contracts -v
+rtk uv run --all-packages python -m unittest discover -s tests/containment -v
+rtk uv run --all-packages python -m unittest tests.integration.test_plumber_consumer -v
+rtk uv run --all-packages python -m unittest tests.test_foundation_validator -v
+rtk uv run --all-packages python scripts/validate_foundation.py
+rtk git diff --check
+```
+
+Exception decision: no exception. If unavoidable, route to canonical fields;
+licensing, source authority, private product, write, secret, and publication
+gates remain non-waivable.
+
+Stop categories selected from canonical sources: contribution rights and
+commercial licensing; Brain/Pro/private integration; OG/DB native authority
+and DB behavior; cross-repository owner/public-contract boundary; and GitHub,
+dependency-download, publication, and release authority.
+
+PASS compared with RED: router led agent to canonical sources rather than
+assembling them ad hoc; it selected C, behavior-first and architecture tests,
+exact validation commands, no unjustified exception, proposed-versus-accepted
+authority, and external stops. GitNexus remained unindexed and was not changed.
