@@ -244,17 +244,25 @@ class DependencyBoundaryTests(unittest.TestCase):
             self.assertEqual(codes(root), ["ARCH002"])
 
     def test_over_broad_exception_path_glob_is_rejected(self) -> None:
-        for path_glob in (
-            "*",
-            "**",
-            "**/*",
-            "packages/contracts/**",
-            "/packages/contracts/src/trama_contracts/bad.py",
-            "../packages/contracts/src/trama_contracts/bad.py",
-        ):
+        cases = (
+            ("*", "bad.py"),
+            ("**", "bad.py"),
+            ("**/*", "bad.py"),
+            ("packages/contracts/**", "bad.py"),
+            ("packages/contracts/**/*.py", "bad.py"),
+            ("packages/contracts/*/*.py", "bad.py"),
+            ("packages/contracts/src/trama_contracts/bad?.py", "bad1.py"),
+            ("packages/contracts/src/trama_contracts/[bad].py", "b.py"),
+            ("packages/contracts/src/trama_contracts/bad].py", "bad].py"),
+            ("/packages/contracts/src/trama_contracts/bad.py", "bad.py"),
+            ("../packages/contracts/src/trama_contracts/bad.py", "bad.py"),
+        )
+        for path_glob, filename in cases:
             with self.subTest(path_glob=path_glob), tempfile.TemporaryDirectory() as directory:
                 root = Path(directory)
-                write_fixture(root, {"packages/contracts/src/trama_contracts/bad.py": "import trama_core\n"})
+                write_fixture(root, {
+                    f"packages/contracts/src/trama_contracts/{filename}": "import trama_core\n"
+                })
                 config = (root / "architecture.toml").read_text(encoding="utf-8")
                 exception = EXPIRED_EXCEPTION.replace('id = "old"', 'id = "wide"').replace(
                     'created = "2000-01-01"\nexpires = "2000-01-02"',

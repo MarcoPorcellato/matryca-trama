@@ -5,7 +5,6 @@ from __future__ import annotations
 
 import argparse
 import ast
-import fnmatch
 import re
 import sys
 import tomllib
@@ -252,7 +251,7 @@ class ImportVisitor(ast.NodeVisitor):
         self.generic_visit(node)
 
 
-def is_narrow_path_glob(path_glob: object) -> bool:
+def is_narrow_path_glob(path_glob: object, package_directory: Path) -> bool:
     if not isinstance(path_glob, str) or not path_glob or path_glob.startswith(("/", "\\")):
         return False
     if re.match(r"^[A-Za-z]:[\\/]", path_glob):
@@ -260,9 +259,9 @@ def is_narrow_path_glob(path_glob: object) -> bool:
     parts = path_glob.split("/")
     if any(part in {"", ".", ".."} for part in parts):
         return False
-    if path_glob in {"*", "**", "**/*"} or parts[-1] in {"*", "**"}:
+    if any(token in path_glob for token in "*?[]"):
         return False
-    return len(parts) > 1
+    return path_glob.startswith(f"{package_directory.as_posix()}/") and path_glob.endswith(".py")
 
 
 def validate_exceptions(
@@ -288,10 +287,13 @@ def validate_exceptions(
             errors.append(architecture_error(root, "exception identifier is invalid or duplicate"))
             continue
         seen.add(identifier)
-        if not isinstance(package, str) or not isinstance(import_root, str) or not is_narrow_path_glob(path_glob) or any(
+        if not isinstance(package, str) or not isinstance(import_root, str) or any(
             character in package + import_root for character in "*?[]"
         ) or package not in rules or import_root in forbidden:
             errors.append(architecture_error(root, f"exception {identifier} is over-broad or forbidden"))
+            continue
+        if not is_narrow_path_glob(path_glob, rules[package].directory):
+            errors.append(architecture_error(root, f"exception {identifier} has invalid path_glob"))
             continue
         if not all(isinstance(entry[field], str) and entry[field] for field in required - {"created", "expires"}):
             errors.append(architecture_error(root, f"exception {identifier} is incomplete"))
@@ -311,7 +313,7 @@ def validate_exceptions(
             if finding.package == package
             and finding.import_root == import_root
             and finding.violation.code in {"ARCH002", "ARCH003", "ARCH004"}
-            and fnmatch.fnmatchcase(finding.violation.path.as_posix(), path_glob)
+            and finding.violation.path.as_posix() == path_glob
         ]
         if not matches:
             errors.append(architecture_error(root, f"exception {identifier} matches no live violation"))
