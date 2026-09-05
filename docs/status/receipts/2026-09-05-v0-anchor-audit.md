@@ -11,5 +11,5 @@
 - Runtime comparison: no differences in `pyproject.toml`, `uv.lock`, `packages`, `tests`, or `.github/workflows/python-contracts.yml` between baseline and candidate.
 - Known qualification: baseline bounded Python read-contract evidence at `docs/spikes/evidence/python-read-contract-v1/862c5c89157f28c1985cde6145fc2c8af04a70b4.md`; comparison evidence does not qualify the candidate.
 - Checks: `python3 scripts/validate_foundation.py` and `git diff --check` passed (exit 0).
-- Unknowns: current-head qualification suites and hosted evidence are not established; the V0 source commit is `340154c774bff1fe8fc64e77625843f2ebc58ec2`; this follow-up correction remains uncommitted until a separate local commit; maintainer approval of unresolved V0 unknowns is pending.
+- Unknowns: current-head qualification suites and hosted evidence are not established; the V0 source commit is `340154c774bff1fe8fc64e77625843f2ebc58ec2`; evidence correction recorded in commit `ebaeea48e6b6b75153b2fcde7d873dd0e7754240`; maintainer approval of unresolved V0 unknowns is pending.
 - Next gate: `V1 exact-head local qualification`
