@@ -77,6 +77,7 @@ EXPIRED_EXCEPTION = (
     'id = "old"\n'
     'package = "trama-contracts"\n'
     'import_root = "trama_core"\n'
+    'path_glob = "packages/contracts/src/trama_contracts/bad.py"\n'
     'issue = "https://example.test/issues/1"\n'
     'owner = "maintainer"\n'
     'reason = "temporary"\n'
@@ -131,8 +132,22 @@ class DependencyBoundaryTests(unittest.TestCase):
     def test_contracts_cannot_import_core(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
-            write_fixture(root, {"packages/contracts/src/trama_contracts/bad.py": "import trama_core\n"})
-            self.assertIn("ARCH002", codes(root))
+            write_fixture(root, {
+                "packages/contracts/src/trama_contracts/bad.py": "import trama_core\n",
+                "packages/contracts/src/trama_contracts/other.py": "import trama_core\n",
+            })
+            self.assertIn(
+                (
+                    Path("packages/contracts/src/trama_contracts/bad.py"),
+                    1,
+                    "ARCH002",
+                    "forbidden internal import: trama_core",
+                ),
+                [
+                    (violation.path, violation.line, violation.code, violation.message)
+                    for violation in validate_repository(root)
+                ],
+            )
 
     def test_core_cannot_import_adapter(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
@@ -173,10 +188,22 @@ class DependencyBoundaryTests(unittest.TestCase):
             write_fixture(root, {"packages/contracts/src/trama_contracts/bad.py": "import importlib\nimportlib.import_module('trama_core')\n"})
             self.assertIn("ARCH005", codes(root))
 
+    def test_builtins_import_alias_is_rejected(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            write_fixture(root, {"packages/contracts/src/trama_contracts/bad.py": "from builtins import __import__ as load\nload('trama_core')\n"})
+            self.assertIn("ARCH005", codes(root))
+
     def test_sys_path_mutation_is_rejected(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
             write_fixture(root, {"packages/contracts/src/trama_contracts/bad.py": "import sys\nsys.path.append('../sibling')\n"})
+            self.assertIn("ARCH005", codes(root))
+
+    def test_sys_path_import_alias_mutation_is_rejected(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            write_fixture(root, {"packages/contracts/src/trama_contracts/bad.py": "from sys import path as sibling_path\nsibling_path.insert(0, '../sibling')\n"})
             self.assertIn("ARCH005", codes(root))
 
     def test_allowed_same_package_stdlib_inward_and_parser_root_imports_pass(self) -> None:
@@ -196,6 +223,48 @@ class DependencyBoundaryTests(unittest.TestCase):
                 config = (root / "architecture.toml").read_text(encoding="utf-8")
                 (root / "architecture.toml").write_text(
                     config.replace("exceptions = []", exceptions), encoding="utf-8"
+                )
+                self.assertIn("ARCH006", codes(root))
+
+    def test_scoped_exception_suppresses_only_matching_source(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            write_fixture(root, {
+                "packages/contracts/src/trama_contracts/bad.py": "import trama_core\n",
+                "packages/contracts/src/trama_contracts/other.py": "import trama_core\n",
+            })
+            config = (root / "architecture.toml").read_text(encoding="utf-8")
+            exception = EXPIRED_EXCEPTION.replace('id = "old"', 'id = "scoped"').replace(
+                'created = "2000-01-01"\nexpires = "2000-01-02"',
+                'created = "2026-01-01"\nexpires = "2999-01-01"',
+            )
+            (root / "architecture.toml").write_text(
+                config.replace("exceptions = []", exception), encoding="utf-8"
+            )
+            self.assertEqual(codes(root), ["ARCH002"])
+
+    def test_over_broad_exception_path_glob_is_rejected(self) -> None:
+        for path_glob in (
+            "*",
+            "**",
+            "**/*",
+            "packages/contracts/**",
+            "/packages/contracts/src/trama_contracts/bad.py",
+            "../packages/contracts/src/trama_contracts/bad.py",
+        ):
+            with self.subTest(path_glob=path_glob), tempfile.TemporaryDirectory() as directory:
+                root = Path(directory)
+                write_fixture(root, {"packages/contracts/src/trama_contracts/bad.py": "import trama_core\n"})
+                config = (root / "architecture.toml").read_text(encoding="utf-8")
+                exception = EXPIRED_EXCEPTION.replace('id = "old"', 'id = "wide"').replace(
+                    'created = "2000-01-01"\nexpires = "2000-01-02"',
+                    'created = "2026-01-01"\nexpires = "2999-01-01"',
+                ).replace(
+                    'path_glob = "packages/contracts/src/trama_contracts/bad.py"',
+                    f'path_glob = "{path_glob}"',
+                )
+                (root / "architecture.toml").write_text(
+                    config.replace("exceptions = []", exception), encoding="utf-8"
                 )
                 self.assertIn("ARCH006", codes(root))
 

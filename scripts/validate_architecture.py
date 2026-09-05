@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import argparse
 import ast
+import fnmatch
 import re
 import sys
 import tomllib
@@ -160,6 +161,7 @@ class ImportVisitor(ast.NodeVisitor):
         self.importlib_names = {"importlib"}
         self.dynamic_names = {"__import__"}
         self.sys_names = {"sys"}
+        self.sys_path_names: set[str] = set()
 
     def add(self, node: ast.AST, code: str, message: str, import_root: str | None) -> None:
         relative = self.path.relative_to(self.root)
@@ -206,10 +208,20 @@ class ImportVisitor(ast.NodeVisitor):
             for alias in node.names:
                 if alias.name == "import_module":
                     self.dynamic_names.add(alias.asname or alias.name)
+        if node.module == "builtins":
+            for alias in node.names:
+                if alias.name == "__import__":
+                    self.dynamic_names.add(alias.asname or alias.name)
+        if node.module == "sys":
+            for alias in node.names:
+                if alias.name == "path":
+                    self.sys_path_names.add(alias.asname or alias.name)
         self.check_import(node, node.module)
         self.generic_visit(node)
 
     def is_sys_path(self, node: ast.AST) -> bool:
+        if isinstance(node, ast.Name):
+            return node.id in self.sys_path_names
         if isinstance(node, ast.Attribute):
             return isinstance(node.value, ast.Name) and node.value.id in self.sys_names and node.attr == "path"
         return isinstance(node, ast.Subscript) and self.is_sys_path(node.value)
@@ -240,6 +252,19 @@ class ImportVisitor(ast.NodeVisitor):
         self.generic_visit(node)
 
 
+def is_narrow_path_glob(path_glob: object) -> bool:
+    if not isinstance(path_glob, str) or not path_glob or path_glob.startswith(("/", "\\")):
+        return False
+    if re.match(r"^[A-Za-z]:[\\/]", path_glob):
+        return False
+    parts = path_glob.split("/")
+    if any(part in {"", ".", ".."} for part in parts):
+        return False
+    if path_glob in {"*", "**", "**/*"} or parts[-1] in {"*", "**"}:
+        return False
+    return len(parts) > 1
+
+
 def validate_exceptions(
     root: Path,
     exceptions: list[Any],
@@ -250,7 +275,7 @@ def validate_exceptions(
     errors: list[Violation] = []
     suppressed: set[int] = set()
     seen: set[str] = set()
-    required = {"id", "package", "import_root", "issue", "owner", "reason", "created", "expires", "removal_condition"}
+    required = {"id", "package", "import_root", "path_glob", "issue", "owner", "reason", "created", "expires", "removal_condition"}
     for entry in exceptions:
         if not isinstance(entry, dict) or not required.issubset(entry):
             errors.append(architecture_error(root, "exception is incomplete"))
@@ -258,11 +283,12 @@ def validate_exceptions(
         identifier = entry["id"]
         package = entry["package"]
         import_root = entry["import_root"]
+        path_glob = entry["path_glob"]
         if not isinstance(identifier, str) or identifier in seen:
             errors.append(architecture_error(root, "exception identifier is invalid or duplicate"))
             continue
         seen.add(identifier)
-        if not isinstance(package, str) or not isinstance(import_root, str) or any(
+        if not isinstance(package, str) or not isinstance(import_root, str) or not is_narrow_path_glob(path_glob) or any(
             character in package + import_root for character in "*?[]"
         ) or package not in rules or import_root in forbidden:
             errors.append(architecture_error(root, f"exception {identifier} is over-broad or forbidden"))
@@ -285,6 +311,7 @@ def validate_exceptions(
             if finding.package == package
             and finding.import_root == import_root
             and finding.violation.code in {"ARCH002", "ARCH003", "ARCH004"}
+            and fnmatch.fnmatchcase(finding.violation.path.as_posix(), path_glob)
         ]
         if not matches:
             errors.append(architecture_error(root, f"exception {identifier} matches no live violation"))
