@@ -20,7 +20,12 @@ Read only the authority matching the change:
 
 ## Change flow
 
-Classify affected package, declared dependencies, public contract owner, and source authority before editing. Keep Parser use behind `trama_parser_bridge`; adapters consume its public symbols. Start with a focused failing behavior or boundary test, then make the smallest change and re-run it.
+Before editing, classify the affected package, declared dependencies, public
+contract owner, and source authority against the exact package table in the
+[Clean Architecture standard](../../../docs/standards/CLEAN_ARCHITECTURE.md)
+and the selected accepted contract or ADR; never decide these from memory.
+Start with a focused failing behavior or boundary test, then make the smallest
+change and re-run it.
 
 Run this validation family for R1 package or boundary work:
 
@@ -38,4 +43,8 @@ rtk git diff --check
 
 ## External gates
 
-Stop and obtain required review or authorization when source authority could change; a contract is not released or source-bound; a proposed ownership contract is treated as accepted; work adds DB, writes, events, Shadow, synchronization, export, recovery, network behavior, UI, Nodi runtime, Brain/Pro source, entitlement, pricing, or commercial rights; an external copyright-bearing contribution lacks a lawyer-reviewed grant; or work would push, open or change GitHub objects, merge, release, change licence, or install a personal/global skill.
+Route legal and product-boundary decisions to the [Clean Architecture standard
+stop gates](../../../docs/standards/CLEAN_ARCHITECTURE.md#validation-and-stop-gates)
+and [Contributor Licensing](../../../CONTRIBUTOR_LICENSING.md). Stop when either
+gate matches. For any external mutation, stop unless the current instruction
+provides its exact authority.
