@@ -96,7 +96,7 @@ licensing scope. These are review questions, not invented numeric metrics.
 For this policy-document change, run exactly:
 
 ```bash
-python scripts/validate_foundation.py
+python3 scripts/validate_foundation.py
 git diff --check
 ```
 

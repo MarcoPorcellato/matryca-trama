@@ -56,7 +56,7 @@ canonical standard without copying it.
 Run:
 
 ```bash
-python scripts/validate_foundation.py
+python3 scripts/validate_foundation.py
 git diff --check
 ```
 
