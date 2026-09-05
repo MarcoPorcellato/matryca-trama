@@ -48,6 +48,10 @@ Actions.
 - Every v1 session is also bound internally to one authenticated transport
   subject and one authorized transport connection. Those opaque bindings never
   serialize; v1 has no reconnect or resume capability.
+- `plumber_graph_read_v1` MCP transport starts default-off. It may advertise
+  support only after a characterization gate proves both bindings exist in the
+  live runtime; otherwise it returns `unsupported`, even when service/TCK tests
+  pass with injected test context.
 - Preserve existing OG, Shadow, CLI, MCP, daemon, Operator Console, Parser
   parsing, and LENS behavior unless the focused slice explicitly changes it.
 - Plumber's Operator Console remains operational metadata/control only; it must
@@ -72,7 +76,7 @@ Actions.
 | B | Trama | A merged | corrected ownership/docs merge |
 | C | Parser | A merged | parser boundary/docs merge |
 | D | Plumber | A merged | canonical read schema, fixtures, binding decision, TCK merge |
-| E | Plumber | D merged | OG adapter and local read vertical merge |
+| E | Plumber | D merged | OG service/TCK merge; MCP remains `unsupported` unless live identity gate passes |
 | F | Trama | E plus separately authorized public Plumber contract release and exact released profile | client adapter, TCK parity, no Parser/host imports merge |
 | G | Parser | C merged | LENS deprecation release merge |
 | H | Plumber | E plus separate authorization | topology/navigation contract groundwork merge |
@@ -484,8 +488,9 @@ success/failure. `session.open` accepts only this registered-source selector:
 `source_id` resolves only through Plumber's configured source registry; the
 payload never contains a filesystem path, DB identifier, ambient/current graph
 selector, or host endpoint. The schema requires transport-supplied
-`auth_policy_id`, `auth_result_class`, and `principal_class` in the result
-evidence, but never a credential, raw principal identifier,
+`auth_context_reference`, `auth_policy_id`, `auth_result_class`, and
+`principal_class` in the result evidence. `auth_context_reference` is opaque
+and non-identifying. JSON never contains a credential, raw principal identifier,
 `authenticated_subject_binding`, or `transport_connection_binding`. The two
 bindings are transport-derived opaque internal state, never request/result JSON
 or public fixture fields. It rejects parser fields, absolute paths, raw queries,
@@ -558,10 +563,12 @@ material is embedded.
 - Create: `src/agent/og_parser_source_adapter.py`
 - Create: `src/agent/graph_source_registry.py`
 - Create: `src/agent/graph_read_v1_config.py`
+- Create: `src/agent/mcp_transport_identity.py`
 - Create: `tests/test_plumber_graph_read_service.py`
 - Create: `tests/test_og_parser_source_adapter.py`
 - Create: `tests/test_graph_source_registry.py`
 - Create: `tests/test_graph_read_v1_config.py`
+- Create: `tests/test_mcp_transport_identity.py`
 - Modify: `src/agent/mcp_server.py`
 - Modify: `tests/test_mcp_server.py`
 - Modify: `.env.example`
@@ -578,7 +585,40 @@ material is embedded.
 `OgParserSourceAdapter`, registered-source resolver, default-off feature gate,
 and additive local transport operation.
 
-- [ ] **Step 1: Characterize unchanged existing read paths**
+- [ ] **Step 1: Characterize live MCP transport identity before admitting support**
+
+Start from Plumber `origin/main@af9b1dfb1cf89e2a4160020ce565be3f617be16a`.
+Inspect actual FastMCP request/context lifecycle and run its in-process transport
+harness with no fabricated authentication. Record whether it exposes both a
+trusted authenticated subject and a stable authorized connection binding. The
+current anchor is not evidence that either exists. Add this default-deny
+abstraction and a test using the real MCP test context:
+
+```python
+@dataclass(frozen=True)
+class VerifiedMcpTransportBindings:
+    authenticated_subject_binding: str
+    transport_connection_binding: str
+
+class McpRuntimeIdentityProvider(Protocol):
+    def bindings_for(self, ctx: Context[ServerSession, AppContext]) -> VerifiedMcpTransportBindings | None:
+        raise NotImplementedError
+
+class UnavailableMcpRuntimeIdentityProvider:
+    def bindings_for(self, ctx: object) -> None:
+        return None
+
+def test_default_identity_provider_is_fail_closed() -> None:
+    assert UnavailableMcpRuntimeIdentityProvider().bindings_for(None) is None
+```
+
+`UnavailableMcpRuntimeIdentityProvider.bindings_for` returns `None`. It must
+not use `id(ctx)`, object identity, a constant, an environment value, or test
+fixture text as a subject/connection substitute. Do not add a provider that
+returns bindings until actual runtime supplies both trusted values and its
+lifecycle proves their stability.
+
+- [ ] **Step 2: Characterize unchanged existing read paths**
 
 Write regression tests before new code:
 
@@ -611,7 +651,7 @@ def test_session_rejects_unauthorized_reconnect_and_preserves_owner_session() ->
 Use the repository's real fixture/monkeypatch style in the second test; do not
 move `get_graph_read_port`, `MarkdownGraphRepository`, or `ShadowGraphRepository`.
 
-- [ ] **Step 2: Run characterization tests and observe RED for new service**
+- [ ] **Step 3: Run characterization tests and observe RED for new service**
 
 Run:
 
@@ -622,7 +662,7 @@ rtk uv run pytest tests/test_graph_repository.py tests/test_graph_dispatch_read.
 Expected: existing regressions pass; new-service import/test fails because it
 does not exist.
 
-- [ ] **Step 3: Implement the narrow port and OG adapter**
+- [ ] **Step 4: Implement the narrow port and OG adapter**
 
 Use these public application signatures:
 
@@ -695,7 +735,7 @@ the adapter. Session reuse after close/expiry returns `stale_session`; using a
 different graph binding returns `foreign_graph`; oversized request/result
 returns `limit_exceeded`; no cache reuse occurs when revision is unavailable.
 
-- [ ] **Step 4: Add additive MCP/local transport adapter**
+- [ ] **Step 5: Add additive MCP/local transport adapter**
 
 Register a new `plumber_graph_read_v1` tool in `register_mcp_tools` with this
 transport signature and no default graph argument:
@@ -714,18 +754,21 @@ async def plumber_graph_read_v1(
 
 `parse_canonical_graph_read_request` rejects duplicate/non-canonical JSON,
 unknown fields, and source selectors outside Task 4 grammar. The serializer
-uses canonical sorted-key UTF-8 JSON from the contract binding. The tool
-delegates once to `PlumberGraphReadService`; it does not alter
+uses canonical sorted-key UTF-8 JSON from the contract binding. The tool first
+requires `McpRuntimeIdentityProvider.bindings_for(ctx)` to return both verified
+bindings, then constructs `TransportAuthContext`; otherwise it serializes the
+canonical `unsupported` result without invoking the service or source registry.
+The tool delegates once to `PlumberGraphReadService` only after that gate; it does not alter
 `read_graph_data`, add a Parser import to `mcp_server.py`, or create a second
 filesystem path.
 
-- [ ] **Step 5: Run focused behavioral and regression gates**
+- [ ] **Step 6: Run focused behavioral and regression gates**
 
 Run:
 
 ```bash
 rtk uv run pytest tests/test_og_parser_source_adapter.py tests/test_plumber_graph_read_service.py tests/test_mcp_server.py -q
-rtk uv run pytest tests/test_graph_source_registry.py tests/test_graph_read_v1_config.py tests/test_env_example_coverage.py -q
+rtk uv run pytest tests/test_graph_source_registry.py tests/test_graph_read_v1_config.py tests/test_mcp_transport_identity.py tests/test_env_example_coverage.py -q
 rtk uv run pytest tests/test_graph_repository.py tests/test_graph_dispatch_read.py tests/test_shadow_hardening_axis3_routing.py -q
 rtk uv run pytest tests/test_graph_layer_boundary.py -q
 rtk make check
@@ -733,17 +776,18 @@ rtk make ci
 rtk git diff --check
 ```
 
-Expected: service and transport each execute the owner TCK accepted vectors
-and reject stale, foreign, cross-principal, unauthorized-reconnect,
-feature-disabled, unregistered-source, unsupported, malformed,
-missing-provenance, incomplete-subtree, and excessive-limit vectors with the
-canonical code; pre-existing OG/Shadow tests remain green.
+Expected: injected service context executes owner TCK vectors and rejects
+stale, foreign, cross-principal, unauthorized-reconnect, feature-disabled,
+unregistered-source, malformed, missing-provenance, incomplete-subtree, and
+excessive-limit vectors with canonical codes. Current live MCP transport stays
+default-off and returns `unsupported` unless Step 1 proves both bindings;
+pre-existing OG/Shadow tests remain green.
 
-- [ ] **Step 6: Commit OG vertical**
+- [ ] **Step 7: Commit OG service and default-off transport gate**
 
 ```bash
-rtk git add .env.example src/graph/ports/session_read.py src/agent/plumber_graph_read_service.py src/agent/og_parser_source_adapter.py src/agent/graph_source_registry.py src/agent/graph_read_v1_config.py src/agent/mcp_server.py tests docs/contracts CHANGELOG.md
-rtk git commit -m "feat(graph): serve OG reads through Plumber contracts"
+rtk git add .env.example src/graph/ports/session_read.py src/agent/plumber_graph_read_service.py src/agent/og_parser_source_adapter.py src/agent/graph_source_registry.py src/agent/graph_read_v1_config.py src/agent/mcp_transport_identity.py src/agent/mcp_server.py tests docs/contracts CHANGELOG.md
+rtk git commit -m "feat(graph): add default-off Plumber OG read service"
 ```
 
 ## Task 6: Record owner evidence; block Trama migration until separately authorized release

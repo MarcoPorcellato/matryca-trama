@@ -292,7 +292,7 @@ Initial operations:
 
 | Operation | Successful result |
 | --- | --- |
-| `session.open` | Authenticates or binds one local client, selects one source and graph under explicit policy, and returns a scoped session binding. |
+| `session.open` | Binds one transport-authenticated client context, selects one registered source and graph under explicit policy, and returns a scoped session binding. |
 | `graph.identify` | Identifies the selected graph, source mode, native authority, session binding, and supported capabilities. |
 | `page.read` | Returns one requested page with ordered block content and complete provenance. |
 | `block.subtree.read.complete` | Returns one root block and every descendant in declared order, explicitly marked complete. |
@@ -305,24 +305,40 @@ Every request includes:
 - operation-specific page or block reference when required;
 - declared size, depth, and timeout bounds where applicable.
 
-`session.open` additionally includes a declared client identity, requested
-capabilities, an opaque source and graph selector, and an authentication-context
-reference defined by the selected local transport. Its success returns:
+`session.open` includes requested capabilities and one opaque registered-source
+selector. It never declares client identity, credentials, authentication
+material, transport subject, transport connection, a local path, or an implicit
+current graph. The selected transport derives authentication and its internal
+bindings outside JSON. Its success returns:
 
 - opaque session and graph bindings;
-- authenticated principal class and granted capability scope;
+- non-identifying authentication-context reference, authentication policy ID,
+  authentication result class, authenticated principal class, and granted
+  capability scope;
 - native source mode and authority;
 - graph-lock or graph-switch policy;
 - issue and expiry times;
 - source generation or revision, or explicit `revision_unavailable`;
 - producer version and build identity.
 
+At `session.open`, Plumber stores opaque transport-derived
+`authenticated_subject_binding` and `transport_connection_binding` with the
+session. They are neither request fields nor result/provenance/receipt fields.
+`graph.identify`, every later read, and `session.close` must present through the
+same subject and authorized connection. A different subject fails
+`session_subject_mismatch`; an unapproved reconnect fails
+`session_connection_mismatch`; neither failure closes, rebinds, or mutates the
+session. `session.resume` is not a v1 operation or capability. Any resume path
+requires a separate future capability with explicit reauthentication and
+session-transfer semantics.
+
 `graph.identify` and every later read must send the returned session and graph
 bindings. They may not request an implicit current graph, silently reopen a
 session, extend expiry, widen capabilities, or switch graphs. A graph switch
 requires closing the old session and opening a new one. Transport authentication
-details remain outside payloads, but their policy identifier and result class
-are part of qualification evidence.
+details, subject binding, and connection binding remain outside payloads; only
+the non-identifying context reference, policy identifier, result class, and
+principal class are public evidence.
 
 Every result includes:
 
@@ -456,6 +472,9 @@ Every family fails closed. Initial shared outcomes are:
 - `incomplete_result`;
 - `limit_exceeded`;
 - `timeout`;
+- `cancelled`;
+- `session_subject_mismatch`;
+- `session_connection_mismatch`;
 - `internal_failure`.
 
 Failures include a stable namespaced code and documented retryability. They do
@@ -589,7 +608,13 @@ Owner: Plumber.
 
 Characterize current `GraphReadPort`, Parser integration, Shadow fallback, CLI,
 MCP, and daemon behavior. Implement the smallest adapter into
-`plumber.graph.read/v1` without changing OG authority or Parser semantics.
+`plumber.graph.read/v1` without changing OG authority or Parser semantics. A
+live MCP transport may advertise the feature only after it proves one trusted
+authenticated subject binding and one stable authorized connection binding from
+its actual runtime context. If either fact is unavailable, the feature remains
+default-off and the MCP operation returns `unsupported`; service/TCK coverage
+may use injected test-only transport contexts but cannot create a live support
+claim.
 
 ### M3 — Convert Trama into a consumer
 
@@ -685,6 +710,13 @@ Repository-local boundary tests must prove:
 - Shadow and other derived stores never become native authority;
 - graph switching, cancellation, disconnect, and concurrent sessions cannot
   leak a graph binding, cache result, or provenance record across sessions.
+- session read and close reject a different authenticated subject and an
+  unauthorized reconnect without exposing or changing either internal binding;
+  resume is absent unless a later dedicated capability is qualified.
+- the MCP transport starts default-off and returns `unsupported` unless a
+  characterization probe against the actual runtime proves trusted subject and
+  stable connection bindings; constants, object identity, and fabricated auth
+  context are forbidden substitutes.
 
 ### Trama
 
