@@ -2,7 +2,6 @@
 
 from collections.abc import Mapping
 
-from logseq_matryca_parser import LogseqGraph, LogseqNode, LogseqPage
 from trama_contracts import (
     Outcome,
     Provenance,
@@ -11,10 +10,11 @@ from trama_contracts import (
     validate_request,
 )
 from trama_core import canonical_json, sha256_bytes
+from trama_parser_bridge import LogseqGraph, LogseqNode, LogseqPage
 
 
 _CONTRACT_VERSION = "1.0.0"
-_PRODUCER = "trama-logseq-og-adapter 1.0.0"
+_PRODUCER = "trama-logseq-og-adapter 0.0.0"
 _CAPABILITIES = (
     "graph.identify",
     "page.read",

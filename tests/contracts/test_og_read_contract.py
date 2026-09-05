@@ -91,6 +91,17 @@ class OgReadContractTests(unittest.TestCase):
         self.assertEqual(result.provenance.source_reference, "fixture:og-minimal")
         self.assertEqual(result.provenance.exercised_capabilities, ("graph.identify",))
 
+    def test_identify_reports_distribution_version_as_producer(self) -> None:
+        """Producer identity must be exact package distribution name and version."""
+
+        result = self.adapter.identify(request("graph.identify"))
+
+        self.assertEqual(result.producer, "trama-logseq-og-adapter 0.0.0")
+        self.assertEqual(
+            result.provenance.producer,
+            "trama-logseq-og-adapter 0.0.0",
+        )
+
     def test_page_read_preserves_page_content_and_native_og_provenance(self) -> None:
         """Dropping page structure or authority would corrupt a successful read."""
 

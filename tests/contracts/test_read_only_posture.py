@@ -38,7 +38,7 @@ RUNTIME_ROOT = Path(__file__).parents[2] / "packages"
 ALLOWED_IMPORT_ROOTS = {
     "collections", "hmac", "json", "math", "pathlib", "hashlib", "re",
     "dataclasses", "enum", "typing", "logseq_matryca_parser", "trama_core",
-    "trama_contracts",
+    "trama_contracts", "trama_parser_bridge",
 }
 FORBIDDEN_CALLS = {
     "write_text",

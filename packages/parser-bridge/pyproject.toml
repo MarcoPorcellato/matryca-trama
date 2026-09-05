@@ -6,7 +6,10 @@ build-backend = "hatchling.build"
 name = "trama-parser-bridge"
 version = "0.0.0"
 requires-python = ">=3.12"
-dependencies = ["logseq-matryca-parser>=1.7.1,<2.0.0"]
+dependencies = [
+    "logseq-matryca-parser>=1.7.1,<2.0.0",
+    "trama-core",
+]
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/trama_parser_bridge"]
