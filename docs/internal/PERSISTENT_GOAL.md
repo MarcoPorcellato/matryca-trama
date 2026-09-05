@@ -1,49 +1,35 @@
-# Persistent Goal: Matryca Trama Contract-Driven Community Roadmap
+# Persistent Goal: Matryca Trama Community Delivery
 
-Deliver one evidence-backed terminal outcome for the canonical
-[cross-repository contract roadmap](../superpowers/specs/2026-09-05-cross-repository-contract-roadmap.md).
-Success is a useful, independently operable, architecture-enforced read-only
-Trama Community vertical. An honest `capability_no_go` or `upstream_blocked`
-result for Logseq DB is also valid when the roadmap's gates prove it.
+Execute the delivery program and preserve exact evidence. Before each action,
+recheck live remote heads, exact commit, branch base, worktree state, contracts,
+fixtures, checks, and evidence. Dated anchors are starting evidence, not current
+proof.
 
-Before every milestone, reverify live source heads, issue state, branch base,
-dirty state, exact contracts, versions, fixtures, artifacts, checks, and
-evidence. Dated anchors and reports are starting evidence, not permanent truth.
+The cross-repository roadmap is a maintainer-review proposal: Plumber becomes
+the sole Logseq gateway; Trama and Brain consume only published Plumber public
+contracts and remain unaware of Parser and source adapters. Do not implement or
+claim that decision until Plumber publishes its ADR and canonical contract.
+Until then, `trama.logseq.read/v1` is historical experimental source, not future
+contract authority.
 
-Execute one cross-repository mutating slice at a time. The owning repository
-changes and merges first; each consumer follows in a separate short-lived
-branch pinned to the exact owner commit, contract/profile version, and fixture
-digest. Read-only research and disjoint documentation may run in parallel.
+Preserve Clean Architecture R1 enforcement. Execute one cross-repository
+mutating slice at a time: owner first, then a separately pinned consumer branch.
+Read-only research and non-overlapping documentation may run in parallel.
 
-Preserve the
-[ecosystem responsibility contract](../contracts/ECOSYSTEM_RESPONSIBILITY_AND_CHANGE_CONTRACT.md):
-Trama owns Community product, Nodi, public DTOs, host lifecycle, and OG/DB host
-adapters; Parser owns deterministic Markdown semantics and its package-root
-API; Plumber owns memory/search, daemon and agent surfaces, existing OG/Shadow
-behavior, and the consumer session port; Brain remains a separate optional
-product; Knowledge is a read-only projection, never runtime authority.
-
-Proceed in this order: accept contract authority; make Clean Architecture
-enforceable under issue #9; freeze Plumber's consumer evidence policy; execute
-the Trama official-host capability spike; record D1 transport or stop; freeze
-contract/security profiles; implement the single Trama adapter and shell; add
-Plumber's separate session consumer; qualify exact versions; deliver one Nodi
-read-only vertical; prepare Community distribution.
-
-The current proven scope remains the exact synthetic OG qualification at
-commit `862c5c89157f28c1985cde6145fc2c8af04a70b4`: graph identification, one
-page read, and one complete ordered subtree. Do not infer user-graph, DB-host,
+Current historical evidence at `862c5c89157f28c1985cde6145fc2c8af04a70b4`
+qualifies only synthetic OG `graph.identify`, `page.read`, and complete ordered
+`block.subtree.read.complete`. Do not infer current-head, user-graph, DB-host,
 UI/Nodi, distribution, performance, network, event, Shadow, synchronization,
 write, export, or recovery support.
 
-Stop for explicit authority before commit, push, PR, issue/milestone/project
-mutation, merge, release, publication, external artifact download/execution,
-user or private data access, graph/DB writes, events, DB-source Shadow, Brain
-integration, Pro/commercial source, entitlement, pricing, or licence changes.
-External copyright-bearing contributions remain merge-blocked until a
-lawyer-reviewed contributor agreement or equivalent grant exists.
+Hard-stop before Brain or Pro/private source, DB writes, events, Shadow,
+synchronization, export, recovery, commercial-rights decisions, releases, or
+external copyright-bearing contributions. Each needs an accepted contract,
+separate authorization, and executable evidence. External copyright-bearing
+contributions remain merge-blocked until a lawyer-reviewed contributor agreement
+or equivalent grant exists. Commit, push, PR, merge, publication, and release
+remain separate authorization gates.
 
-At every interruption, record repository/worktree, branch, exact HEAD and base,
-dirty state, milestone owner, checks, digests, negative results, unproven claims,
-next dependency, and pending authorization. This goal points to the canonical
-roadmap and must never redefine or weaken it.
+At interruption, record repository/worktree, branch, exact HEAD and base, dirty
+state, milestone owner, checks, digests, negative results, unproven claims, next
+dependency, and pending authorization.

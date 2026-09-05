@@ -1,12 +1,12 @@
 # Parser Compatibility for Logseq Read Contract v1
 
-> **Status:** implemented for the bounded synthetic OG slice. Exact hosted
-> qualification uses Parser `1.8.2`; no user graph, DB, or broader Parser
-> compatibility is claimed.
+> **Status:** historical experimental direct-Parser profile with bounded bridge
+> source. It does not qualify current-head or production interoperability. The
+> proposed Plumber-gateway design forbids future Trama-to-Parser integration.
 
 ## Purpose
 
-This profile defines how a Trama producer may use
+This profile records how the bounded historical Trama producer used
 `logseq-matryca-parser` for the OG Markdown branch of
 `trama.logseq.read/v1`. Parser output helps interpret authoritative Markdown;
 it does not transfer graph authority to Parser or create any DB capability.
@@ -17,9 +17,9 @@ The first candidate profile is:
 
 | Component | Candidate range | Status |
 | --- | --- | --- |
-| Logseq Matryca Parser | `>=1.7.1,<2.0.0` | accepted range; exact synthetic qualification uses `1.8.2` |
-| Contract line | `trama.logseq.read/v1` | implemented for the bounded synthetic slice |
-| Logseq source mode | `og_markdown` | qualified only for owned synthetic fixtures |
+| Logseq Matryca Parser | `>=1.7.1,<2.0.0` | historical candidate range; production interoperability unqualified |
+| Contract line | `trama.logseq.read/v1` | historical bounded source; not published |
+| Logseq source mode | `og_markdown` | synthetic read-only profile only |
 
 Parser `v1.8.2` is the locked public artifact in the exact synthetic
 qualification. This does not qualify every version in the declared range.
@@ -50,9 +50,9 @@ result. It must not convert parse ambiguity into guessed graph content.
 
 ## Evidence and future gate
 
-The evidence record under
-`docs/spikes/evidence/python-read-contract-v1/862c5c89157f28c1985cde6145fc2c8af04a70b4.md`
-binds the current synthetic OG qualification. A new Parser version or broader
-input profile must separately prove accepted graph/page/subtree reads,
-source-location provenance, parse failure handling, determinism, containment,
-and rejection outside its declared range.
+Bounded bridge and synthetic fixtures exist before the resolved `origin/main`
+`70fc14c27b11e31e8f557fd70684b6a83933e7d6`; baseline evidence at `862c5c8`
+covers only initial synthetic OG operations and rejection cases. This document
+does not authorize a new Trama Parser profile. The future gateway, if accepted,
+belongs to Plumber and needs its published ADR, canonical contract, and its own
+exact-version evidence.

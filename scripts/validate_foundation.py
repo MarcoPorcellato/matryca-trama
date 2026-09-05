@@ -35,6 +35,8 @@ REQUIRED = {
     "docs/decisions/ADR-0002-TRAMA_BRAIN_PRODUCT_BOUNDARY.md",
     "docs/decisions/ADR-0003-SOURCE_AVAILABLE-COMMERCIAL_BOUNDARY.md",
     "docs/specs/MATRYCA_TRAMA_PUBLIC_MONOREPO_FOUNDATION.md",
+    "docs/specs/MATRYCA_TRAMA_DELIVERY_PROGRAM.md",
+    "docs/status/CLAIM_LEDGER.md",
 }
 FORBIDDEN_PARTS = {"matryca_core", "repomix-output.xml"}
 FORBIDDEN_SUFFIXES = {".bin", ".db", ".gguf", ".lbug", ".safetensors", ".sqlite"}

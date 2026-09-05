@@ -1,13 +1,14 @@
 # Logseq Read Contract v1
 
-> **Status:** implemented and qualified only for the exact owned synthetic OG
-> profile recorded below. No user graph, Logseq DB host, or broader runtime is
-> qualified.
+> **Status:** historical experimental Trama specification and bounded Python
+> source. It is not a published API, current-head conformance claim, or the
+> authority for future integration. The proposed Plumber ADR and canonical
+> contract must be published before a future consumer contract exists.
 
 ## Purpose
 
 `trama.logseq.read/v1` defines a minimal read-only interchange boundary between
-a host-facing Matryca Trama producer and public consumers. It preserves
+a historical bounded Matryca Trama producer and test consumers. It preserves
 native Logseq source authority and makes incompatibility or missing provenance
 an explicit result rather than an inferred success.
 
@@ -155,13 +156,15 @@ An absent version, unselected host route, or unsupported source mode is
 
 ## Conformance evidence and next gate
 
-The public Python packages and conformance suite implement this contract for
-owned synthetic OG fixtures. Exact hosted evidence at commit
-`862c5c89157f28c1985cde6145fc2c8af04a70b4` records accepted reads and
-rejection of unknown version, missing provenance, wrong authority, incomplete
-subtree, and private dependency.
+The bounded Python source and synthetic conformance suite predate the resolved
+`origin/main` merge parent `70fc14c27b11e31e8f557fd70684b6a83933e7d6`. Exact hosted evidence
+at `862c5c89157f28c1985cde6145fc2c8af04a70b4` records only synthetic OG reads
+and rejection of unknown version, missing provenance, wrong authority,
+incomplete subtree, and private dependency. It does not qualify this head, a
+user graph, Logseq host, DB, writes, events, Shadow, synchronization, export,
+recovery, UI, performance, distribution, or network behavior.
 
-That evidence does not qualify a user graph, Logseq DB host, new consumer
-version, application, or platform not recorded there. Every new profile must
-repeat the applicable positive and negative gates and bind exact producer,
-consumer, host, Parser, fixture, and result identities.
+No new profile may treat this historical Trama line as the future contract. The
+proposed design requires a published Plumber ADR and canonical Plumber contract;
+then every new profile needs its own exact producer, consumer, host, Parser,
+fixture, and result evidence.

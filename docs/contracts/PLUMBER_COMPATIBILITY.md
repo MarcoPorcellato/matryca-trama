@@ -1,13 +1,14 @@
 # Plumber Compatibility for Logseq Read Contract v1
 
-> **Status:** Trama contains a synthetic reference admission helper for the
-> declared stable anchor. No live Trama--Plumber runtime, Plumber session port,
-> or current-prerelease compatibility is qualified.
+> **Status:** historical Trama-side synthetic helper and candidate consumer
+> profile. No live Trama--Plumber runtime, Plumber session port, or
+> cross-repository production integration is qualified. The proposed Plumber
+> gateway is not accepted until its ADR and canonical contract are published.
 
 ## Purpose
 
-This profile defines the future public consumer boundary between Matryca Trama
-and Matryca Plumber. Trama produces host-facing read results through
+This profile defines the public consumer boundary between Matryca Trama and
+Matryca Plumber. Bounded Trama source produces read results through
 `trama.logseq.read/v1`; Plumber consumes only those declared public results and
 maps them to its own consumer-side ports and retrieval behavior.
 
@@ -17,8 +18,8 @@ maps them to its own consumer-side ports and retrieval behavior.
 | --- | --- | --- |
 | Matryca Plumber | `v2.0.0` | public stable anchor; Trama compatibility unqualified |
 | Logseq Matryca Parser | `>=1.7.1,<2.0.0` | Plumber-supported metadata range; Trama compatibility unqualified |
-| Contract line | `trama.logseq.read/v1` | implemented synthetic reference profile |
-| Logseq source mode | `og_markdown` | qualified only through Trama-owned synthetic fixtures |
+| Contract line | `trama.logseq.read/v1` | historical bounded source; not published |
+| Logseq source mode | `og_markdown` | synthetic initial consumer profile |
 
 Current Plumber source at
 `d347d43dad090586b10a77a53c4e0c8fd6da8e15` reports `2.0.1rc3`; the Trama
@@ -48,10 +49,11 @@ or partial result as a successful Trama graph read.
 
 ## Future cross-repository evidence gate
 
-Plumber must first publish its consumer evidence profile while referencing,
-not copying, this Trama contract. A later cross-repository suite must prove
-version negotiation, accepted provenance, unknown-version rejection,
-missing-provenance rejection, wrong-authority rejection, complete-subtree
-preservation, and unchanged OG/Shadow behavior. It must bind every result to
-exact Trama, Plumber, Parser, profile, and fixture versions. This document does
-not claim that a live integration exists.
+Bounded local consumer tests predate the resolved `origin/main`
+`70fc14c27b11e31e8f557fd70684b6a83933e7d6`; baseline evidence at `862c5c8`
+covers those historical synthetic cases only. Plumber must first publish its
+ADR, canonical public contract, schemas, fixtures, and compatibility policy.
+A later suite must bind exact Plumber, Trama, Parser, profile, and fixture
+versions and prove version negotiation, provenance and authority rejection,
+complete-subtree preservation, and unchanged Plumber OG/Shadow behavior. This
+document does not claim that any such integration or qualification exists.

@@ -1,11 +1,16 @@
 # Matryca Trama Public Monorepo Foundation
 
-> **Status:** active canonical specification
+> **Status:** accepted historical Phase 0 specification
 >
 > **Owner:** Marco Porcellato
 >
 > **Anchor:** repository created on 2026-08-31 from clean public history;
 > verify live `origin/main` before every delivery milestone.
+
+Current implementation, qualification, and milestone status is governed by the
+[Matryca Trama Delivery Program](MATRYCA_TRAMA_DELIVERY_PROGRAM.md). This file
+preserves the foundation decision and must not be read as a current capability
+ledger.
 
 ## Purpose and falsifiable outcome
 
@@ -62,9 +67,11 @@ matryca-trama/
   .github/
 ```
 
-Names describe intended boundaries, not a claim that every package already
-exists. New packages require an API, ownership, licence, tests, and
-documentation before publication.
+`contracts`, `trama-core`, `parser-bridge`, `plumber-bridge`, and
+`logseq-og-adapter` now exist as bounded Python source. `apps`, `nodi`, and
+`logseq-db-adapter` remain absent. Existing source is not automatically a
+published or qualified capability. New packages require an API, ownership,
+licence, tests, and documentation before publication.
 
 ## Non-negotiable invariants
 

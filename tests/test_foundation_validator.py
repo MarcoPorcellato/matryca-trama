@@ -34,6 +34,8 @@ REQUIRED = {
     "docs/decisions/ADR-0002-TRAMA_BRAIN_PRODUCT_BOUNDARY.md",
     "docs/decisions/ADR-0003-SOURCE_AVAILABLE-COMMERCIAL_BOUNDARY.md",
     "docs/specs/MATRYCA_TRAMA_PUBLIC_MONOREPO_FOUNDATION.md",
+    "docs/specs/MATRYCA_TRAMA_DELIVERY_PROGRAM.md",
+    "docs/status/CLAIM_LEDGER.md",
 }
 
 
@@ -119,6 +121,34 @@ class FoundationValidatorTests(unittest.TestCase):
 
             self.assertNotEqual(result.returncode, 0)
             self.assertIn("missing required file: .github/CODEOWNERS", result.stderr)
+
+    def test_missing_delivery_program_is_rejected(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            create_minimum_repository(root)
+            (root / "docs" / "specs" / "MATRYCA_TRAMA_DELIVERY_PROGRAM.md").unlink()
+
+            result = run_validator(root)
+
+            self.assertNotEqual(result.returncode, 0)
+            self.assertIn(
+                "missing required file: docs/specs/MATRYCA_TRAMA_DELIVERY_PROGRAM.md",
+                result.stderr,
+            )
+
+    def test_missing_claim_ledger_is_rejected(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            create_minimum_repository(root)
+            (root / "docs" / "status" / "CLAIM_LEDGER.md").unlink()
+
+            result = run_validator(root)
+
+            self.assertNotEqual(result.returncode, 0)
+            self.assertIn(
+                "missing required file: docs/status/CLAIM_LEDGER.md",
+                result.stderr,
+            )
 
     def test_missing_required_notice_is_rejected(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
