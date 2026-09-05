@@ -81,11 +81,12 @@ exactly one supported official-host route or records `capability_no_go` or
 
 ### Phase 3 — Trama Plumber consumer profile
 
-After Plumber publishes the contract and D1 has a supported outcome, Trama may
-implement a Plumber client adapter behind its internal domain port. Trama does
-not import Parser or implement Logseq OG/DB adapters. Existing experimental
-adapters remain historical until explicitly deprecated or removed. A DB graph
-never falls back to Markdown.
+After Plumber publishes the contract, Trama may implement a Plumber client adapter
+behind its internal domain port. A qualified `og_markdown` Plumber profile may
+support the Trama consumer independently of D1. A `db_native` consumer profile
+requires D1 outcome `supported`. Trama does not import Parser or implement Logseq
+OG/DB adapters. Existing experimental adapters remain historical until explicitly
+deprecated or removed. A DB graph never falls back to Markdown.
 
 Evidence: stable graph binding, one page, one complete ordered subtree,
 explicit failures, bounded lifecycle, zero forbidden state change, and exact

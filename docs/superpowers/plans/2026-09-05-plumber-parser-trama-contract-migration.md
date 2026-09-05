@@ -260,8 +260,12 @@ Task 1 merges.
 - Modify: `docs/contracts/README.md`
 - Modify: `docs/standards/CLEAN_ARCHITECTURE.md`
 - Modify: `docs/ROADMAP.md`
+- Modify: `docs/specs/MATRYCA_TRAMA_DELIVERY_PROGRAM.md`
+- Modify: `docs/ARCHITECTURE.md`
+- Modify: `docs/superpowers/plans/2026-09-01-logseq-read-contract-and-adapter.md`
 - Modify: `README.md`
-- Modify: `tests/contracts/test_workflow_contract.py`
+- Create: `tests/contracts/test_cross_repository_authority.py`
+- Modify: `tests/test_foundation_validator.py`
 - Modify: `tests/architecture/test_dependency_boundaries.py`
 
 **Interfaces:**
@@ -271,8 +275,9 @@ Task 1 merges.
 
 - [ ] **Step 1: Add failing policy tests**
 
-Add assertions that the ecosystem contract rejects old ownership and the
-architecture map has no admitted direct Parser or OG adapter after migration:
+Add assertions that the ecosystem contract rejects old ownership, the delivery
+program and architecture classify the direct Trama route as historical evidence,
+and the roadmap does not couple an `og_markdown` consumer to the DB decision:
 
 ```python
 assert "Matryca Plumber | sole Logseq gateway" in ecosystem
@@ -280,6 +285,10 @@ assert "Trama to Parser" in prohibited_dependencies
 assert "Trama to Logseq storage or host APIs" in prohibited_dependencies
 assert "trama-parser-bridge" not in migrated_architecture
 assert "trama-logseq-og-adapter" not in migrated_architecture
+assert "Matryca Plumber is the sole future Logseq gateway" in delivery_program
+assert "OG Markdown -> Parser -> Plumber -> Trama / Brain" in architecture
+assert "og_markdown" in roadmap
+assert "db_native" in roadmap
 ```
 
 Keep the last two assertions in a migration-specific fixture until Task 6;
@@ -290,8 +299,9 @@ current live packages remain historical until their replacement is merged.
 Run:
 
 ```bash
-rtk uv run --all-packages python -m unittest tests.contracts.test_workflow_contract -v
+rtk uv run --all-packages python -m unittest tests.contracts.test_cross_repository_authority -v
 rtk uv run --all-packages python -m unittest tests.architecture.test_dependency_boundaries -v
+rtk uv run --all-packages python -m unittest tests.test_foundation_validator -v
 ```
 
 Expected: FAIL because accepted Plumber ownership and migration fixture do not
@@ -301,10 +311,13 @@ yet exist.
 
 State that `trama.logseq.read/v1` is historical experimental producer evidence,
 not a future contract authority; Plumber owns `plumber.*`, source selection,
-OG Parser adapter, official DB host adapter, and public schemas. Preserve the
-historical tests and facts until Task 6. Correct diagrams to show
-`OG Markdown -> Parser -> Plumber -> Trama/Brain` and
-`DB official host -> Plumber -> Trama/Brain`.
+OG Parser adapter, official DB host adapter, and public schemas. Update the
+canonical delivery program and architecture, mark the 2026-09-01 plan
+Superseded/Historical/Non-operative, and correct diagrams to show
+`OG Markdown -> Parser -> Plumber -> Trama / Brain` and
+`Logseq DB official host -> Plumber -> Trama / Brain`. Preserve historical tests
+and facts until Task 6. Permit a qualified `og_markdown` consumer profile without
+D1; require D1 `supported` only for `db_native`.
 
 - [ ] **Step 4: Run Trama policy and foundation checks**
 
@@ -314,6 +327,9 @@ Run:
 rtk uv run --all-packages python scripts/validate_architecture.py
 rtk uv run --all-packages python -m unittest discover -s tests/architecture -v
 rtk uv run --all-packages python -m unittest discover -s tests/contracts -v
+rtk uv run --all-packages python -m unittest discover -s tests/containment -v
+rtk uv run --all-packages python -m unittest tests.integration.test_plumber_consumer -v
+rtk uv run --all-packages python -m unittest tests.test_foundation_validator -v
 rtk uv run --all-packages python scripts/validate_foundation.py
 rtk git diff --check
 ```
@@ -323,7 +339,7 @@ Expected: all exit `0`; no package is removed in this documentation PR.
 - [ ] **Step 5: Commit only Trama authority adoption**
 
 ```bash
-rtk git add README.md docs tests/architecture/test_dependency_boundaries.py tests/contracts/test_workflow_contract.py
+rtk git add README.md docs tests/architecture/test_dependency_boundaries.py tests/contracts/test_cross_repository_authority.py tests/test_foundation_validator.py
 rtk git commit -m "docs(architecture): adopt Plumber gateway boundary"
 ```
 

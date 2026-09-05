@@ -1,70 +1,78 @@
 # Matryca Trama Architecture
 
-Matryca Trama is a public source-available Community monorepo for a Logseq
-sidecar. Its architecture keeps source authority, product boundaries, licensing,
-and optional integrations explicit.
+Matryca Trama is a public source-available Community monorepo for a local-first
+graph product. Its architecture keeps source authority, product boundaries,
+licensing, and optional integrations explicit.
 
 ## Current implementation status
 
 At `9905e8a`, bounded Python source exists for contracts, core behavior, Parser
-and Plumber bridges, and a synthetic OG adapter. Qualification remains bound to
+and Plumber bridges, and a synthetic OG adapter. This is a historical experimental
+implementation, not the future gateway authority. Qualification remains bound to
 the `862c5c8` baseline and only to synthetic fixtures plus
 `graph.identify`, `page.read`, and complete ordered
 `block.subtree.read.complete`. No evidence record qualifies `9905e8a` as the
 current head; matching runtime source does not replace exact-head evidence.
 `apps`, Nodi UI, a DB adapter, writes, events, Shadow, synchronization, export,
-recovery, distribution, and network behavior remain unimplemented or
-unsupported. Current status is governed by the
+recovery, distribution, and network behavior remain unimplemented or unsupported.
+No current source proves a migrated Plumber client or official host integration.
+Current status is governed by the
 [delivery program](specs/MATRYCA_TRAMA_DELIVERY_PROGRAM.md).
 
-## Layers
+## Future source-to-product boundary
+
+The [cross-repository contract roadmap](superpowers/specs/2026-09-05-cross-repository-contract-roadmap.md)
+is proposed pending Plumber's owner ADR and canonical public contract. It defines
+the future direction only; it does not alter or qualify current runtime code.
 
 ```text
-Logseq OG Markdown          Logseq DB native store
-        |                            |
-  OG adapter                  DB adapter
-        +------------+---------------+
-                     |
-            versioned contracts
-                     |
-             trama-core ---- Nodi experience
-                     |
-          apps, exports, integrations
+OG Markdown -> Parser -> Plumber -> Trama / Brain
+Logseq DB official host -> Plumber -> Trama / Brain
 ```
 
-Logseq OG Markdown files remain authoritative for OG workflows. The native
-local database remains authoritative for Logseq DB workflows. Adapters
-normalize only supported representations into documented contracts, preserve
-provenance, and report unsupported behavior instead of guessing. An export or
-derived index never becomes an implicit replacement authority.
+Matryca Plumber is the sole future Logseq gateway and canonical public-contract
+owner. It owns source selection, the OG Parser adapter, any official DB host
+adapter, canonical `plumber.*` schemas, and transport-neutral contract semantics.
+Trama is a consumer: it does not import Parser or Logseq storage/host APIs, and it
+does not create a competing source adapter or wire contract. Brain follows the same
+consumer boundary and is unaware of Parser.
+
+## Historical experimental layers
+
+```text
+historical synthetic OG fixture -> Trama experimental adapter
+                                      |
+                         `trama.logseq.read/v1`
+                                      |
+                           historical bridges/tests
+```
+
+This retained source records an owned synthetic baseline. It is not an admitted
+future implementation path. Logseq OG Markdown files remain authoritative for OG
+workflows; the native local database remains authoritative for Logseq DB workflows.
+An export or derived index never becomes an implicit replacement authority.
 
 ## Repository boundaries
 
-- `trama-core`: Community domain behavior and stable public APIs.
-- `contracts`: versioned interfaces shared with Parser and Plumber.
-- `parser-bridge`: integration boundary for the public Parser capability.
-- `plumber-bridge`: contract-mediated integration boundary for Plumber consumer
-  capabilities. It never imports Plumber internals or becomes a second
-  authority for graph content.
-- `logseq-og-adapter`: explicit Logseq OG support.
-- `logseq-db-adapter`: explicit Logseq DB support, initially read-only until a
-  later ADR proves safe write, export, and recovery semantics.
+- `trama-core`: Community domain behavior and stable product use cases.
+- future Plumber client: a Trama-owned outer adapter that consumes published
+  Plumber contracts through an internal port.
 - `nodi`: user-facing knowledge companion and presentation model.
 - `apps`: thin compositions of packages; business rules belong below this layer.
 
-Matryca Brain is a separate product and repository. Trama may depend on public
-contracts, never on Brain-private source. A Plumber bridge and any future Brain
-bridge are independently versioned public boundaries; neither silently widens
-the other. Pro source is excluded from this foundation.
+The current `contracts`, `parser-bridge`, `plumber-bridge`, and synthetic adapter
+packages are preserved historical experimental components. They remain available
+for their documented synthetic evidence but are not authority for future source
+acquisition or public Logseq wire schemas. Matryca Brain is a separate product and
+repository. Trama may depend on public contracts, never on Brain-private source.
+Pro source is excluded from this foundation.
 
-## Initial Logseq read boundary
+## Historical experimental read boundary
 
-The first adapter contract is deliberately narrow: identify a graph, read one
-page, and read one complete ordered block subtree. It must state the native
-authority, adapter capability set, source binding, producer version, and
-unsupported-condition result for every response. The OG adapter reads
-authoritative Markdown; the DB adapter reads only through a later-qualified
-official Logseq host surface. A cached export or derived projection is never
+The retained `trama.logseq.read/v1` experiment is deliberately narrow: identify a
+graph, read one page, and read one complete ordered block subtree for owned
+synthetic OG fixtures. It must not be presented as a supported OG or DB route, nor
+as a future Plumber contract. A cached export or derived projection is never
 silently substituted for either source.
 
 Events, subscriptions, Shadow acceleration, synchronization, mutation, and

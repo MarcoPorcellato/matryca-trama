@@ -12,6 +12,21 @@ This document is a delivery contract, not a product announcement. It converts th
 current public Trama foundation into a sequence of bounded, falsifiable milestones.
 It never upgrades a planned boundary into an implemented or qualified feature.
 
+### Future cross-repository gateway direction
+
+The proposed cross-repository contract roadmap is not a runtime claim and remains
+subject to the owning Plumber ADR and canonical public contract. If accepted,
+**Matryca Plumber is the sole future Logseq gateway and canonical public-contract
+owner.** **Trama is a future Plumber consumer; it does not own future source
+adapters or Logseq wire contracts.** Parser remains the pure OG parsing provider
+behind Plumber; Brain is a separate Plumber consumer and does not know Parser.
+
+The historical Trama `trama.logseq.read/v1`, Parser/Plumber bridges, and synthetic
+OG adapter remain preserved source and evidence, not future authority. Historical
+experimental Trama adapters remain evidence only until a separately reviewed,
+repository-local deprecation or removal change. Nothing in this direction proves
+that a Plumber contract, host transport, DB capability, or Trama client exists.
+
 ## 1. Claim discipline
 
 Every statement in plans, issues, release notes, and handoffs uses one of these
@@ -31,14 +46,16 @@ does not prove support on an untested host, Logseq mode, or device.
 
 ## 2. Scope, authority, and invariants
 
-Trama is a public, source-available Community monorepo for a local-first Logseq
-sidecar and Nodi experience. Logseq OG Markdown remains authoritative for OG;
-the native local database remains authoritative for DB. Exports, caches, indexes,
+Trama is a public, source-available Community monorepo for a local-first graph
+experience and Nodi. Logseq OG Markdown remains authoritative for OG; the native
+local database remains authoritative for DB. Exports, caches, indexes,
 visualizations, and AI chunks are derived views and never implicit substitutes.
 
-In scope: public contracts, deterministic Community core, explicit OG and initially
-read-only DB adapters, Parser and Plumber bridges, Nodi, reproducible Community
-artifacts, and safe contributor workflows. Pro source, Brain private source,
+In scope: deterministic Community product behavior, a future public Plumber client
+boundary, Nodi, reproducible Community artifacts, and safe contributor workflows.
+Future source selection, OG Parser adaptation, official DB host adaptation, and
+canonical public Logseq schemas belong to Plumber, subject to its accepted ADR and
+evidence. Pro source, Brain private source,
 entitlement enforcement, paid connectors, hosted accounts, telemetry by default,
 commercial checkout, synchronization, events, Shadow acceleration, mutation,
 write recovery, and unsupported host surfaces are excluded until separately
@@ -107,41 +124,49 @@ determinism, and no-private-import checks pass on that revision; the evidence bi
 the qualified and evidence revisions without circular claims. No user graph, host,
 DB, UI, performance, network, or distribution support is implied.
 
-### V2 — Contract freeze
+### V2 — Plumber contract freeze
 
-Freeze `trama.logseq.read/v1` identifiers, semantic ranges, provenance envelopes,
-capabilities, fixture ownership, compatibility matrices, and failure semantics.
-Reject absent versions, wrong authority, incomplete provenance, unsupported
-operations, and private dependencies. Exit: public-dependency contract tests pass
-and unsupported profiles fail closed.
+Plumber first freezes its `plumber.*` identifiers, semantic ranges, provenance
+envelopes, capabilities, fixture ownership, compatibility matrices, and failure
+semantics. Trama records only its consumer profile. Reject absent versions, wrong
+authority, incomplete provenance, unsupported operations, and private dependencies.
+The historical `trama.logseq.read/v1` contract remains experimental evidence and
+cannot be adopted as the future public authority. Exit: Plumber public-dependency
+contract tests pass and unsupported profiles fail closed.
 
 ### V3 — Parser public profile
 
-Qualify only documented package-root Parser APIs against exact released versions.
-Preserve native OG authority, source locations, hierarchy, order, and diagnostics.
-Exit: accepted and rejected version profiles, parse failures, incomplete locations,
-and fixture digests are bound to exact Trama and Parser revisions.
+Qualify only documented package-root Parser APIs through Plumber against exact
+released versions. Preserve native OG authority, source locations, hierarchy,
+order, and diagnostics. Trama and Brain do not import Parser. Exit: accepted and
+rejected version profiles, parse failures, incomplete locations, and fixture digests
+are bound to exact Plumber and Parser revisions.
 
-### V4 — Plumber consumer profile
+### V4 — Trama consumer profile
 
-Qualify Plumber as consumer of validated public Trama envelopes. Plumber owns its
-mapping and orchestration; Trama owns host acquisition and provenance. Exit:
-cross-repository tests bind exact Trama, Parser, and Plumber revisions and reject
-private imports, wrong authority, missing provenance, and unsupported outcomes.
+Qualify Trama as a consumer of validated public Plumber envelopes. Plumber owns
+source selection, OG Parser adaptation, official DB host adaptation, provenance,
+and canonical public contract semantics. Trama owns its product mapping and Nodi
+experience. Exit: cross-repository tests bind exact Trama, Parser, and Plumber
+revisions and reject private imports, wrong authority, missing provenance, and
+unsupported outcomes.
 
 ### V5 — Operational OG profile
 
-Expand beyond synthetic contract vectors through public, sanitized OG fixture
-classes while keeping Markdown authoritative and reads contained. Exit: supported
-graph/page/subtree cases, ambiguous inputs, path escape attempts, and deterministic
-rebuilds pass. No private vault content may enter evidence.
+Plumber expands beyond synthetic contract vectors through its Parser-backed,
+public, sanitized OG fixture classes while keeping Markdown authoritative and reads
+contained. Trama consumes only the qualified `og_markdown` Plumber profile. Exit:
+supported graph/page/subtree cases, ambiguous inputs, path escape attempts, and
+deterministic rebuilds pass. No private vault content may enter evidence.
 
 ### V6 — Logseq DB read-only profile
 
-Select an official, versioned Logseq host route through a focused compatibility
-spike. Deliver only capability-probed read-only access; direct SQLite coupling,
-implicit export fallback, writes, watchers, events, and recovery remain absent.
-Exit: native DB provenance and unsupported cases are proven on named host versions.
+Plumber selects an official, versioned Logseq host route through a focused
+compatibility spike. Deliver only capability-probed read-only access; direct SQLite
+coupling, implicit export fallback, writes, watchers, events, and recovery remain
+absent. A Trama `db_native` consumer profile is blocked unless Plumber's Decision
+D1 outcome is `supported`. Exit: native DB provenance and unsupported cases are
+proven on named host versions.
 
 ### V7 — Nodi vertical slice
 
@@ -185,13 +210,18 @@ UI affordance, or configuration flag alone.
 
 ## 6. Cross-repository rules
 
-Parser remains the authoritative parsing capability; Plumber remains the governed
-consumer/orchestration boundary; Trama owns the sidecar, adapters, contracts, and
-Nodi; Brain remains a separate product and repository. Bridges depend only on
-versioned public contracts, publish compatibility ranges, preserve provenance,
-and reject incompatible or private implementations. A contract change crossing
-repositories requires fixture updates, compatibility tests, an ADR or ADR update,
-and coordinated evidence. No repository may silently become a second authority.
+Parser remains the authoritative parsing capability. Plumber is the sole future
+Logseq gateway and canonical public-contract owner: it owns source selection, the
+OG Parser adapter, any official DB host adapter, public schemas, and transport-
+neutral contract semantics. Trama owns its product mapping and Nodi; Brain remains
+a separate product and Plumber consumer. Historical experimental Trama adapters
+remain evidence only and must not be extended into a parallel gateway.
+
+Bridges depend only on versioned public contracts, publish compatibility ranges,
+preserve provenance, and reject incompatible or private implementations. A contract
+change crossing repositories requires fixture updates, compatibility tests, an ADR
+or ADR update, and coordinated evidence. No repository may silently become a second
+authority.
 
 ## 7. GitHub, CI, and release security
 

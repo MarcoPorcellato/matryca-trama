@@ -68,6 +68,35 @@ def create_minimum_repository(root: Path) -> None:
 
 
 class FoundationValidatorTests(unittest.TestCase):
+    def test_canonical_authority_docs_guard_gateway_and_db_profile_boundary(self) -> None:
+        delivery_program = " ".join(
+            (
+                REPOSITORY / "docs" / "specs" / "MATRYCA_TRAMA_DELIVERY_PROGRAM.md"
+            )
+            .read_text(encoding="utf-8")
+            .split()
+        )
+        roadmap = " ".join(
+            (REPOSITORY / "docs" / "ROADMAP.md").read_text(encoding="utf-8").split()
+        )
+
+        self.assertIn(
+            "Matryca Plumber is the sole future Logseq gateway and canonical public-contract owner.",
+            delivery_program,
+        )
+        self.assertIn(
+            "A qualified `og_markdown` Plumber profile may support the Trama consumer independently of D1.",
+            roadmap,
+        )
+        self.assertIn(
+            "A `db_native` consumer profile requires D1 outcome `supported`.",
+            roadmap,
+        )
+        self.assertNotIn(
+            "After Plumber publishes the contract and D1 has a supported outcome",
+            roadmap,
+        )
+
     def test_repository_has_no_self_referential_false_positive(self) -> None:
         result = run_validator(REPOSITORY)
 
