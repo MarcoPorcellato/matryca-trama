@@ -5,8 +5,8 @@
 
 ## Purpose
 
-This record pins one reviewed upstream source state so maintainers can compare a
-future released Plumber artifact against known bytes. It must not create a
+This record pins reviewed upstream source checkpoints so maintainers can compare
+a future released Plumber artifact against known bytes. It must not create a
 runtime adapter, dependency, client, package import, transport, endpoint, CLI,
 MCP tool, UI, Parser, Logseq, filesystem, or DB dependency.
 
@@ -40,9 +40,32 @@ The observed Trama profile identifies itself as
 establishes a release, runtime support, capability negotiation, host support,
 or compatibility qualification.
 
+## Later source checkpoints
+
+These later observations prove source implementation evidence and test-only
+capability-policy evidence. This progression does not supersede the original
+catalogue pin and does not establish a distributable consumer artifact.
+
+| Evidence | Value |
+| --- | --- |
+| OG topology runtime merge | Plumber PR #577, merged 2026-09-06 |
+| OG topology runtime commit / tree | `405ec69582b3ca240d4747ef9c89b79e0073b545` / `67ccefa91f8b4343c2d5821edae37c7c9aacd805` |
+| Topology contract path | `docs/contracts/plumber-graph-topology-v1.md` |
+| Topology contract Git blob / SHA-256 | `1083278b94a089f0593ac660bf230393fb9b94ad` / `1a3befbaf9d5442dc186963a374628f758714141f807192d2eee0eed5c4f27dc` |
+| DB capability-policy merge | Plumber PR #578, merged 2026-09-06 |
+| Current observed commit / tree | `62e1abb6c6177c3063e0dd87c43510190fd9d24a` / `5ceacf991825334ddeb3d825e72acb5c48f3710c` |
+| DB capability-policy manifest path | `tests/compatibility/logseq_db_native/manifest.json` |
+| DB capability-policy manifest Git blob / SHA-256 | `191995b71f03477d175be8f320c8a94419c50a7c` / `9c8f0ac2584d89dda396b9830a91094b8d83dc57ae4f23036eec05e868375627` |
+
+The runtime checkpoint shows an internal bounded OG implementation behind
+Plumber's session boundary. It adds no released transport or consumer package.
+The DB checkpoint contains only synthetic rejected-candidate fixtures and an
+unbound capability-discovery policy. It is not a production DB adapter and does
+not establish Logseq DB support.
+
 ## Release hold
 
-Git object identity makes this source observation reproducible, but not
+Git object identity makes these source observations reproducible, but not
 distributable. It is insufficient for a Trama dependency pin or a runtime
 adapter because it has no released artifact provenance, supported version
 matrix, published schema/fixture/TCK bundle, or release-level compatibility

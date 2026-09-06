@@ -8,10 +8,11 @@ the accepted [Plumber gateway adoption](../decisions/ADR-0006-PLUMBER-GATEWAY-AD
 assigns future public contract ownership to Plumber. A canonical Plumber
 artifact and immutable consumer profile remain unpublished.
 
-[Plumber Source Admission Record](PLUMBER_SOURCE_ADMISSION.md) pins one
-unreleased Plumber source observation by commit, tree, and content digests. It
-is static evidence only: it copies no upstream contract bytes and does not
-qualify a Trama dependency or runtime adapter.
+[Plumber Source Admission Record](PLUMBER_SOURCE_ADMISSION.md) pins the initial
+unreleased consumer catalogue plus later OG runtime and DB capability-policy
+source checkpoints by commit, tree, and content digests. It is static evidence
+only: it copies no upstream contract bytes and does not qualify a Trama
+dependency or runtime adapter.
 
 ## Contract set
 
@@ -22,8 +23,8 @@ qualify a Trama dependency or runtime adapter.
   Parser profile and provenance requirements.
 - [Plumber Compatibility](PLUMBER_COMPATIBILITY.md) records the historical
   consumer helper and a future publication gate for Matryca Plumber.
-- [Plumber Source Admission Record](PLUMBER_SOURCE_ADMISSION.md) records one
-  unreleased static Plumber source observation without adopting its bytes or
+- [Plumber Source Admission Record](PLUMBER_SOURCE_ADMISSION.md) records
+  unreleased static Plumber source checkpoints without adopting their bytes or
   creating a consumer runtime claim.
 - [Ecosystem Responsibility and Change Contract](ECOSYSTEM_RESPONSIBILITY_AND_CHANGE_CONTRACT.md)
   is a superseded historical coordination draft. It assigns no current
