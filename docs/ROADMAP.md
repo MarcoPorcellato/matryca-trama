@@ -36,13 +36,13 @@ Disjoint read-only research and non-overlapping documentation may run in
 parallel. Runtime, schema, adapter, session, authority, and product changes
 remain sequential.
 
-### First epistemic-review tranche — planned
+### First epistemic-review tranche — private candidate under exit review
 
-The first tranche is a fixture-only, read-only synthetic-note review surface. It distinguishes source claims, hypotheses, possible contradictions, and verification gaps while retaining evidence, rationale, selected scope, and partial/unknown state. It excludes graph access, Plumber, Parser, UI/editor, application shell, apply/write, persistence, network, database, and truth claims. See [the tranche specification](specs/2026-09-19-epistemic-review-first-tranche.md).
+The private synthetic core has an implementation candidate and local test evidence; independent exit review is pending. This is not a merge, qualification, release, or real-graph capability claim. The fixture-only scope excludes graph access, Plumber, Parser, UI/editor, application shell, apply/write, persistence, network, database, and truth claims. See [the tranche specification](specs/2026-09-19-epistemic-review-first-tranche.md) and [the Block 2 implementation specification](specs/2026-09-26-synthetic-review-block2.md).
 
 External/deferred references are Plumber [#582](https://github.com/MarcoPorcellato/matryca-plumber/issues/582), [#491](https://github.com/MarcoPorcellato/matryca-plumber/issues/491), and [#493](https://github.com/MarcoPorcellato/matryca-plumber/issues/493), Parser [#213](https://github.com/MarcoPorcellato/logseq-matryca-parser/issues/213), and Matryca-per-Delineat [#430](https://github.com/MarcoPorcellato/Matryca-per-Delineat/issues/430). These links assign no ownership, do not claim completion, and do not establish consumer readiness.
 
-The later-gate topology discrepancy remains unresolved: the current source-admission record requires topology alongside `graph.read`, while the execution plan treats topology as optional enrichment after payload qualification. This roadmap does not reconcile the positions or claim a consumer is ready. PolyForm Noncommercial and the contributor-rights gate remain in force.
+The source-admission record requires `plumber.graph.read/v1` with `plumber.graph.topology/v1`. Plumber separately documents `plumber.graph.payload.read/v1`; that contract evidence does not establish a released Trama text consumer. Content-free topology cannot supply page/block text. The later admission gate must reconcile required capabilities against exact published owner artifacts; no consumer is admitted by this roadmap. PolyForm Noncommercial and the contributor-rights gate remain in force.
 
 ## Ordered programme
 

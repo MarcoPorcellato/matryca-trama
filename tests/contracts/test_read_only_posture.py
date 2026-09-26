@@ -36,9 +36,9 @@ def request(
 
 RUNTIME_ROOT = Path(__file__).parents[2] / "packages"
 ALLOWED_IMPORT_ROOTS = {
-    "collections", "hmac", "json", "math", "pathlib", "hashlib", "re",
+    "collections", "datetime", "hmac", "json", "math", "pathlib", "hashlib", "re",
     "dataclasses", "enum", "typing", "logseq_matryca_parser", "trama_core",
-    "trama_contracts", "trama_parser_bridge",
+    "trama_contracts", "trama_parser_bridge", "unicodedata",
 }
 FORBIDDEN_CALLS = {
     "write_text",
@@ -108,6 +108,30 @@ class ReadOnlyPostureTests(unittest.TestCase):
 
     def test_scanner_rejects_synthetic_import_and_write(self) -> None:
         source = "import sqlite3\nfrom pathlib import Path\nPath('x').write_text('x')\n"
+        self.assertEqual(
+            violations(source),
+            ["import:sqlite3", "call:write_text"],
+        )
+
+    def test_scanner_allows_date_validation_and_unicode_normalization(self) -> None:
+        source = """
+from datetime import date
+import unicodedata
+date.fromisoformat("2026-09-26")
+unicodedata.normalize("NFC", "e\\u0301")
+"""
+        self.assertEqual(violations(source), [])
+
+    def test_scanner_keeps_rejecting_imports_and_writes_with_allowed_stdlib(self) -> None:
+        source = """
+from datetime import date
+import unicodedata
+import sqlite3
+from pathlib import Path
+date.fromisoformat("2026-09-26")
+unicodedata.normalize("NFC", "e\\u0301")
+Path("x").write_text("x")
+"""
         self.assertEqual(
             violations(source),
             ["import:sqlite3", "call:write_text"],
