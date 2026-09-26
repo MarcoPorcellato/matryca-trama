@@ -1,7 +1,7 @@
 # Synthetic epistemic review — Block 2 specification
 
-**Status:** private implementation candidate; entry gates passed, exit review pending. No merge, release, or qualification claim.  
-**Scope:** private, deterministic, in-memory analysis of repository-owned synthetic values only.  
+**Status:** private implementation candidate; entry gates passed, exit review pending. No merge, release, or qualification claim.
+**Scope:** private, deterministic, in-memory analysis of repository-owned synthetic values only.
 **Authority:** autonomous Trama programme; entry GO was issued on the reviewed contract hash recorded in the local Block 2 receipt. Current status text does not alter contract semantics.
 
 This specification narrows Block 2 of the local programme. It does not establish an operational graph/application runtime, real-source support, a public stable contract, consumer adapter, release support, truth engine, or user-utility result. Repository-owned content remains under PolyForm Noncommercial 1.0.0. No external copyright-bearing contribution is admitted before a lawyer-reviewed contributor agreement or equivalent grant exists.
