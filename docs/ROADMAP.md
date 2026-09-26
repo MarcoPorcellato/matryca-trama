@@ -42,7 +42,7 @@ Block 2 is merged in PR #23 at `eca93f19398972ede50127ce6aaa93d78fb5d5cd`. Exact
 
 External/deferred references are Plumber [#582](https://github.com/MarcoPorcellato/matryca-plumber/issues/582), [#491](https://github.com/MarcoPorcellato/matryca-plumber/issues/491), and [#493](https://github.com/MarcoPorcellato/matryca-plumber/issues/493), Parser [#213](https://github.com/MarcoPorcellato/logseq-matryca-parser/issues/213), and Matryca-per-Delineat [#430](https://github.com/MarcoPorcellato/Matryca-per-Delineat/issues/430). These links assign no ownership, do not claim completion, and do not establish consumer readiness.
 
-The source-admission record requires `plumber.graph.read/v1` with `plumber.graph.topology/v1`. Plumber separately documents `plumber.graph.payload.read/v1`; that contract evidence does not establish a released Trama text consumer. Content-free topology cannot supply page/block text. The later admission gate must reconcile required capabilities against exact published owner artifacts; no consumer is admitted by this roadmap. PolyForm Noncommercial and the contributor-rights gate remain in force.
+The source-admission record and [ADR-0007](decisions/ADR-0007-PLUMBER-CAPABILITY-ADMISSION.md) distinguish Plumber capabilities: `plumber.graph.read/v1` supplies identity/session binding; `plumber.graph.topology/v1` adds complete content-free relationships; and the additive `plumber.graph.payload.read/v1` is additionally required for text/property-backed analysis. Plumber accepted payload semantics in [PR #590](https://github.com/MarcoPorcellato/matryca-plumber/pull/590), but the decision is documentation-only and does not establish a released artifact, host, or runtime. The planned Trama adapter gate still requires both read and topology; no reduced-profile consumer is authorized. The later admission gate must verify exact released artifacts, owner-defined profile coherence, and independent OG/DB evidence. No consumer is admitted by this roadmap. PolyForm Noncommercial and the contributor-rights gate remain in force.
 
 ## Ordered programme
 
@@ -81,7 +81,9 @@ of its stable package-root API. Until that publication, no consumer adopts
 Evidence: exact version/profile matrix; accepted and rejected fixtures;
 producer, source, binding, capability, bounds, uncertainty, and digest fields;
 unsupported versions, missing provenance, direct-database access, mutation,
-foreign sessions, and incomplete subtrees fail closed.
+foreign sessions, and incomplete subtrees fail closed. Capability-specific
+text reads require the separately published payload profile and may not infer
+content from graph topology.
 
 ### Decision D1 — Plumber selects official host transport or stops
 
@@ -100,7 +102,10 @@ deprecated or removed. A DB graph never falls back to Markdown.
 
 Evidence: stable graph binding, one page, one complete ordered subtree,
 explicit failures, bounded lifecycle, zero forbidden state change, and exact
-cross-repository hosted compatibility.
+cross-repository hosted compatibility. Any text-backed page/subtree result
+also requires `plumber.graph.payload.read/v1`; all combined profiles must
+match owner-defined compatibility and graph/session/revision bindings. OG and
+DB remain separately qualified.
 
 ### Phase 4 — Nodi
 
