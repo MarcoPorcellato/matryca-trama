@@ -34,6 +34,7 @@ evidence, and limitations.
 | `ER-TRANCHE-006` | Planned | A private synthetic review core was proposed to return a deterministic proposal and in-memory receipt from explicitly classified fixture values. | None. | [Block 2 synthetic review specification](../specs/2026-09-26-synthetic-review-block2.md). | Historical pre-entry planning snapshot, superseded by ER-TRANCHE-007. It does not claim a graph runtime, source consumer, truth, persistence, UI, or release capability. |
 | `ER-TRANCHE-007` | Candidate | A private deterministic core candidate returns a proposal and in-memory receipt for explicitly classified repository-owned synthetic values. | Historical candidate `9eb13d5352a4d32905a214457a76925006d1bb5e`; its successor merged as PR #23 at `eca93f19398972ede50127ce6aaa93d78fb5d5cd`. | [Block 2 specification](../specs/2026-09-26-synthetic-review-block2.md) and candidate-branch source/test evidence. | Historical candidate claim retained as recorded at entry; current merged implementation state is recorded separately in ER-TRANCHE-008. No operational graph runtime, real-source consumer, truth, persistence, UI, release, performance, or user-utility claim. PolyForm Noncommercial and the contributor-rights gate remain in force. |
 | `ER-TRANCHE-008` | Implemented | The private deterministic core returns a proposal and in-memory receipt for explicitly classified repository-owned synthetic values. | PR #23 merged at `eca93f19398972ede50127ce6aaa93d78fb5d5cd`; exact PR checks and merged-main Python contracts/Foundation CI passed. | [Block 2 specification](../specs/2026-09-26-synthetic-review-block2.md), `_epistemic_review.py`, focused tests, and PR/main check results. | Implemented only for the repository-owned synthetic fixtures and private pure core. Does not establish an operational graph runtime, real-source consumer, truth, persistence, UI, release, performance, user utility, or product support. PolyForm Noncommercial and the contributor-rights gate remain in force. |
+| `ER-TRANCHE-009` | Documented | Identity/session, graph navigation, and text-backed analysis have distinct Plumber profile prerequisites; profile composition never qualifies itself or crosses OG/DB modes. | None. | [ADR-0007](../decisions/ADR-0007-PLUMBER-CAPABILITY-ADMISSION.md), bound to Plumber PR #590 merge `233731cde79ceb2e26da91b935ad5a4dfd02c85c`. | No released payload profile, consumer adapter, host, or graph capability is admitted. The existing planned implementation gate remains read + topology; text use also requires payload. |
 | `V0-FOUNDATION-001` | Documented | Public source-available foundation, PolyForm Noncommercial boundary, governance, and fork-safe policy checks exist. | Not assigned by this ledger. | Foundation specification and repository policy files. | Reverify mutable GitHub settings and exact-head checks. |
 | `V0-SOURCE-001` | Implemented | `9905e8a` contains bounded Python contracts, core, Parser bridge, Plumber bridge, and synthetic OG adapter source. | None. | Repository tree at `9905e8a`. | Implementation is not current-head qualification or publication. |
 | `V1-BASELINE-001` | Qualified baseline | Synthetic OG fixtures cover `graph.identify`, `page.read`, and complete ordered `block.subtree.read.complete`. | `862c5c89157f28c1985cde6145fc2c8af04a70b4` | Baseline evidence record linked above. | No user graph, host, DB, write, event, Shadow, sync, export, recovery, UI, performance, distribution, or network claim. |
@@ -49,6 +50,16 @@ evidence, and limitations.
 | `V8-AGENT-001` | Unsupported | Agent and plugin execution surface. | None. | Safety requirements only. | Requires default-deny capability model and adversarial evaluation corpus. |
 | `V9-DIST-001` | Unsupported | Reproducible Community artifacts. | None. | None. | Requires qualified runtime, SBOM, provenance, artifact inspection, and rehearsal. |
 | `V10-RELEASE-001` | Blocked | Public Community release. | None. | None. | Requires V0–V9 evidence and separate maintainer authorization. |
+
+## Resolution note — 2026-09-26
+
+`ER-TRANCHE-004` and `ER-TRANCHE-005` preserve the planning and source-admission
+claims as they were recorded before capability-specific reconciliation. The
+discrepancy in ER-TRANCHE-004 is resolved by [ER-TRANCHE-009](#claims) and
+[ADR-0007](../decisions/ADR-0007-PLUMBER-CAPABILITY-ADMISSION.md): the planned
+adapter floor remains `graph.read` plus `graph.topology`, while any
+text/property-backed capability also requires the additive payload profile.
+This does not admit a released profile or runtime consumer.
 
 ## Update rule
 

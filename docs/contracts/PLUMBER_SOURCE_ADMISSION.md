@@ -63,6 +63,28 @@ The DB checkpoint contains only synthetic rejected-candidate fixtures and an
 unbound capability-discovery policy. It is not a production DB adapter and does
 not establish Logseq DB support.
 
+### Additive text-payload decision
+
+Plumber accepted a separate `plumber.graph.payload.read/v1` semantics decision
+in PR #590, merged at
+`233731cde79ceb2e26da91b935ad5a4dfd02c85c`. Its exact owner document is
+[`2026-09-12-plumber-graph-payload-read-v1.md`](https://github.com/MarcoPorcellato/matryca-plumber/blob/233731cde79ceb2e26da91b935ad5a4dfd02c85c/docs/decisions/2026-09-12-plumber-graph-payload-read-v1.md)
+(Git blob `d149861519dd86fcc2e26e9b87cedc3e127b00e1`). The merge is present in
+the live Plumber main observed at `2579702736cb3f63d3cc58aba48a29aa6aed6878`.
+This is an accepted documentation decision only: it defines additive bounded
+page/subtree payload semantics but publishes no schema, fixture/TCK, released
+artifact, runtime route, qualified host, or Logseq DB support.
+
+Trama records the resulting capability composition in
+[ADR-0007](../decisions/ADR-0007-PLUMBER-CAPABILITY-ADMISSION.md): the planned
+consumer implementation still requires both released identity/read and
+topology profiles; text-backed analysis additionally requires the separately
+released and qualified payload profile. These semantic prerequisites do not
+admit any current artifact or authorize a reduced-profile consumer. Topology
+does not supply text, and payload does not supply topology. Each source mode
+and each combined profile set requires owner-defined compatibility and exact
+graph, session, and source-revision binding evidence.
+
 ## Release hold
 
 Git object identity makes these source observations reproducible, but not
@@ -71,13 +93,17 @@ adapter because it has no released artifact provenance, supported version
 matrix, published schema/fixture/TCK bundle, or release-level compatibility
 evidence.
 
-Before consumer code starts, Plumber must publish immutable released artifacts
-for both `plumber.graph.read/v1` and `plumber.graph.topology/v1`, including
-their profile, schema, fixture, TCK, provenance, supported versions, and
-fail-closed session, revision, capability, and bounds behavior. Trama then
-revalidates digests against that release and opens a separately authorized
-consumer-adapter slice. A mismatch, missing artifact, changed source ref, or
-unreleased profile remains blocked.
+Before the planned consumer code starts, Plumber must publish immutable
+released artifacts for both `plumber.graph.read/v1` and
+`plumber.graph.topology/v1`, including their profile, schema, fixture, TCK,
+provenance, supported versions, and fail-closed session, revision, capability,
+and bounds behavior. Any text-reading capability additionally requires the
+same evidence for `plumber.graph.payload.read/v1`. Trama then revalidates
+digests against the exact release and opens a separately authorized
+consumer-adapter slice. Combined profiles must satisfy their owner-defined
+compatibility and binding rules. A mismatch, missing artifact, changed source
+ref, or unreleased profile remains blocked. OG and DB retain independent
+release and compatibility gates.
 
 ## Rights and product boundary
 
