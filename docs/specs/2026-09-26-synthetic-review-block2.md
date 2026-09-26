@@ -1,6 +1,6 @@
 # Synthetic epistemic review — Block 2 specification
 
-**Status:** private implementation candidate; entry gates passed, exit review pending. No merge, release, or qualification claim.
+**Status:** merged in PR #23 at `eca93f19398972ede50127ce6aaa93d78fb5d5cd`; exact PR checks and merged-main Python contracts and Foundation CI passed. This evidence qualifies only the private synthetic core. No release, real-graph, operational application, performance, user-utility, or product-support claim.
 **Scope:** private, deterministic, in-memory analysis of repository-owned synthetic values only.
 **Authority:** autonomous Trama programme; entry GO was issued on the reviewed contract hash recorded in the local Block 2 receipt. Current status text does not alter contract semantics.
 
