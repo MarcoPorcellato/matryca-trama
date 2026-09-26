@@ -1,0 +1,31 @@
+{
+  "schema_version": "synthetic-review-fixture/v1",
+  "source_revision": "claim-hypothesis-gap-r1",
+  "scope_complete": true,
+  "selected_ids": ["claim-1", "hypothesis-1", "requirement-1"],
+  "requirement_ids": ["requirement-1"],
+  "context_ids": [],
+  "items": [
+    {
+      "id": "claim-1",
+      "kind": "source_claim",
+      "text": "The synthetic note explicitly states that the review is read-only.",
+      "evidence_ids": [],
+      "comparison": null
+    },
+    {
+      "id": "hypothesis-1",
+      "kind": "hypothesis",
+      "text": "This may indicate an incomplete review.",
+      "evidence_ids": [],
+      "comparison": null
+    },
+    {
+      "id": "requirement-1",
+      "kind": "requirement",
+      "text": "A source reference is required.",
+      "evidence_ids": [],
+      "comparison": null
+    }
+  ]
+}

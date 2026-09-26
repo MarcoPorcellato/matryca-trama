@@ -1,10 +1,10 @@
 # Epistemic Review — First Tranche
 
-Status: planned documentation surface only. This note does not authorize runtime implementation, a public contract, a consumer adapter, release, or external mutation.
+Status: Block 1 vocabulary is merged in PR #22. The private synthetic Block 2 implementation candidate is under exit review with local evidence, but remains unmerged and unqualified. This document establishes no operational graph runtime, public stable contract, consumer adapter, or release support.
 
 ## Selected synthetic-note use case
 
-Given one repository-owned fixture containing a selected set of synthetic notes, a read-only review shows why each candidate finding was produced: a source claim, an unverified hypothesis, a possible contradiction between selected claims, or a verification gap caused by missing evidence. Results retain evidence references, rationale, selected scope, and partial or unknown state. They do not turn a partial selection into a global conclusion or certify truth.
+Given repository-owned synthetic fixture values, a private deterministic core candidate returns explicitly declared source-claim, hypothesis, possible-contradiction, and verification-gap findings with evidence, rationale, selected scope, and partial or unknown state. Local exit review remains pending. Results do not turn a partial selection into a global conclusion or certify truth. Exact input, comparison, digest, rejection, and receipt semantics are recorded in the [Block 2 specification](2026-09-26-synthetic-review-block2.md).
 
 The first deliverable accepts fixture-only input supplied by tests. It does not read a graph, call Plumber or Parser, render a UI/editor/application, apply or write changes, persist a decision, access a database, use a network, or publish a stable contract.
 
@@ -19,12 +19,12 @@ Every finding records evidence, rationale, and scope. Results expose partial and
 
 ## Explicit exclusions
 
-This tranche excludes graph access, Plumber, Parser, UI, editor, application shell, apply, write, persistence, network, database access, and any truth engine. It excludes real user graphs, host support, runtime, distribution, performance, and public stable support claims. No external source, private material, copied contract, LENS asset, or third-party fixture is admitted.
+This tranche excludes graph access, Plumber, Parser, UI, editor, application shell, apply, write, persistence, network, database access, and any truth engine. It excludes real user graphs, host support, operational graph/application runtime, distribution, performance, and public stable support claims. No external source, private material, copied contract, LENS asset, or third-party fixture is admitted.
 
 ## Deferred dependencies and unresolved divergence
 
 Future work is conditional on owner-published and qualified Plumber payload evidence. The roadmap tracks Plumber #582, #491, and #493, Parser #213, and Matryca-per-Delineat #430 as external/deferred dependencies; this note claims no ownership, completion, or consumer readiness for any of them.
 
-An unresolved later-gate divergence is recorded deliberately: the current source-admission record requires topology together with `graph.read`, while the execution plan makes topology optional enrichment after payload qualification. This tranche does not reconcile the two positions and does not claim readiness for a consumer. The owning later gate must resolve the discrepancy with fresh, exact evidence.
+The source-admission record requires `plumber.graph.read/v1` with `plumber.graph.topology/v1`. Plumber separately documents `plumber.graph.payload.read/v1`; that contract evidence does not establish a released Trama text consumer. Content-free topology cannot supply page/block text. The later admission gate must reconcile required capabilities against exact published owner artifacts; no consumer is admitted by this tranche.
 
 Repository-owned material remains under PolyForm Noncommercial 1.0.0. The contributor-rights gate and lawyer-reviewed agreement/equivalent grant remain preserved; no external copyright-bearing material is merged by this tranche.

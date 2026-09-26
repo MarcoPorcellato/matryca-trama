@@ -1,0 +1,40 @@
+{
+  "schema_version": "synthetic-review-fixture/v1",
+  "source_revision": "possible-contradiction-r1",
+  "scope_complete": true,
+  "selected_ids": ["claim-a", "claim-b"],
+  "requirement_ids": [],
+  "context_ids": [],
+  "items": [
+    {
+      "id": "claim-b",
+      "kind": "source_claim",
+      "text": "The synthetic delivery date is 2026-02-15.",
+      "evidence_ids": [],
+      "comparison": {
+        "date": "2026-01-31",
+        "context": "project-a",
+        "key": "delivery-date",
+        "subject": "project-a",
+        "predicate": "delivery-date",
+        "value": "2026-02-15",
+        "incompatible_values": ["2026-01-31"]
+      }
+    },
+    {
+      "id": "claim-a",
+      "kind": "source_claim",
+      "text": "The synthetic delivery date is 2026-01-31.",
+      "evidence_ids": [],
+      "comparison": {
+        "date": "2026-01-31",
+        "context": "project-a",
+        "key": "delivery-date",
+        "subject": "project-a",
+        "predicate": "delivery-date",
+        "value": "2026-01-31",
+        "incompatible_values": ["2026-02-15"]
+      }
+    }
+  ]
+}

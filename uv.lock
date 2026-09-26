@@ -209,6 +209,12 @@ source = { editable = "packages/contracts" }
 name = "trama-core"
 version = "0.0.0"
 source = { editable = "packages/core" }
+dependencies = [
+    { name = "trama-contracts" },
+]
+
+[package.metadata]
+requires-dist = [{ name = "trama-contracts", editable = "packages/contracts" }]
 
 [[package]]
 name = "trama-logseq-og-adapter"

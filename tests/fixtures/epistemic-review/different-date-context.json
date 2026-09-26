@@ -1,0 +1,20 @@
+{
+  "schema_version": "synthetic-review-fixture/v1",
+  "source_revision": "different-date-context-r1",
+  "scope_complete": true,
+  "selected_ids": ["date-a", "date-b", "context-a", "context-b", "key-a", "key-b", "subject-a", "subject-b", "predicate-a", "predicate-b"],
+  "requirement_ids": [],
+  "context_ids": [],
+  "items": [
+    {"id":"date-a","kind":"source_claim","text":"same wording","evidence_ids":[],"comparison":{"date":"2026-01-31","context":"p","key":"k","subject":"s","predicate":"v","value":"x","incompatible_values":["y"]}},
+    {"id":"date-b","kind":"source_claim","text":"same wording","evidence_ids":[],"comparison":{"date":"2026-02-01","context":"p","key":"k","subject":"s","predicate":"v","value":"y","incompatible_values":["x"]}},
+    {"id":"context-a","kind":"source_claim","text":"same wording","evidence_ids":[],"comparison":{"date":"2026-01-31","context":"p1","key":"k","subject":"s","predicate":"v","value":"x","incompatible_values":["y"]}},
+    {"id":"context-b","kind":"source_claim","text":"same wording","evidence_ids":[],"comparison":{"date":"2026-01-31","context":"p2","key":"k","subject":"s","predicate":"v","value":"y","incompatible_values":["x"]}},
+    {"id":"key-a","kind":"source_claim","text":"same wording","evidence_ids":[],"comparison":{"date":"2026-01-31","context":"p","key":"k1","subject":"s","predicate":"v","value":"x","incompatible_values":["y"]}},
+    {"id":"key-b","kind":"source_claim","text":"same wording","evidence_ids":[],"comparison":{"date":"2026-01-31","context":"p","key":"k2","subject":"s","predicate":"v","value":"y","incompatible_values":["x"]}},
+    {"id":"subject-a","kind":"source_claim","text":"same wording","evidence_ids":[],"comparison":{"date":"2026-01-31","context":"p","key":"k","subject":"s1","predicate":"v","value":"x","incompatible_values":["y"]}},
+    {"id":"subject-b","kind":"source_claim","text":"same wording","evidence_ids":[],"comparison":{"date":"2026-01-31","context":"p","key":"k","subject":"s2","predicate":"v","value":"y","incompatible_values":["x"]}},
+    {"id":"predicate-a","kind":"source_claim","text":"same wording","evidence_ids":[],"comparison":{"date":"2026-01-31","context":"p","key":"k","subject":"s","predicate":"v1","value":"x","incompatible_values":["y"]}},
+    {"id":"predicate-b","kind":"source_claim","text":"same wording","evidence_ids":[],"comparison":{"date":"2026-01-31","context":"p","key":"k","subject":"s","predicate":"v2","value":"y","incompatible_values":["x"]}}
+  ]
+}
