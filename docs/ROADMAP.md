@@ -36,6 +36,14 @@ Disjoint read-only research and non-overlapping documentation may run in
 parallel. Runtime, schema, adapter, session, authority, and product changes
 remain sequential.
 
+### First epistemic-review tranche — planned
+
+The first tranche is a fixture-only, read-only synthetic-note review surface. It distinguishes source claims, hypotheses, possible contradictions, and verification gaps while retaining evidence, rationale, selected scope, and partial/unknown state. It excludes graph access, Plumber, Parser, UI/editor, application shell, apply/write, persistence, network, database, and truth claims. See [the tranche specification](specs/2026-09-19-epistemic-review-first-tranche.md).
+
+External/deferred references are Plumber [#582](https://github.com/MarcoPorcellato/matryca-plumber/issues/582), [#491](https://github.com/MarcoPorcellato/matryca-plumber/issues/491), and [#493](https://github.com/MarcoPorcellato/matryca-plumber/issues/493), Parser [#213](https://github.com/MarcoPorcellato/logseq-matryca-parser/issues/213), and Matryca-per-Delineat [#430](https://github.com/MarcoPorcellato/Matryca-per-Delineat/issues/430). These links assign no ownership, do not claim completion, and do not establish consumer readiness.
+
+The later-gate topology discrepancy remains unresolved: the current source-admission record requires topology alongside `graph.read`, while the execution plan treats topology as optional enrichment after payload qualification. This roadmap does not reconcile the positions or claim a consumer is ready. PolyForm Noncommercial and the contributor-rights gate remain in force.
+
 ## Ordered programme
 
 ### Phase 0 — Public foundation and coordination
