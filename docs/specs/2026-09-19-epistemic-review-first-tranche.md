@@ -1,6 +1,6 @@
 # Epistemic Review — First Tranche
 
-Status: Block 1 vocabulary is merged in PR #22. The private synthetic Block 2 implementation candidate is under exit review with local evidence, but remains unmerged and unqualified. This document establishes no operational graph runtime, public stable contract, consumer adapter, or release support.
+Status: Block 1 vocabulary is merged in PR #22. Block 2 is merged in PR #23 at `eca93f19398972ede50127ce6aaa93d78fb5d5cd`; exact PR checks and merged-main Python contracts and Foundation CI passed. This evidence establishes only the private synthetic review core. Block 3 comparative utility evaluation remains pending. This document establishes no operational graph runtime, public stable contract, consumer adapter, real-graph support, user-utility result, or release support.
 
 ## Selected synthetic-note use case
 

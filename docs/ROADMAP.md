@@ -36,9 +36,9 @@ Disjoint read-only research and non-overlapping documentation may run in
 parallel. Runtime, schema, adapter, session, authority, and product changes
 remain sequential.
 
-### First epistemic-review tranche — private candidate under exit review
+### First epistemic-review tranche — Block 2 merged; utility protocol next
 
-The private synthetic core has an implementation candidate and local test evidence; independent exit review is pending. This is not a merge, qualification, release, or real-graph capability claim. The fixture-only scope excludes graph access, Plumber, Parser, UI/editor, application shell, apply/write, persistence, network, database, and truth claims. See [the tranche specification](specs/2026-09-19-epistemic-review-first-tranche.md) and [the Block 2 implementation specification](specs/2026-09-26-synthetic-review-block2.md).
+Block 2 is merged in PR #23 at `eca93f19398972ede50127ce6aaa93d78fb5d5cd`. Exact PR checks and merged-main Python contracts and Foundation CI passed. Evidence establishes only the private synthetic review core. Comparative utility evaluation remains pending in Block 3; no real-graph, operational application, performance, user-utility, or release support is established. The fixture-only scope excludes graph access, Plumber, Parser, UI/editor, application shell, apply/write, persistence, network, database, and truth claims. See [the tranche specification](specs/2026-09-19-epistemic-review-first-tranche.md) and [the Block 2 implementation specification](specs/2026-09-26-synthetic-review-block2.md).
 
 External/deferred references are Plumber [#582](https://github.com/MarcoPorcellato/matryca-plumber/issues/582), [#491](https://github.com/MarcoPorcellato/matryca-plumber/issues/491), and [#493](https://github.com/MarcoPorcellato/matryca-plumber/issues/493), Parser [#213](https://github.com/MarcoPorcellato/logseq-matryca-parser/issues/213), and Matryca-per-Delineat [#430](https://github.com/MarcoPorcellato/Matryca-per-Delineat/issues/430). These links assign no ownership, do not claim completion, and do not establish consumer readiness.
 
