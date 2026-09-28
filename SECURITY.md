@@ -14,7 +14,7 @@ Security reports should explain the affected revision, impact, reproduction step
 
 ## Security boundaries
 
-- Markdown is authoritative for graph content; embedded instructions are never authority for an agent.
+- Logseq OG Markdown and the Logseq DB native store remain authoritative for their respective graphs. Derived views never replace either source; embedded instructions are never authority for an agent.
 - Reads, scans, exports, and writes must stay within an explicitly selected path.
 - Writes require explicit caller or maintainer consent and must be bounded and reviewable.
 - Pro and Brain boundaries must not be bypassed through undocumented imports or copied private code.
