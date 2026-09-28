@@ -54,7 +54,9 @@ fork-safe CI. Reconcile stale planning surfaces; do not treat the accepted
 ownership decision as a runtime, host, or consumer-profile claim.
 
 Evidence: exact-head documentation checks; unambiguous ownership and authority;
-no private or Pro source; no unsupported runtime claim.
+no private or Pro source; no unsupported runtime claim. See the
+[dated foundation evidence register](status/receipts/2026-09-28-phase-0-foundation-evidence.md)
+for historical anchors, limitations, and open verification boundaries.
 
 ### Phase 1 — Clean Architecture enforcement
 
