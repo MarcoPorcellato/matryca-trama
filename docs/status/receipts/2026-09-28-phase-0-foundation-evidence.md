@@ -1,8 +1,8 @@
 # Phase 0 foundation evidence register
 
-**Evidence snapshot:** 2026-09-28  
-**Live base reviewed:** `d9ed04ce6e6333fc25f671fe21dbe3817b01d5cd`  
-**Purpose:** reconcile the public foundation evidence without claiming runtime, host, or consumer compatibility.
+- Evidence snapshot: 2026-09-28
+- Live base reviewed: `d9ed04ce6e6333fc25f671fe21dbe3817b01d5cd`
+- Purpose: reconcile the public foundation evidence without claiming runtime, host, or consumer compatibility.
 
 ## Original foundation pull request
 
