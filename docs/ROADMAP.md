@@ -54,21 +54,28 @@ fork-safe CI. Reconcile stale planning surfaces; do not treat the accepted
 ownership decision as a runtime, host, or consumer-profile claim.
 
 Evidence: exact-head documentation checks; unambiguous ownership and authority;
-no private or Pro source; no unsupported runtime claim. See the
-[dated foundation evidence register](status/receipts/2026-09-28-phase-0-foundation-evidence.md)
-for historical anchors, limitations, and open verification boundaries.
+no private or Pro source; no unsupported runtime claim. Issue #8 is closed for
+foundation planning and evidence only. The dated
+[foundation evidence register](status/receipts/2026-09-28-phase-0-foundation-evidence.md)
+records historical anchors and the exact post-merge checks; it does not claim
+runtime, consumer, or platform support.
 
 ### Phase 1 — Clean Architecture enforcement
 
-Complete issue #9 before application expansion. Add repository-owned standards,
-deterministic dependency/import checks, boundary tests, a repository-local
-development skill, thin personal discovery, contributor guidance, and a
-reviewed exception process. The skill points to canonical policy and does not
-duplicate it.
+Issue #9 is closed. The repository-owned R1 projection is present: the
+canonical standard and dependency map, deterministic validator and boundary
+tests, repository-local development skill, contributor guidance, reviewed
+exception process, and fork-safe CI. The personal/global discovery skill is
+deferred by ADR-0005; no global installation is delivered or claimed here.
 
-The R1 executable projection is implemented. It becomes a repository
-qualification only after publication and fork-safe hosted CI records evidence
-for the exact published head.
+At the exact PR #27 head `030d1d7fe7720c14c6f88534a1bc4fc48de5582e`,
+Foundation CI, Dependency Review, and Python contracts succeeded. The merge
+commit `ce3dbd2e5ad4b39cfb84ec38d0d5f93557a8c4b2` also passed its push-triggered
+Foundation CI and Python contracts checks. The latter runs the architecture
+validator and boundary suite before contract and containment suites. This
+qualifies the repository-local R1 checks at those exact hosted heads only; it
+does not qualify a runtime, host, user graph, consumer profile, platform, or
+release.
 
 Evidence: forbidden dependency fixtures fail; allowed dependency fixtures pass;
 the skill is tested; fork-safe CI enforces the stack-independent rules.
@@ -79,6 +86,10 @@ First, Plumber must publish its ADR, canonical public contract, schemas,
 fixtures, compatibility policy, and evidence profile. Parser remains the owner
 of its stable package-root API. Until that publication, no consumer adopts
 `trama.logseq.read/v1` as a future interface.
+
+Trama issue #2 tracks consumer-side profile admission within this phase. Its
+status does not imply that Plumber has published or qualified the required
+bundle. A Trama adapter remains separately tracked under Phase 3.
 
 Evidence: exact version/profile matrix; accepted and rejected fixtures;
 producer, source, binding, capability, bounds, uncertainty, and digest fields;
@@ -126,6 +137,12 @@ onboarding, and release documentation.
 
 Evidence: clean release rehearsal and fork-safe hosted CI. Publication remains
 a separate authorization gate.
+
+## Unphased backlog
+
+Community core issue #3 has no numbered phase in the current roadmap. Its
+acceptance criteria remain a planning and validation backlog, not a delivery
+commitment; placement requires an explicit roadmap revision.
 
 ## Deferred programmes
 
