@@ -1,7 +1,8 @@
 # Phase 0 foundation evidence register
 
-- Evidence snapshot: 2026-09-28
-- Live base reviewed: `d9ed04ce6e6333fc25f671fe21dbe3817b01d5cd`
+- Evidence snapshot: 2026-09-29
+- PR #27 base reviewed: `d9ed04ce6e6333fc25f671fe21dbe3817b01d5cd`
+- Post-merge main reviewed: `ce3dbd2e5ad4b39cfb84ec38d0d5f93557a8c4b2`
 - Purpose: reconcile the public foundation evidence without claiming runtime, host, or consumer compatibility.
 
 ## Original foundation pull request
@@ -17,7 +18,7 @@ The PR description also records local validator, unit-test, syntax, YAML,
 whitespace, licence-text, and sensitive-artifact checks. Those are PR-submitted
 claims, not independently replayed by this register.
 
-## Foundation surfaces present on the reviewed live base
+## Foundation surfaces present on the reviewed main
 
 - `LICENSE` and `NOTICE` carry the repository's PolyForm Noncommercial
   boundary; commercial use requires separate written permission.
@@ -41,9 +42,9 @@ claims, not independently replayed by this register.
   Trama access remains through Plumber.
 
 The source-authority sentence in `SECURITY.md` was found overbroad during the
-2026-09-28 review and is corrected in the pull request carrying this register.
-Naming the DB's authoritative store grants no direct DB access and admits no
-adapter or runtime compatibility.
+2026-09-28 review and was corrected by [PR #27](https://github.com/MarcoPorcellato/matryca-trama/pull/27),
+which introduced this register. Naming the DB's authoritative store grants no
+direct DB access and admits no adapter or runtime compatibility.
 
 ## Later exact-head evidence; not a substitute for original runs
 
@@ -58,6 +59,30 @@ all succeeded on that PR head. They are not runs on merge commit
 `d9ed04ce6e6333fc25f671fe21dbe3817b01d5cd`; the workflow-run query for that
 merge commit returned no PR-triggered runs.
 
+## PR #27 merge and main-push evidence
+
+PR [#27](https://github.com/MarcoPorcellato/matryca-trama/pull/27) had exact
+head `030d1d7fe7720c14c6f88534a1bc4fc48de5582e`. Its Foundation CI,
+Dependency Review, and Python contracts checks all succeeded on that PR head.
+It merged as `ce3dbd2e5ad4b39cfb84ec38d0d5f93557a8c4b2`.
+
+The push-triggered checks on that exact merge commit also succeeded:
+
+| Evidence | Exact merge-commit result |
+|---|---|
+| [Foundation CI run 36433008503](https://github.com/MarcoPorcellato/matryca-trama/actions/runs/36433008503) | Success |
+| [Python contracts run 36433008516](https://github.com/MarcoPorcellato/matryca-trama/actions/runs/36433008516) | Success |
+
+Dependency Review passed on the exact PR head; no Dependency Review run is
+claimed for the merge commit. Issue [#8](https://github.com/MarcoPorcellato/matryca-trama/issues/8)
+was closed on 2026-09-29 for its foundation planning-and-evidence criteria
+after these exact-head and post-merge results were verified.
+
+This reconciliation does not claim any supported Logseq runtime, host,
+consumer profile, platform, write path, commercial offering, Pro, or Brain
+implementation. It does not close the broader, ongoing Phase 0 governance and
+coordination work.
+
 ## Review and mutable-state limits
 
 On 2026-09-28, GitHub's pull-request review and conversation-comment APIs
@@ -66,9 +91,3 @@ that those APIs exposed no such record at query time; it does not prove that no
 review occurred elsewhere. The PR description's repository-settings checks are
 dated 2026-08-31. Mutable GitHub settings have not been reverified by this
 register and must not be presented as current settings evidence.
-
-The acceptance decision for the corrective pull request must use its own exact
-head, required hosted checks, and current review. Historical evidence above
-must not be relabelled as evidence for that head. This register does not by
-itself close Phase 0 or claim any supported Logseq runtime, platform, write
-path, commercial offering, Pro, or Brain implementation.
