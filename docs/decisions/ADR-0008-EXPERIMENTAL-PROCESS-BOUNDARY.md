@@ -33,11 +33,48 @@ the operator environment implicitly. Invocation inputs and outputs should be
 opaque bounded bytes until an owner-published contract and a separate Trama
 admission decision define their meaning.
 
-Any such implementation proposal must specify bounded stdout and stderr,
-wall-clock timeout, one-shot non-retryable failure handling, child reaping,
-process-group cleanup, and retained cleanup observations. An inability to prove
-cleanup is failure, not success. A permission-denied process-group observation
-must remain visible as an unresolved cleanup result.
+The proposed invocation shape is:
+
+```text
+/absolute/operator-venv/bin/python -I -B -m matryca_plumber.graph_gateway snapshot --graph-root <os.path.realpath(root)> --expect-descriptor-sha256 <h>
+```
+
+This command is a design datum only. It is not executable or authorized until
+the producer and capability pass separate admission. This proposal and its
+tests do not open or read a graph root.
+
+The candidate producer profile specifies a 180-second execution deadline and
+up to 5 seconds for finalization after the child terminates. Its output caps are
+4 MiB stdout and 512 bytes stderr; a future consumer must enforce both
+incrementally, before retaining bytes beyond either limit. These values are
+proposed profile limits, not claims about the current test helper: its cleanup
+polling and reaping timings are prototype mechanics, not that qualified
+finalization contract. Exit code `4` means `source_rejected` and is
+non-retryable. The exit code carries no copied or inferred producer payload.
+
+Cleanup is verified only when the direct child has been reaped, process-group
+absence is observed as ESRCH within the existing finalization deadline, and
+all stream, reader and selector gates pass. EPERM is a retained observation,
+never success. Unresolved observations, exceptions or an expired deadline
+must fail closed.
+
+The candidate version matrix below is explicitly **CANDIDATE / NOT-ADMITTED**;
+it does not state support or qualification:
+
+| Dimension | Candidate value | Status and boundary |
+| --- | --- | --- |
+| Plumber producer | `2.1.0a3` | Candidate only; not admitted. |
+| Producer environment | CPython `3.12` or `3.13` | Candidate only; each exact environment still needs separate qualification. |
+| Producer platform | Linux x86_64; macOS arm64 | Candidate only; no platform support claim. |
+| Parser | `1.9.0` | Producer environment only; no Trama dependency or direct Trama import. |
+| Windows | Refusal only | No invocation or support claim. |
+| Payload and native DB profiles | Excluded | No payload, database, or graph-content capability is proposed. |
+
+Local fake-child tests and ordinary CI can exercise only consumer-side process
+mechanics with synthetic bytes. They are not validation of public producer
+bytes, producer/consumer compatibility, or Trama capability qualification.
+Those are separate gates and remain blocked pending exact published artifacts,
+contract review, and independent admission evidence.
 
 This process boundary would be only an execution mechanism. Before any
 user-facing capability could be claimed, the relevant released Plumber

@@ -108,6 +108,17 @@ class FakeProducerBoundaryTests(unittest.TestCase):
         self.assertTrue(failure.child_reaped)
         self.assertEqual(failure.group_probe_errno, errno.ESRCH)
 
+    def test_exit_four_is_nonretryable_and_reaped(self) -> None:
+        with self.assertRaises(FakeProcessFailure) as caught:
+            self.run_child("raise SystemExit(4)")
+
+        failure = caught.exception
+        self.assertEqual(failure.reason, "nonzero_exit")
+        self.assertEqual(failure.returncode, 4)
+        self.assertFalse(failure.retryable)
+        self.assertTrue(failure.child_reaped)
+        self.assertEqual(failure.group_probe_errno, errno.ESRCH)
+
     def test_esrch_signal_race_is_confirmed_by_final_group_probe(self) -> None:
         real_killpg = os.killpg
 
