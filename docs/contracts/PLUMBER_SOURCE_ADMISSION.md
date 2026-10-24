@@ -1,12 +1,13 @@
 # Plumber Source Admission Record
 
-> **Status:** source-pinned static evidence only. This record is not a release artifact,
-> a consumer-profile admission, or runtime compatibility evidence.
+> **Status:** source-pinned and released-package documentary evidence only.
+> This record is not a release artifact, consumer-profile admission, or Trama
+> runtime compatibility evidence.
 
 ## Purpose
 
-This record pins reviewed upstream source checkpoints so maintainers can compare
-a future released Plumber artifact against known bytes. It must not create a
+This record pins reviewed upstream source checkpoints and later released-package
+evidence so maintainers can compare artifacts against known bytes. It must not create a
 runtime adapter, dependency, client, package import, transport, endpoint, CLI,
 MCP tool, UI, Parser, Logseq, filesystem, or DB dependency.
 
@@ -117,3 +118,103 @@ Trama remains unaware of Parser and source adapters. Future source paths stay
 `OG Markdown -> Parser -> Plumber -> Trama / Brain` and
 `Logseq DB official host -> Plumber -> Trama / Brain`; this record changes
 neither path and creates no DB fallback.
+
+## Released alpha.3 documentary evaluation — 2026-10-24
+
+**Disposition: documentary evidence verified; consumer NOT ADMITTED and real
+invocation NOT AUTHORIZED.** The earlier pins and release-hold discussion remain
+historical source observations. This later evaluation does not erase them,
+promote packaged status fields, or satisfy Trama's consumer gate by implication.
+
+The [producer handoff](https://github.com/MarcoPorcellato/matryca-plumber/blob/9907c0a0cde2793f32cf5ef7346ff5189dbdbfb4/docs/quality/OG_OPERATIONAL_V1_ALPHA3_PUBLIC_HANDOFF.md)
+and [machine-readable record](https://github.com/MarcoPorcellato/matryca-plumber/blob/9907c0a0cde2793f32cf5ef7346ff5189dbdbfb4/docs/quality/evidence/og-operational-v1-2.1.0a3-public.json)
+bind the original released producer, not the newer verifier or documentary tree.
+
+| Item | Exact released binding |
+| --- | --- |
+| Version / signed tag | `2.1.0a3` / `v2.1.0-alpha.3` |
+| Producer commit / tree | `8c30f70e217722e719c5aedc322219ebccb87e68` / `de80d0473aa281c52d0fed10b4561024dd12d76f` |
+| Signed tag object | `c093e9e8aa735b7c37a0c1a56a601a9c31cbdf24` |
+| Original publisher | `39887297548/1` |
+| Original wheel / SHA-256 | `matryca_plumber-2.1.0a3-py3-none-any.whl` / `e5bc586a3da76d8e11760b39c9d7ac45b62b1240f085a8a96a573b9902bfea12` |
+| Original sdist / SHA-256 | `matryca_plumber-2.1.0a3.tar.gz` / `cbf6f47dece7266c0ec69820ca3ef84e6519ff5d12f5d057c851e5b9c453ed9c` |
+| Operational descriptor SHA-256 | `bcc6ac607706e934e5df4e044802aa74c7d7455e7711220df116080f1ab0cc70` |
+| Dependency-profile SHA-256 | `9064e339a2fa5e58ce2d49e64b896865dd3a80615b8f5dbd5391c404cde83e92` |
+| External public-byte campaign | [39999081040, attempt 1](https://github.com/MarcoPorcellato/matryca-plumber/actions/runs/39999081040) |
+| Separate verifier commit | `15a79076932491b588cedc43f5e6497edc87e16b`; not replacement producer source |
+
+The retained authenticated originals were inspected as bytes without extraction,
+installation, imports or execution. Twenty-three canonical JSON resources, three
+static TCK scripts and sixteen operational resources/modules matched between
+the wheel, corresponding sdist source paths and original producer Git objects.
+The catalogue and Trama-profile hashes still equal the earlier pins above.
+Both required floor bindings are present:
+
+| Floor profile | Schema SHA-256 | Canonical consumer-profile SHA-256 |
+| --- | --- | --- |
+| `plumber.graph.read/v1` | `250438c57580c811c3e10b2a59089ffbb23ea2f1f66c4c53acc8ace0a9ee8569` | `00e51bb51b945c521c9cf51fc7b451920bb5fc52dddacd921e2d901696703e06` |
+| `plumber.graph.topology/v1` | `613f765376f2091b3dad2569ce19d9931f455b026f5ed495178526e87da1397a` | `9da9f9286f276eb18bb50c34327d75b087a891a539ef3c6424d6393f02339ea2` |
+
+The operational descriptor binds those same schemas and advertises only
+`graph.identify` and `graph.topology.snapshot.complete`. Historical static
+read fixtures mentioning page/subtree operations do not qualify text, properties
+or a payload runtime. The static catalogue remains `proposed`, its Trama profile
+`static-only-unqualified`, and the operational descriptor/matrix
+`unqualified`/`planned`.
+
+The external campaign records eight installed producer rows: Linux x86_64 and
+macOS arm64, CPython 3.12.14/3.13.15, original wheel/sdist. Each has full installed
+verification, three static TCKs, thirteen operational controls and verified
+cleanup. This evaluation rechecked artifact bytes and documentation; it did not
+repeat that campaign or establish any Trama consumer result. The exact Parser
+1.9.0 profile belongs only in the separate producer environment. No supported
+range for other Parser versions, active Logseq desktops or user graphs follows.
+
+### Remaining consumer gates
+
+- Explicitly accept or reject the proposed distinction in
+  [draft ADR-0008](../decisions/ADR-0008-EXPERIMENTAL-PROCESS-BOUNDARY.md)
+  between a separately authorized qualification experiment and later product
+  admission. Until accepted, the current pre-admission invocation hold remains.
+- Freeze and separately approve the test-only process boundary, exact
+  owner-contract validation route, dependency/runtime profile, synthetic-root
+  derivation and security applicability before implementation or execution.
+  Plumber's M6-only alert exception does not apply to Trama.
+- If separately authorized, start with one hosted Linux x86_64 / CPython
+  3.12.14 / original-wheel synthetic probe. Preserve all lifecycle, provenance,
+  bounds and failure gates. It is not a production adapter or user-graph test.
+- Review the resulting evidence before any explicit #2 admission. Issue #4
+  remains dependent on that admission; neither this record nor a successful
+  producer TCK can open the real-adapter slice automatically.
+
+No payload, DB, Windows installation, writes, events, sync, UI, stable support,
+licensing permission or compatibility admission is added by this evaluation.
+
+### M1 test-only qualification decision — 2026-10-24
+
+The preceding E0 hold and one-row proposal are historical dispositions, not the
+current M1 execution scope. The owner accepted ADR-0008 only for separately
+authorized synthetic qualification and approved simplified M1 on PR #30.
+The dedicated same-repository workflow may provision the exact original wheel
+and run `describe`, one positive snapshot and two expected refusals on Linux
+x86_64 and macOS arm64 with CPython 3.12.14. There is no user-graph access.
+
+The positive run starts from an explicit alias input and canonicalizes it in
+the consumer. The negative controls require `expectation_mismatch` / exit `3`
+for the zero descriptor digest and `source_rejected` / exit `4` for the raw
+alias. Every invocation must independently satisfy output and cleanup gates;
+expected negative exits do not waive them. Fixture equality and authenticated
+golden topology, version, graph/session/revision and schema bindings remain
+mandatory. Wheel attestation must bind the full original source commit, tag,
+repository and release workflow. All owner resource bytes stay transient.
+
+This experiment makes no network-isolation claim and does not reuse Plumber's
+M6 alert exception. Its separate test-only validator environment, exact licence
+inventory and startup checks are not application-dependency admission. All
+qualifying evidence must come from the exact reviewed PR candidate and both
+hosted rows before conditional merge. No result is established by this decision
+or by source inspection; the workflow artifacts must supply it.
+
+Consumer admission in #2, the runtime-validator dependency decision and the
+real adapter under #4 remain separate owner decisions. No payload, DB, Windows,
+user graph, write, sync, release or stable compatibility claim follows.

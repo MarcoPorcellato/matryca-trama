@@ -1,0 +1,107 @@
+name: Plumber OG consumer qualification
+
+on:
+  pull_request:
+    paths:
+      - tests/qualification/**
+      - tests/fakes/**
+      - tests/containment/test_fake_producer_boundary.py
+      - .github/workflows/plumber-og-consumer-qualification.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  attestations: read
+
+concurrency:
+  group: plumber-og-consumer-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  unit:
+    name: OG consumer unit (${{ matrix.row }})
+    if: github.actor != 'dependabot[bot]' && (github.event_name == 'workflow_dispatch' || github.event.pull_request.head.repo.full_name == github.repository)
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - row: linux-x64
+            runner: ubuntu-24.04
+          - row: macos-arm64
+            runner: macos-15
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+      - uses: astral-sh/setup-uv@bec219d24cd3e171d82865faccec33120bb574f4
+        with:
+          version: 0.12.19
+          python-version: 3.12.14
+          enable-cache: false
+      - name: Provision isolated validator and run synthetic unit controls
+        shell: bash
+        run: |
+          set -euo pipefail
+          uv --no-config python install --managed-python --no-bin 3.12.14
+          PYTHON="$(uv python find --managed-python 3.12.14)"
+          JOB_ROOT="$("$PYTHON" -I -B -c 'import os; print(os.path.realpath(os.environ["RUNNER_TEMP"]))')/trama-og-unit"
+          printf 'QUAL_ROOT=%s\n' "$JOB_ROOT" >> "$GITHUB_ENV"
+          "$PYTHON" -I -B tests/qualification/provision.py --root "$JOB_ROOT"
+      - name: Retain bounded sanitized unit evidence
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: trama-og-unit-${{ matrix.row }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ env.QUAL_ROOT }}/artifacts/
+          retention-days: 14
+          if-no-files-found: warn
+
+  probe:
+    name: OG alpha.3 synthetic probe (${{ matrix.row }})
+    needs: unit
+    if: github.actor != 'dependabot[bot]' && (github.event_name == 'workflow_dispatch' || github.event.pull_request.head.repo.full_name == github.repository)
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - row: linux-x64
+            runner: ubuntu-24.04
+          - row: macos-arm64
+            runner: macos-15
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+      - uses: astral-sh/setup-uv@bec219d24cd3e171d82865faccec33120bb574f4
+        with:
+          version: 0.12.19
+          python-version: 3.12.14
+          enable-cache: false
+      - name: Authenticate original wheel and provision separate environments
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          uv --no-config python install --managed-python --no-bin 3.12.14
+          PYTHON="$(uv python find --managed-python 3.12.14)"
+          JOB_ROOT="$("$PYTHON" -I -B -c 'import os; print(os.path.realpath(os.environ["RUNNER_TEMP"]))')/trama-og-probe"
+          printf 'QUAL_ROOT=%s\n' "$JOB_ROOT" >> "$GITHUB_ENV"
+          "$PYTHON" -I -B tests/qualification/provision.py --root "$JOB_ROOT" --producer
+      - name: Read-only fixture qualification and two negative controls
+        shell: bash
+        run: |
+          set -euo pipefail
+          "$QUAL_ROOT/consumer/bin/python" -I -B "$GITHUB_WORKSPACE/tests/qualification/real_probe.py" --root "$QUAL_ROOT"
+      - name: Retain bounded sanitized producer evidence
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: trama-og-alpha3-${{ matrix.row }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ env.QUAL_ROOT }}/artifacts/
+          retention-days: 14
+          if-no-files-found: warn

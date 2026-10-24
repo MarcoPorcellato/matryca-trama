@@ -9,5 +9,6 @@ ADRs record durable boundaries for Matryca Trama. They complement implementation
 - [ADR-0005: Clean Architecture enforcement](ADR-0005-CLEAN-ARCHITECTURE-ENFORCEMENT.md)
 - [ADR-0006: Plumber gateway adoption](ADR-0006-PLUMBER-GATEWAY-ADOPTION.md)
 - [ADR-0007: Plumber capability admission by user-facing claim](ADR-0007-PLUMBER-CAPABILITY-ADMISSION.md)
+- [ADR-0008: Test-only experimental process boundary (accepted for synthetic qualification; no consumer admission)](ADR-0008-EXPERIMENTAL-PROCESS-BOUNDARY.md)
 
 New decisions must state context, decision, alternatives, consequences, and migration or reversal conditions.
