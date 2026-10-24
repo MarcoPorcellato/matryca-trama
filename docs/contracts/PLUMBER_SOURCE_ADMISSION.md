@@ -189,3 +189,32 @@ range for other Parser versions, active Logseq desktops or user graphs follows.
 
 No payload, DB, Windows installation, writes, events, sync, UI, stable support,
 licensing permission or compatibility admission is added by this evaluation.
+
+### M1 test-only qualification decision — 2026-10-24
+
+The preceding E0 hold and one-row proposal are historical dispositions, not the
+current M1 execution scope. The owner accepted ADR-0008 only for separately
+authorized synthetic qualification and approved simplified M1 on PR #30.
+The dedicated same-repository workflow may provision the exact original wheel
+and run `describe`, one positive snapshot and two expected refusals on Linux
+x86_64 and macOS arm64 with CPython 3.12.14. There is no user-graph access.
+
+The positive run starts from an explicit alias input and canonicalizes it in
+the consumer. The negative controls require `expectation_mismatch` / exit `3`
+for the zero descriptor digest and `source_rejected` / exit `4` for the raw
+alias. Every invocation must independently satisfy output and cleanup gates;
+expected negative exits do not waive them. Fixture equality and authenticated
+golden topology, version, graph/session/revision and schema bindings remain
+mandatory. Wheel attestation must bind the full original source commit, tag,
+repository and release workflow. All owner resource bytes stay transient.
+
+This experiment makes no network-isolation claim and does not reuse Plumber's
+M6 alert exception. Its separate test-only validator environment, exact licence
+inventory and startup checks are not application-dependency admission. All
+qualifying evidence must come from the exact reviewed PR candidate and both
+hosted rows before conditional merge. No result is established by this decision
+or by source inspection; the workflow artifacts must supply it.
+
+Consumer admission in #2, the runtime-validator dependency decision and the
+real adapter under #4 remain separate owner decisions. No payload, DB, Windows,
+user graph, write, sync, release or stable compatibility claim follows.
