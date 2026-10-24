@@ -10,6 +10,21 @@ Supersedes: None
 
 Superseded by: None
 
+## Current admission disposition — 2026-10-24
+
+The capability policy below is unchanged. The owner has since adopted a
+restricted experimental admission of the joint read/topology profiles for the
+exact original alpha.3 wheel, hash-locked producer closure, CPython `3.12.14`,
+Linux x86_64/macOS arm64 and authenticated disposable synthetic fixture. The
+[source-admission record](../contracts/PLUMBER_SOURCE_ADMISSION.md#current-owner-admission--2026-10-24)
+contains the exact [#2 decision](https://github.com/MarcoPorcellato/matryca-trama/issues/2#issuecomment-6383824647)
+and immutable evidence binding. Packaged labels remain unchanged.
+
+This later owner decision satisfies only that tuple's consumer-policy gate;
+the ADR alone grants no admission or implementation authority. The separately
+approved M2 client slice remains synthetic-only. Payload, native DB, user
+graphs, general Logseq support and OS network isolation are not admitted.
+
 ## Context
 
 Trama's Plumber source-admission record requires the released
