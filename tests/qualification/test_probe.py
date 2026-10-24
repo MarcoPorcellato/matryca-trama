@@ -15,6 +15,20 @@ from resources import QualificationFailure
 
 
 class ProbeClassificationTests(unittest.TestCase):
+    def test_managed_python_is_installed_before_both_workflow_lookups(self) -> None:
+        workflow = (
+            Path(__file__).resolve().parents[2]
+            / ".github/workflows/plumber-og-consumer-qualification.yml"
+        )
+        lines = [line.strip() for line in workflow.read_text().splitlines()]
+        install = "uv --no-config python install --managed-python --no-bin 3.12.14"
+        lookup = 'PYTHON="$(uv python find --managed-python 3.12.14)"'
+        self.assertEqual(lines.count(install), 2)
+        lookups = [index for index, line in enumerate(lines) if line == lookup]
+        self.assertEqual(len(lookups), 2)
+        for index in lookups:
+            self.assertEqual(lines[index - 1], install)
+
     def test_reader_exception_preserves_captured_bytes_and_cleanup(self) -> None:
         original_read = os.read
         captured_prefix = False

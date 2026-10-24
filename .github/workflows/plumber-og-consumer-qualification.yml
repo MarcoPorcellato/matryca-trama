@@ -44,6 +44,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          uv --no-config python install --managed-python --no-bin 3.12.14
           PYTHON="$(uv python find --managed-python 3.12.14)"
           JOB_ROOT="$("$PYTHON" -I -B -c 'import os; print(os.path.realpath(os.environ["RUNNER_TEMP"]))')/trama-og-unit"
           printf 'QUAL_ROOT=%s\n' "$JOB_ROOT" >> "$GITHUB_ENV"
@@ -86,6 +87,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
+          uv --no-config python install --managed-python --no-bin 3.12.14
           PYTHON="$(uv python find --managed-python 3.12.14)"
           JOB_ROOT="$("$PYTHON" -I -B -c 'import os; print(os.path.realpath(os.environ["RUNNER_TEMP"]))')/trama-og-probe"
           printf 'QUAL_ROOT=%s\n' "$JOB_ROOT" >> "$GITHUB_ENV"
