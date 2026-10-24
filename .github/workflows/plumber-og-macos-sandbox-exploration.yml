@@ -1,0 +1,64 @@
+name: Exploratory synthetic macOS sandbox
+
+on:
+  workflow_dispatch:
+    inputs:
+      expected_source:
+        description: Exact reviewed Trama source commit
+        required: true
+        type: string
+
+permissions:
+  contents: read
+  attestations: read
+
+concurrency:
+  group: og-sandbox-exploration
+  cancel-in-progress: false
+
+jobs:
+  exploration:
+    name: Exploratory only - alpha.3 synthetic macOS
+    if: github.actor != 'dependabot[bot]' && github.sha == inputs.expected_source && github.run_attempt == 1
+    runs-on: macos-15
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: ${{ inputs.expected_source }}
+          persist-credentials: false
+      - uses: astral-sh/setup-uv@bec219d24cd3e171d82865faccec33120bb574f4
+        with:
+          version: 0.12.19
+          python-version: 3.12.14
+          enable-cache: false
+      - name: Prepare exact runtime and run offline exploration controls
+        shell: bash
+        run: |
+          set -euo pipefail
+          uv --no-config python install --managed-python --no-bin 3.12.14
+          PYTHON="$(uv python find --managed-python 3.12.14)"
+          "$PYTHON" -I -B -m unittest discover -s tests/exploration -q
+          printf 'M3_PYTHON=%s\n' "$PYTHON" >> "$GITHUB_ENV"
+          JOB_ROOT="$("$PYTHON" -I -B -c 'import os; print(os.path.realpath(os.environ["RUNNER_TEMP"]))')/trama-og-m3"
+          printf 'QUAL_ROOT=%s\n' "$JOB_ROOT" >> "$GITHUB_ENV"
+      - name: Authenticate immutable alpha.3 and provision separate environments
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          "$M3_PYTHON" -I -B tests/qualification/provision.py --root "$QUAL_ROOT" --producer
+      - name: One non-qualifying OS-canary and producer experiment
+        shell: bash
+        run: |
+          set -euo pipefail
+          "$QUAL_ROOT/consumer/bin/python" -I -B tests/exploration/macos_sandbox.py --root "$QUAL_ROOT"
+      - name: Retain sanitized exploratory evidence
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: trama-m3-exploratory-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ env.QUAL_ROOT }}/artifacts/
+          retention-days: 14
+          if-no-files-found: warn
