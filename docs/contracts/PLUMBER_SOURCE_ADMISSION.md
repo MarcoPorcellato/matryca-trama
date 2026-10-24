@@ -1,8 +1,9 @@
 # Plumber Source Admission Record
 
-> **Status:** source-pinned and released-package documentary evidence only.
-> This record is not a release artifact, consumer-profile admission, or Trama
-> runtime compatibility evidence.
+> **Current status:** restricted experimental owner admission for the exact
+> synthetic-only alpha.3 read/topology tuple recorded below. This record is
+> not a release artifact or a general compatibility claim. Earlier source,
+> documentary and M1 pre-admission dispositions remain historical evidence.
 
 ## Purpose
 
@@ -16,6 +17,33 @@ contains only original prose, object identifiers, paths, and digests. A future
 implementation must consume a released public artifact through a Trama-owned
 outer adapter behind `KnowledgeGraphGateway`; it must not copy owner semantics
 or import Plumber implementation modules.
+
+## Current owner admission — 2026-10-24
+
+The owner adopted the following decision in [issue #2, comment
+6383824647](https://github.com/MarcoPorcellato/matryca-trama/issues/2#issuecomment-6383824647).
+The [immutable receipt](https://github.com/MarcoPorcellato/matryca-trama/blob/b530071f808a044f09c33a791278669c52824f48/docs/status/receipts/2026-10-24-og-alpha3-consumer-qualification.md)
+and evidence JSON SHA-256
+`3514abaf61d98e46e74f701dc2ab18c1514877308043c3520b19c3a581681f29`
+remain the exact evidentiary binding. PR #31 preserved that evidence on main
+without changing its original immutable commit or producer bytes.
+
+> I accept the exact alpha.3 original-wheel producer and Trama M1 evidence bound by the [immutable public receipt](https://github.com/MarcoPorcellato/matryca-trama/blob/b530071f808a044f09c33a791278669c52824f48/docs/status/receipts/2026-10-24-og-alpha3-consumer-qualification.md), with evidence JSON SHA-256 `3514abaf61d98e46e74f701dc2ab18c1514877308043c3520b19c3a581681f29`, for restricted experimental admission of the jointly bound `plumber.graph.read/v1` and `plumber.graph.topology/v1` profiles.
+>
+> This admission is limited to Plumber `2.1.0a3` from producer `8c30f70e217722e719c5aedc322219ebccb87e68`, the original wheel SHA-256 `e5bc586a3da76d8e11760b39c9d7ac45b62b1240f085a8a96a573b9902bfea12`, its exact hash-locked producer closure with Parser `1.9.0`, CPython `3.12.14`, Linux x86_64/macOS arm64, and the authenticated disposable synthetic fixture.
+>
+> I expressly accept the external experimental evidence for this consumer-policy decision while preserving all packaged `proposed` / `static-only-unqualified` / `unqualified` / `planned` labels. No general Logseq application/version-range, OS network-isolation or stable-support claim follows.
+>
+> This admits no runtime dependency, real adapter, user graph, payload or native DB. Issue #4 may be scoped only for this same synthetic-only tuple after adoption; implementation still requires separate approval. Issue #2 remains open.
+
+This is an owner policy decision accepting exact external experimental
+evidence, not a change to packaged status labels or a retrospective claim that
+the earlier observations admitted a consumer. The later, separately approved
+M2 implementation scope permits only a synthetic-fixture client behind a
+Trama-owned domain port; it does not widen this tuple or authorize user graphs.
+No implementation or new qualification result is established by this
+documentation-only adoption. The earlier holds below describe their dated
+contexts and must not be used as the current admission disposition.
 
 ## Pinned upstream observation
 

@@ -7,7 +7,26 @@ Plumber public contracts and remain unaware of Parser and source adapters. The
 remains a migration plan; no canonical contract artifact or consumer profile is
 published by this decision.
 
-## Current verified baseline
+## Current restricted Plumber admission — 2026-10-24
+
+The owner decision in [issue #2, comment
+6383824647](https://github.com/MarcoPorcellato/matryca-trama/issues/2#issuecomment-6383824647)
+admits only the jointly bound `plumber.graph.read/v1` and
+`plumber.graph.topology/v1` experimental tuple: original Plumber `2.1.0a3`
+wheel, producer `8c30f70e217722e719c5aedc322219ebccb87e68`, its exact
+hash-locked closure with Parser `1.9.0`, CPython `3.12.14`, Linux x86_64/macOS
+arm64, and the authenticated disposable synthetic fixture. The
+[source-admission record](contracts/PLUMBER_SOURCE_ADMISSION.md#current-owner-admission--2026-10-24)
+preserves the exact decision, wheel digest and immutable M1 evidence.
+
+Packaged qualification labels are unchanged. This is not general Logseq,
+network-isolation, stable, payload, DB or user-graph support. Issue #2 remains
+open. The separately approved M2 slice under #4 is a synthetic-only client
+implementation and qualification task, not a delivered adapter or permission
+to inspect an arbitrary graph. A future real-vault capability profile remains
+separate work in [Plumber #654](https://github.com/MarcoPorcellato/matryca-plumber/issues/654).
+
+## Historical experimental baseline
 
 The resolved `origin/main` merge parent is
 `70fc14c27b11e31e8f557fd70684b6a83933e7d6`; it retains
@@ -105,6 +124,11 @@ exactly one supported official-host route or records `capability_no_go` or
 `upstream_blocked`. Trama builds no partial DB adapter.
 
 ### Phase 3 — Trama Plumber consumer profile
+
+The current M2 slice is limited to the exact synthetic-only admission above.
+It may implement the domain port and outer client under its separate owner
+approval; all broader capabilities in this phase retain their existing gates.
+No successful client or later real-vault qualification is claimed here.
 
 After Plumber publishes the contract, Trama may implement a Plumber client adapter
 behind its internal domain port. A qualified `og_markdown` Plumber profile may

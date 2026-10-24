@@ -1,6 +1,7 @@
 # ADR-0008: Experimental Process-Boundary Proposal
 
-Status: Accepted for test-only synthetic qualification; non-admitting
+Status: Accepted for test-only synthetic qualification; this ADR is non-admitting.
+Later restricted owner admission is recorded separately below.
 
 Date: 2026-10-23
 
@@ -11,6 +12,23 @@ Owner: Marco Porcellato
 Supersedes: None
 
 Superseded by: None
+
+## Current disposition — 2026-10-24
+
+This ADR preserves the M1 test-only decision, its pre-admission candidate
+matrix and its process mechanics. M1's hosted synthetic qualification later
+passed, and the owner separately adopted the exact original alpha.3
+read/topology tuple in [#2, comment
+6383824647](https://github.com/MarcoPorcellato/matryca-trama/issues/2#issuecomment-6383824647).
+The [source-admission record](../contracts/PLUMBER_SOURCE_ADMISSION.md#current-owner-admission--2026-10-24)
+records the exact decision and immutable evidence, not a change to packaged
+qualification flags. References below to candidate, blocked or non-admitted
+status describe the M1 decision at that time, not the later owner disposition.
+
+The subsequently approved M2 client implementation is a separate,
+synthetic-only slice under #4. It does not admit a runtime dependency on
+Plumber or Parser, arbitrary graph access, payload, DB or a broader platform
+claim. This ADR still grants no user-graph access or OS network isolation.
 
 ## Context
 
