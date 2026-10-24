@@ -49,7 +49,9 @@ def disk_admit(root: Path) -> None:
 
 
 def save_result(
-    root: Path, label: str, result: process_boundary.ProcessResult | process_boundary.ProcessFailure
+    root: Path,
+    label: str,
+    result: process_boundary.ProcessResult | process_boundary.ProcessFailure,
 ) -> None:
     artifacts = root / "artifacts"
     replacements = {
@@ -86,10 +88,16 @@ def save_result(
 
 
 def run_tool(
-    root: Path, label: str, argv: list[str], *, environment: dict[str, str] | None = None
+    root: Path,
+    label: str,
+    argv: list[str],
+    *,
+    environment: dict[str, str] | None = None,
 ) -> process_boundary.ProcessResult:
     try:
-        result = process_boundary.run_process(argv, timeout_seconds=180, environment=environment)
+        result = process_boundary.run_process(
+            argv, timeout_seconds=180, environment=environment
+        )
     except process_boundary.ProcessFailure as error:
         save_result(root, label, error)
         raise
@@ -99,7 +107,9 @@ def run_tool(
             try:
                 save_result(root, label, captured)
             except BaseException as retention_error:
-                error.add_note("Evidence retention failed: " + type(retention_error).__name__)
+                error.add_note(
+                    "Evidence retention failed: " + type(retention_error).__name__
+                )
         raise
     save_result(root, label, result)
     disk_admit(root)
@@ -139,7 +149,9 @@ def download(root: Path, artifact: dict) -> Path:
 
 
 def inspect_dependency(wheel: Path, artifact: dict) -> dict:
-    directory = artifact["name"].replace("-", "_") + "-" + artifact["version"] + ".dist-info/"
+    directory = (
+        artifact["name"].replace("-", "_") + "-" + artifact["version"] + ".dist-info/"
+    )
     raw = resources.read_member(wheel, directory + "METADATA")
     metadata = BytesParser().parsebytes(raw)
 
@@ -152,7 +164,9 @@ def inspect_dependency(wheel: Path, artifact: dict) -> dict:
         "wheel metadata identity mismatch",
     )
     declared = metadata.get("License-Expression") or metadata.get("License")
-    resources.require(declared == artifact["license"], "wheel license declaration mismatch")
+    resources.require(
+        declared == artifact["license"], "wheel license declaration mismatch"
+    )
     with zipfile.ZipFile(wheel) as archive:
         names = [
             name
@@ -161,9 +175,13 @@ def inspect_dependency(wheel: Path, artifact: dict) -> dict:
             and ("license" in name.lower() or name.lower().endswith("copying"))
             and not name.endswith("/")
         ]
-    resources.require(bool(names) and len(names) <= 8, "wheel license notice absent/unbounded")
+    resources.require(
+        bool(names) and len(names) <= 8, "wheel license notice absent/unbounded"
+    )
     notices = {
-        name: hashlib.sha256(resources.read_member(wheel, name, limit=262_144)).hexdigest()
+        name: hashlib.sha256(
+            resources.read_member(wheel, name, limit=262_144)
+        ).hexdigest()
         for name in names
     }
     return {
@@ -222,7 +240,9 @@ def main() -> None:
     parser.add_argument("--producer", action="store_true")
     args = parser.parse_args()
     root = args.root.absolute()
-    resources.require(root.parent.resolve() == root.parent, "provisioning parent must be canonical")
+    resources.require(
+        root.parent.resolve() == root.parent, "provisioning parent must be canonical"
+    )
     root.mkdir(parents=False, exist_ok=False)
     (root / "artifacts").mkdir()
     inputs = resources.strict_json((HERE / "inputs.json").read_bytes())
@@ -237,13 +257,15 @@ def main() -> None:
     try:
         disk_admit(root)
         resources.require(
-            (platform.system(), platform.machine()) in (("Linux", "x86_64"), ("Darwin", "arm64")),
+            (platform.system(), platform.machine())
+            in (("Linux", "x86_64"), ("Darwin", "arm64")),
             "unsupported qualification row",
         )
         if args.producer:
             resources.require(
                 os.environ.get("GITHUB_ACTIONS") == "true"
-                and os.environ.get("GITHUB_REPOSITORY") == "MarcoPorcellato/matryca-trama",
+                and os.environ.get("GITHUB_REPOSITORY")
+                == "MarcoPorcellato/matryca-trama",
                 "real producer provisioning is hosted-only",
             )
             resources.require(
@@ -260,7 +282,9 @@ def main() -> None:
             }
             if "GH_TOKEN" in os.environ:
                 environment["GH_TOKEN"] = os.environ["GH_TOKEN"]
-            run_tool(root, "attestation-version", [gh, "--version"], environment=environment)
+            run_tool(
+                root, "attestation-version", [gh, "--version"], environment=environment
+            )
             capabilities = run_tool(
                 root,
                 "attestation-capabilities",
@@ -301,7 +325,9 @@ def main() -> None:
                 ],
                 environment=environment,
             )
-            raw = resources.owner_resource(wheel, inputs, "requirements-og-v1-parser-1.9.0.txt")
+            raw = resources.owner_resource(
+                wheel, inputs, "requirements-og-v1-parser-1.9.0.txt"
+            )
             requirements = root / "producer-requirements.txt"
             with requirements.open("xb") as file:
                 file.write(raw)
@@ -327,7 +353,8 @@ def main() -> None:
             if artifact["platform"] in ("any", platform.system())
         ]
         resources.require(
-            len(selected) == 6 and len({artifact["name"] for artifact in selected}) == 6,
+            len(selected) == 6
+            and len({artifact["name"] for artifact in selected}) == 6,
             "consumer wheel matrix mismatch",
         )
         wheelhouse = root / "consumer-wheels"
@@ -364,7 +391,22 @@ def main() -> None:
             run_tool(
                 root,
                 "unit",
-                [str(consumer), "-I", "-B", "-m", "unittest", "discover", "-s", str(HERE), "-q"],
+                [
+                    str(consumer),
+                    "-I",
+                    "-B",
+                    "-m",
+                    "unittest",
+                    "discover",
+                    "-s",
+                    str(HERE),
+                    "-q",
+                ],
+            )
+            run_tool(
+                root,
+                "client-unit",
+                [str(consumer), "-I", "-B", str(HERE / "process_boundary.py")],
             )
         disk_admit(root)
         state["complete"] = True
@@ -372,7 +414,10 @@ def main() -> None:
         state["error"] = type(error).__name__
         state["error_detail"] = resources.sanitize(
             str(error).encode()[:512],
-            replacements={str(root): "<qualification-root>", str(Path.home()): "<home>"},
+            replacements={
+                str(root): "<qualification-root>",
+                str(Path.home()): "<home>",
+            },
         ).decode()
         raise
     finally:
@@ -383,5 +428,8 @@ if __name__ == "__main__":
     try:
         main()
     except Exception as error:
-        print("Qualification provisioning failed: " + type(error).__name__, file=sys.stderr)
+        print(
+            "Qualification provisioning failed: " + type(error).__name__,
+            file=sys.stderr,
+        )
         raise SystemExit(1) from None

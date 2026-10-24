@@ -37,6 +37,8 @@ jobs:
       - run: uv run --all-packages python scripts/validate_architecture.py
       - run: uv run --all-packages python -m unittest discover -s tests/architecture -v
       - run: uv run --all-packages python -m unittest discover -s tests/contracts -v
+      - run: uv run --all-packages python -m unittest discover -s tests/core -v
+      - run: uv run --all-packages python -m unittest discover -s tests/client -v
       - run: uv run --all-packages python -m unittest discover -s tests/containment -v
       - run: uv run --all-packages python -m unittest tests.integration.test_plumber_consumer -v
       - run: uv run --all-packages python -m unittest tests.test_foundation_validator -v
@@ -61,6 +63,8 @@ class WorkflowContractTests(unittest.TestCase):
             "uv run --all-packages python scripts/validate_architecture.py",
             "uv run --all-packages python -m unittest discover -s tests/architecture -v",
             "uv run --all-packages python -m unittest discover -s tests/contracts -v",
+            "uv run --all-packages python -m unittest discover -s tests/core -v",
+            "uv run --all-packages python -m unittest discover -s tests/client -v",
             "uv run --all-packages python -m unittest discover -s tests/containment -v",
             "uv run --all-packages python -m unittest tests.integration.test_plumber_consumer -v",
             "uv run --all-packages python -m unittest tests.test_foundation_validator -v",
@@ -160,6 +164,8 @@ class WorkflowContractTests(unittest.TestCase):
                 "uv run --all-packages python scripts/validate_architecture.py",
                 "uv run --all-packages python -m unittest discover -s tests/architecture -v",
                 "uv run --all-packages python -m unittest discover -s tests/contracts -v",
+                "uv run --all-packages python -m unittest discover -s tests/core -v",
+                "uv run --all-packages python -m unittest discover -s tests/client -v",
                 "uv run --all-packages python -m unittest discover -s tests/containment -v",
                 "uv run --all-packages python -m unittest tests.integration.test_plumber_consumer -v",
                 "uv run --all-packages python -m unittest tests.test_foundation_validator -v",

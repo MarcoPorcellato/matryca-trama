@@ -4,6 +4,13 @@ on:
   pull_request:
     paths:
       - tests/qualification/**
+      - tests/client/**
+      - tests/core/**
+      - packages/plumber-client/**
+      - packages/core/**
+      - architecture.toml
+      - pyproject.toml
+      - uv.lock
       - tests/fakes/**
       - tests/containment/test_fake_producer_boundary.py
       - .github/workflows/plumber-og-consumer-qualification.yml

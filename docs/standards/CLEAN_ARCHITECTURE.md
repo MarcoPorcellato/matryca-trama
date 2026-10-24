@@ -25,6 +25,25 @@ workspace sources bind local distributions.
 | `trama-parser-bridge` | Python standard library; core; contracts; documented Parser package-root API | Parser internals; adapters; Plumber; Brain; Pro; apps; Nodi |
 | `trama-logseq-og-adapter` | Python standard library; contracts; core; parser bridge | direct Parser imports after R1 migration; DB or Shadow implementations; Plumber; Brain; Pro; apps; Nodi; network clients |
 | `trama-plumber-bridge` | Python standard library; contracts; core when needed | Plumber implementation imports; Parser; host adapters; Brain; Pro; apps; Nodi |
+| `trama-plumber-client` | Python standard library; core | contracts, historical bridges/adapters, Plumber or Parser implementation imports; host SDKs; Brain; Pro; network clients |
+
+The separately approved M2 package `trama-plumber-client` is restricted to the
+exact synthetic-only alpha.3 tuple in the [admission record](../contracts/PLUMBER_SOURCE_ADMISSION.md#current-owner-admission--2026-10-24).
+It implements the Trama-owned `KnowledgeGraphGateway` port and maps bounded
+owner wire results into immutable core values. It has no third-party runtime
+dependency. Owner schemas remain authoritative and transient in qualification;
+the strict standard-library runtime mapper is not a replacement schema.
+The qualification builder alone issues the structural fixture handle before
+content reads or producer launch. No arbitrary-root or bypass option is part
+of the client interface. This API scope guard is not an OS sandbox or protection
+against malicious code already executing inside the consumer process.
+
+The read-only posture scanner permits the package's reviewed POSIX process and
+metadata imports only beneath `packages/plumber-client/src/trama_plumber_client`.
+That path-specific rule does not allow filesystem writes, `open`, network,
+SQLite, dynamic imports or the same process authority in any other package.
+The moved process helper retains its existing ownership, incremental output,
+shared five-second finalization and reap-plus-ESRCH gates.
 
 The current Parser bridge, OG adapter, and Plumber bridge are historical
 experimental packages retained for their bounded synthetic evidence. Their

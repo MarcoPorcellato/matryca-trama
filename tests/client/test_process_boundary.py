@@ -1,4 +1,4 @@
-"""Behavioral controls for the promoted test-only process boundary."""
+"""Unchanged lifecycle controls for the moved synthetic-client boundary."""
 
 import errno
 import os
@@ -9,7 +9,7 @@ from pathlib import Path
 from typing import Any
 from unittest.mock import patch
 
-import process_boundary as boundary
+from trama_plumber_client import _process as boundary
 
 
 class QualificationProcessTests(unittest.TestCase):
@@ -51,7 +51,8 @@ class QualificationProcessTests(unittest.TestCase):
     def run_child(self, code: str, **options: Any) -> boundary.ProcessResult:
         self.assertEqual(
             Path(boundary.__file__).resolve(),
-            Path(__file__).with_name("process_boundary.py").resolve(),
+            Path(__file__).resolve().parents[2]
+            / "packages/plumber-client/src/trama_plumber_client/_process.py",
         )
         return boundary.run_process(
             [sys.executable, "-I", "-B", "-c", code],

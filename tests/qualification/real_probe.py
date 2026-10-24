@@ -3,26 +3,45 @@
 from __future__ import annotations
 
 import argparse
+import copy
+from dataclasses import asdict
 import hashlib
 import json
 import os
 import platform
 import sys
-import tempfile
 from importlib import metadata
-from pathlib import Path, PurePosixPath
+from pathlib import Path
+from unittest.mock import patch
 
 HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
 import process_boundary  # noqa: E402 - admit only the resolved sibling directory first.
 import resources  # noqa: E402 - admit only the resolved sibling directory first.
 import validation  # noqa: E402 - admit only the resolved sibling directory first.
+import fixture_builder  # noqa: E402
+from trama_core.graph_values import GraphGatewayError, GraphSnapshot  # noqa: E402
+from trama_plumber_client import adapter as client_module  # noqa: E402
+from trama_plumber_client import _mapping as client_mapping  # noqa: E402
 
-for module in (process_boundary, resources, validation):
+for module in (process_boundary, resources, validation, fixture_builder):
     resources.require(
         Path(module.__file__).resolve() == HERE / (module.__name__ + ".py")
         and Path(module.__spec__.origin).resolve() == Path(module.__file__).resolve(),
         "qualification sibling origin mismatch",
+    )
+
+for module, package, filename in (
+    (client_module, "plumber-client", "adapter.py"),
+    (client_mapping, "plumber-client", "_mapping.py"),
+):
+    expected = (
+        HERE.parents[1] / "packages" / package / "src/trama_plumber_client" / filename
+    )
+    resources.require(
+        Path(module.__file__).resolve() == expected
+        and Path(module.__spec__.origin).resolve() == expected,
+        "qualification client module origin mismatch",
     )
 
 
@@ -34,7 +53,9 @@ def write_json(path: Path, value: object) -> None:
 
 
 def retain(
-    root: Path, label: str, result: process_boundary.ProcessResult | process_boundary.ProcessFailure
+    root: Path,
+    label: str,
+    result: process_boundary.ProcessResult | process_boundary.ProcessFailure,
 ) -> dict:
     replacements = {
         str(root): "<qualification-root>",
@@ -92,7 +113,9 @@ def invoke(
             code = value.get("error", "unclassified")
         except resources.QualificationFailure:
             code = "unclassified"
-        resources.require(code == expected_error, "negative-control error mismatch: " + str(code))
+        resources.require(
+            code == expected_error, "negative-control error mismatch: " + str(code)
+        )
         evidence["expected_negative"] = code
         return evidence
     except BaseException as error:
@@ -101,40 +124,98 @@ def invoke(
             try:
                 retain(root, label, captured)
             except BaseException as retention_error:
-                error.add_note("Evidence retention failed: " + type(retention_error).__name__)
+                error.add_note(
+                    "Evidence retention failed: " + type(retention_error).__name__
+                )
         raise
     evidence = retain(root, label, result)
     resources.require(expected_exit == 0, "negative control unexpectedly succeeded")
     resources.require(
-        not result.stderr and result.cleanup_succeeded, "positive process stderr/cleanup rejected"
+        not result.stderr and result.cleanup_succeeded,
+        "positive process stderr/cleanup rejected",
     )
     return resources.strict_json(result.stdout)
 
 
-def make_fixture(root: Path, wheel: Path, inputs: dict, manifest: dict) -> Path:
-    parent = root / "synthetic"
-    parent.mkdir()
-    graph = Path(tempfile.mkdtemp(prefix="graph-", dir=parent)).resolve()
-    files = manifest["files"]
-    resources.require(0 < len(files) <= 1024, "fixture manifest file bound rejected")
-    for logical, expected in files.items():
-        path = PurePosixPath(logical)
+def invoke_client(
+    root: Path, label: str, client, *, graph: Path
+) -> tuple[dict, GraphSnapshot | None]:
+    """Retain existing reader results after termination, without a second owner."""
+    captured = []
+    calls = 0
+
+    def retain_call(argv, **options):
+        nonlocal calls
+        calls += 1
+        resources.require(calls == 1, "client retried an invocation")
+        if label == "snapshot":
+            resources.require(
+                argv[argv.index("--graph-root") + 1] == str(graph),
+                "client did not canonicalize the positive alias",
+            )
+        try:
+            result = process_boundary.run_process(argv, **options)
+        except BaseException as error:
+            evidence = (
+                error
+                if isinstance(error, process_boundary.ProcessFailure)
+                else getattr(error, "process_evidence", None)
+            )
+            if isinstance(evidence, process_boundary.ProcessFailure):
+                try:
+                    retain(root, label, evidence)
+                except BaseException as retention_error:
+                    error.add_note(
+                        "Evidence retention failed: " + type(retention_error).__name__
+                    )
+            raise
+        captured.append(result)
+        retain(root, label, result)
+        return result
+
+    # Only the call site's reference is traced. The existing package reader
+    # remains the sole lifecycle owner and runs exactly once, unchanged.
+    with patch.object(client_module, "run_process", side_effect=retain_call):
+        mapped = client.snapshot() if label == "snapshot" else client.describe()
+    resources.require(calls == len(captured) == 1, "client invocation evidence absent")
+    return resources.strict_json(captured[0].stdout), mapped
+
+
+def differential_cases(document: dict, schemas: dict) -> int:
+    """Evidence of agreement on these cases, never schema equivalence."""
+    cases = [(copy.deepcopy(document), True)]
+    for path, replacement in (
+        (("read", "schema_version"), True),
+        (("topology", "session", "schema_version"), 2),
+        (("topology", "result", "nodes", 0, "ordinal"), -1),
+        (("topology", "result", "nodes", 0, "kind"), "unknown"),
+        (("topology", "result", "edges", 0, "kind"), "unknown"),
+    ):
+        changed = copy.deepcopy(document)
+        cursor = changed
+        for key in path[:-1]:
+            cursor = cursor[key]
+        cursor[path[-1]] = replacement
+        cases.append((changed, False))
+    changed = copy.deepcopy(document)
+    changed["topology"]["result"]["unexpected"] = "not permitted"
+    cases.append((changed, False))
+    for value, expected in cases:
+        owner_pass = mapper_pass = True
+        try:
+            for name in ("read", "topology"):
+                validation.owner_validate(value[name], schemas[name])
+        except resources.QualificationFailure:
+            owner_pass = False
+        try:
+            client_mapping.snapshot_from_bytes(json.dumps(value).encode())
+        except GraphGatewayError:
+            mapper_pass = False
         resources.require(
-            not path.is_absolute()
-            and ".." not in path.parts
-            and path.parts[0] in ("pages", "journals")
-            and path.suffix == ".md",
-            "fixture path rejected",
+            owner_pass is expected and mapper_pass is expected,
+            "owner-schema/consumer differential disagreement",
         )
-        raw = resources.read_member(wheel, inputs["resource_prefix"] + "fixtures/" + logical)
-        resources.require(
-            hashlib.sha256(raw).hexdigest() == expected["sha256"], "fixture digest mismatch"
-        )
-        destination = graph.joinpath(*path.parts)
-        destination.parent.mkdir(parents=True, exist_ok=True)
-        with destination.open("xb") as stream:
-            stream.write(raw)
-    return graph
+    return len(cases)
 
 
 def main() -> None:
@@ -165,10 +246,12 @@ def main() -> None:
             "real producer probe is hosted-only",
         )
         resources.require(
-            platform.python_version() == inputs["versions"]["python"], "exact runtime mismatch"
+            platform.python_version() == inputs["versions"]["python"],
+            "exact runtime mismatch",
         )
         resources.require(
-            (platform.system(), platform.machine()) in (("Linux", "x86_64"), ("Darwin", "arm64")),
+            (platform.system(), platform.machine())
+            in (("Linux", "x86_64"), ("Darwin", "arm64")),
             "qualification platform mismatch",
         )
 
@@ -176,14 +259,20 @@ def main() -> None:
             return value.lower().replace("_", "-")
 
         installed = {
-            normalize(item.metadata["Name"]): item.version for item in metadata.distributions()
+            normalize(item.metadata["Name"]): item.version
+            for item in metadata.distributions()
         }
         resources.require(
-            installed == inputs["consumer_distributions"], "consumer distribution identity mismatch"
+            installed == inputs["consumer_distributions"],
+            "consumer distribution identity mismatch",
         )
-        wheel = root / "downloads" / inputs["wheel"]["sha256"] / inputs["wheel"]["filename"]
+        wheel = (
+            root / "downloads" / inputs["wheel"]["sha256"] / inputs["wheel"]["filename"]
+        )
         resources.verify_file(wheel, inputs["wheel"]["sha256"], inputs["wheel"]["size"])
-        provision = resources.strict_json((root / "artifacts" / "provision.json").read_bytes())
+        provision = resources.strict_json(
+            (root / "artifacts" / "provision.json").read_bytes()
+        )
         resources.require(
             provision["complete"] is True
             and provision["source_commit"] == inputs["source_commit"]
@@ -191,7 +280,9 @@ def main() -> None:
             and provision["consumer_startup_check"] == "pass-before-first-start",
             "provisioning evidence mismatch",
         )
-        attestation = resources.strict_json((root / "artifacts" / "attestation.json").read_bytes())
+        attestation = resources.strict_json(
+            (root / "artifacts" / "attestation.json").read_bytes()
+        )
         resources.require(
             type(attestation["returncode"]) is int
             and attestation["returncode"] == 0
@@ -219,21 +310,21 @@ def main() -> None:
         fixture_manifest = resources.strict_json(
             resources.owner_resource(wheel, inputs, "fixture-manifest.json")
         )
-        graph = make_fixture(root, wheel, inputs, fixture_manifest)
-        alias = root / "input-alias"
-        alias.symlink_to(graph, target_is_directory=True)
+        fixture = fixture_builder.build_fixture(root, wheel, inputs, fixture_manifest)
+        graph = Path(fixture.canonical_root)
+        alias = Path(fixture.input_alias)
         resources.require(
-            str(alias) != os.path.realpath(alias), "noncanonical alias was not exercised"
+            str(alias) != os.path.realpath(alias),
+            "noncanonical alias was not exercised",
         )
         before = resources.fixture_ledger(graph)
         write_json(root / "artifacts" / "fixture-before.json", before)
         producer = str(root / "producer" / "bin" / "python")
         digest = inputs["resources"]["descriptor.json"]
-        describe = invoke(
-            root,
-            "describe",
-            [producer, "-I", "-B", "-m", "matryca_plumber.graph_gateway", "describe"],
+        client = client_module.PlumberClientAdapter(
+            producer, fixture, expected_resolved_python=os.path.realpath(producer)
         )
+        describe, _ = invoke_client(root, "describe", client, graph=graph)
         state["invocations"].append("describe")
         resources.require(
             set(describe) == {"descriptor", "descriptor_sha256"}
@@ -241,17 +332,31 @@ def main() -> None:
             and describe["descriptor_sha256"] == digest,
             "describe binding mismatch",
         )
-        positive = validation.snapshot_argv(producer, alias, digest)
-        resources.require(
-            positive[positive.index("--graph-root") + 1] == str(graph),
-            "positive alias canonicalization failed",
-        )
-        snapshot = invoke(root, "snapshot", positive)
+        snapshot, mapped = invoke_client(root, "snapshot", client, graph=graph)
         state["invocations"].append("snapshot")
-        canaries = [item["value"] for item in fixture_manifest["privacy_canaries"].values()]
+        canaries = [
+            item["value"] for item in fixture_manifest["privacy_canaries"].values()
+        ]
         validation.validate_snapshot(
             snapshot, descriptor, digest, schemas, golden, inputs["versions"], canaries
         )
+        resources.require(isinstance(mapped, GraphSnapshot), "domain snapshot absent")
+        resources.require(
+            [asdict(node) for node in mapped.topology.nodes] == golden["nodes"]
+            and [
+                {**asdict(edge), "kind": "reference"} for edge in mapped.topology.edges
+            ]
+            == golden["edges"]
+            and mapped.topology.id == golden["topology_id"]
+            and mapped.identity.graph_id == snapshot["read"]["graph_id"]
+            and mapped.identity.session_id == snapshot["read"]["session"]["id"]
+            and mapped.identity.source_revision == snapshot["read"]["source_revision"]
+            and mapped.provenance.producer_source == inputs["source_commit"]
+            and mapped.provenance.producer_artifact_sha256 == inputs["wheel"]["sha256"],
+            "mapped domain result differs from authenticated evidence",
+        )
+        state["owner_schema_differential_cases"] = differential_cases(snapshot, schemas)
+        state["client_domain_mapping"] = "pass"
         state["positive_alias_canonicalized"] = True
         state["snapshot_bindings"] = {
             "graph_id": snapshot["read"]["graph_id"],
@@ -274,12 +379,32 @@ def main() -> None:
             expected_error="source_rejected",
         )
         state["invocations"].append("raw-alias")
+        oversized = fixture_builder.build_file_bound_control(root)
+        bound_before = fixture_builder.file_bound_ledger(oversized)
+        try:
+            invoke(
+                root,
+                "file-bound",
+                validation.snapshot_argv(producer, oversized, digest),
+                expected_exit=5,
+                expected_error="bounds_exceeded",
+            )
+            state["invocations"].append("file-bound")
+        finally:
+            bound_after = fixture_builder.file_bound_ledger(oversized)
+            state["file_bound_control"] = {"before": bound_before, "after": bound_after}
+            resources.require(
+                bound_before == bound_after, "file-bound synthetic fixture changed"
+            )
         state["complete"] = True
     except BaseException as error:
         state["error"] = type(error).__name__
         state["error_detail"] = resources.sanitize(
             str(error).encode()[:512],
-            replacements={str(root): "<qualification-root>", str(Path.home()): "<home>"},
+            replacements={
+                str(root): "<qualification-root>",
+                str(Path.home()): "<home>",
+            },
         ).decode()
         raise
     finally:
@@ -293,12 +418,16 @@ def main() -> None:
                 state["fixture_unchanged"] = False
             state["complete"] = state["complete"] and state["fixture_unchanged"]
         write_json(root / "artifacts" / "receipt.json", state)
-        resources.require(state["fixture_unchanged"] or graph is None, "synthetic fixture changed")
+        resources.require(
+            state["fixture_unchanged"] or graph is None, "synthetic fixture changed"
+        )
 
 
 if __name__ == "__main__":
     try:
         main()
     except Exception as error:
-        print("Synthetic qualification failed: " + type(error).__name__, file=sys.stderr)
+        print(
+            "Synthetic qualification failed: " + type(error).__name__, file=sys.stderr
+        )
         raise SystemExit(1) from None

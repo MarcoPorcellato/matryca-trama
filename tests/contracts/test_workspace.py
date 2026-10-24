@@ -10,5 +10,6 @@ class WorkspaceTest(unittest.TestCase):
             "trama_parser_bridge",
             "trama_logseq_og_adapter",
             "trama_plumber_bridge",
+            "trama_plumber_client",
         ):
             self.assertIsNotNone(importlib.import_module(name))

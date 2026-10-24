@@ -16,6 +16,52 @@ from resources import QualificationFailure
 
 
 class ProbeClassificationTests(unittest.TestCase):
+    def test_client_shape_failure_retains_output_before_domain_translation(
+        self,
+    ) -> None:
+        from trama_plumber_client._fixture import _created_fixture
+        from trama_core.graph_values import GraphGatewayError
+
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary).resolve()
+            (root / "artifacts").mkdir()
+            graph = root / "synthetic"
+            graph.mkdir()
+            alias = root / "alias"
+            alias.symlink_to(graph, target_is_directory=True)
+            fixture = _created_fixture(str(root), str(graph), str(alias))
+            client = real_probe.client_module.PlumberClientAdapter(
+                sys.executable,
+                fixture,
+                expected_resolved_python=os.path.realpath(sys.executable),
+            )
+            result = process_boundary.ProcessResult(
+                stdout=b"[]\n",
+                stderr=b"",
+                returncode=0,
+                child_reaped=True,
+                group_probe_errno=errno.ESRCH,
+                cleanup_succeeded=True,
+                cleanup_exception=None,
+                observations=(),
+                events=(),
+            )
+            with (
+                patch.object(
+                    process_boundary, "run_process", return_value=result
+                ) as launch,
+                self.assertRaises(GraphGatewayError),
+            ):
+                real_probe.invoke_client(root, "snapshot", client, graph=graph)
+            self.assertEqual(launch.call_count, 1)
+            self.assertEqual(
+                (root / "artifacts/snapshot.stdout.txt").read_bytes(), b"[]\n"
+            )
+            evidence = json.loads(
+                (root / "artifacts/snapshot.lifecycle.json").read_bytes()
+            )
+            self.assertTrue(evidence["child_reaped"] and evidence["cleanup_succeeded"])
+
     def capture_attestation(self, capabilities: bytes) -> tuple[list[str], str | None]:
         class CommandCaptured(Exception):
             pass
@@ -48,7 +94,9 @@ class ProbeClassificationTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary).resolve() / "qualification"
             with (
-                patch.object(sys, "argv", ["provision", "--root", str(root), "--producer"]),
+                patch.object(
+                    sys, "argv", ["provision", "--root", str(root), "--producer"]
+                ),
                 patch.dict(
                     os.environ,
                     {
@@ -59,10 +107,16 @@ class ProbeClassificationTests(unittest.TestCase):
                 ),
                 patch.object(provision.platform, "system", return_value="Linux"),
                 patch.object(provision.platform, "machine", return_value="x86_64"),
-                patch.object(provision.platform, "python_version", return_value="3.12.14"),
+                patch.object(
+                    provision.platform, "python_version", return_value="3.12.14"
+                ),
                 patch.object(provision, "disk_admit"),
-                patch.object(provision, "download", return_value=root / "synthetic.whl"),
-                patch.object(provision.shutil, "which", return_value="/qualification/gh"),
+                patch.object(
+                    provision, "download", return_value=root / "synthetic.whl"
+                ),
+                patch.object(
+                    provision.shutil, "which", return_value="/qualification/gh"
+                ),
                 patch.object(provision, "run_tool", side_effect=capture_tool),
             ):
                 try:
@@ -73,7 +127,9 @@ class ProbeClassificationTests(unittest.TestCase):
                     failure = str(error)
         return command, failure
 
-    def test_attestation_command_has_one_identity_selector_and_exact_provenance(self) -> None:
+    def test_attestation_command_has_one_identity_selector_and_exact_provenance(
+        self,
+    ) -> None:
         argv, failure = self.capture_attestation(
             b"--signer-workflow --source-digest --source-ref "
             b"--cert-identity --deny-self-hosted-runners"
@@ -85,7 +141,9 @@ class ProbeClassificationTests(unittest.TestCase):
             "--signer-repo",
             "--signer-workflow",
         )
-        self.assertEqual([flag for flag in selectors if flag in argv], ["--cert-identity"])
+        self.assertEqual(
+            [flag for flag in selectors if flag in argv], ["--cert-identity"]
+        )
         self.assertEqual(argv[:3], ["/qualification/gh", "attestation", "verify"])
         expected = {
             "--repo": "MarcoPorcellato/matryca-plumber",
@@ -155,7 +213,9 @@ class ProbeClassificationTests(unittest.TestCase):
             self.assertEqual(
                 (root / "artifacts/reader.stdout.txt").read_bytes(), b"synthetic-prefix"
             )
-            evidence = json.loads((root / "artifacts/reader.lifecycle.json").read_bytes())
+            evidence = json.loads(
+                (root / "artifacts/reader.lifecycle.json").read_bytes()
+            )
             self.assertTrue(evidence["child_reaped"])
             self.assertTrue(evidence["cleanup_succeeded"])
             self.assertIs(type(evidence["returncode"]), int)
@@ -168,7 +228,9 @@ class ProbeClassificationTests(unittest.TestCase):
             root = Path(temporary)
             (root / "artifacts").mkdir()
             with (
-                patch.object(process_boundary.os, "set_blocking", side_effect=Abort("setup")),
+                patch.object(
+                    process_boundary.os, "set_blocking", side_effect=Abort("setup")
+                ),
                 self.assertRaises(Abort),
             ):
                 provision.run_tool(
@@ -182,7 +244,9 @@ class ProbeClassificationTests(unittest.TestCase):
             self.assertTrue(evidence["cleanup_succeeded"])
             self.assertEqual((root / "artifacts/setup.stdout.txt").read_bytes(), b"")
 
-    def test_expected_refusal_is_a_passing_control_with_lifecycle_evidence(self) -> None:
+    def test_expected_refusal_is_a_passing_control_with_lifecycle_evidence(
+        self,
+    ) -> None:
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)
             (root / "artifacts").mkdir()
@@ -194,7 +258,11 @@ class ProbeClassificationTests(unittest.TestCase):
                 'import os; os.write(2,b\'{"error":"source_rejected"}\\n\'); raise SystemExit(4)',
             ]
             result = real_probe.invoke(
-                root, "negative", argv, expected_exit=4, expected_error="source_rejected"
+                root,
+                "negative",
+                argv,
+                expected_exit=4,
+                expected_error="source_rejected",
             )
             self.assertEqual(result["expected_negative"], "source_rejected")
             self.assertTrue(result["child_reaped"])
@@ -217,7 +285,11 @@ class ProbeClassificationTests(unittest.TestCase):
             ]
             with self.assertRaises(QualificationFailure):
                 real_probe.invoke(
-                    root, "negative", argv, expected_exit=4, expected_error="source_rejected"
+                    root,
+                    "negative",
+                    argv,
+                    expected_exit=4,
+                    expected_error="source_rejected",
                 )
             self.assertTrue((root / "artifacts/negative.lifecycle.json").is_file())
 
@@ -228,7 +300,9 @@ class ProbeClassificationTests(unittest.TestCase):
             argv = [sys.executable, "-I", "-B", "-c", 'import os; os.write(1,b"[]\\n")']
             with self.assertRaises(QualificationFailure):
                 real_probe.invoke(root, "shape", argv)
-            self.assertEqual((root / "artifacts/shape.stdout.txt").read_bytes(), b"[]\n")
+            self.assertEqual(
+                (root / "artifacts/shape.stdout.txt").read_bytes(), b"[]\n"
+            )
             self.assertTrue(
                 json.loads((root / "artifacts/shape.lifecycle.json").read_bytes())[
                     "cleanup_succeeded"

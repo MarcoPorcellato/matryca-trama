@@ -71,18 +71,30 @@ FORBIDDEN_CALLS = {
 }
 
 
-def violations(source: str) -> list[str]:
+CLIENT_PROCESS_IMPORTS = {
+    "__future__", "os", "subprocess", "selectors", "signal", "time", "errno", "stat",
+    "json", "hashlib", "re", "dataclasses",
+}
+
+
+def violations(source: str, *, relative_path: Path | None = None) -> list[str]:
     """Return high-signal write/watch/export/network violations in source."""
 
     tree = ast.parse(source)
     found: list[str] = []
+    client = (
+        relative_path is not None
+        and relative_path.parts[:3] == ("plumber-client", "src", "trama_plumber_client")
+        and ".." not in relative_path.parts
+    )
+    allowed = ALLOWED_IMPORT_ROOTS | (CLIENT_PROCESS_IMPORTS if client else set())
     for node in ast.walk(tree):
         if isinstance(node, ast.Import):
             for alias in node.names:
-                if alias.name.split(".", 1)[0] not in ALLOWED_IMPORT_ROOTS:
+                if alias.name.split(".", 1)[0] not in allowed:
                     found.append(f"import:{alias.name}")
         elif isinstance(node, ast.ImportFrom) and node.module:
-            if node.level == 0 and node.module.split(".", 1)[0] not in ALLOWED_IMPORT_ROOTS:
+            if node.level == 0 and node.module.split(".", 1)[0] not in allowed:
                 found.append(f"import:{node.module}")
         elif isinstance(node, ast.Call):
             name = node.func.attr if isinstance(node.func, ast.Attribute) else (
@@ -102,7 +114,7 @@ class ReadOnlyPostureTests(unittest.TestCase):
         found = {
             f"{path.relative_to(RUNTIME_ROOT)}:{item}"
             for path in files
-            for item in violations(path.read_text(encoding="utf-8"))
+            for item in violations(path.read_text(encoding="utf-8"), relative_path=path.relative_to(RUNTIME_ROOT))
         }
         self.assertEqual(found, set())
 
@@ -112,6 +124,26 @@ class ReadOnlyPostureTests(unittest.TestCase):
             violations(source),
             ["import:sqlite3", "call:write_text"],
         )
+
+    def test_client_process_imports_are_path_specific(self) -> None:
+        source = "import os, subprocess, selectors, signal, time, errno, stat\n"
+        client = Path("plumber-client/src/trama_plumber_client/_process.py")
+        self.assertEqual(violations(source, relative_path=client), [])
+        for path in (None, Path("core/src/trama_core/x.py"),
+                     Path("plumber-client-other/src/trama_plumber_client/x.py"),
+                     Path("plumber-client/src/trama_plumber_client/../other/x.py")):
+            with self.subTest(path=path):
+                self.assertEqual(len(violations(source, relative_path=path)), 7)
+
+    def test_client_still_rejects_network_dynamic_imports_open_and_writes(self) -> None:
+        source = (
+            "import socket, urllib, sqlite3, importlib, ctypes, tempfile\n"
+            "open('x')\nPath('x').write_text('x')\n"
+        )
+        found = violations(source, relative_path=Path("plumber-client/src/trama_plumber_client/x.py"))
+        self.assertEqual(found, ["import:socket", "import:urllib", "import:sqlite3",
+                                 "import:importlib", "import:ctypes", "import:tempfile",
+                                 "call:open", "call:write_text"])
 
     def test_scanner_allows_date_validation_and_unicode_normalization(self) -> None:
         source = """
@@ -169,7 +201,6 @@ __import__('os')
         self.assertEqual(violations(source), expected)
 
     def test_repeated_reads_have_identical_payload_and_provenance(self) -> None:
-        manifest = FIXTURES_ROOT / "og-minimal"
         before = {path.relative_to(FIXTURES_ROOT): path.read_bytes() for path in FIXTURES_ROOT.rglob("*") if path.is_file()}
         observed = []
         for operation, kwargs in (
