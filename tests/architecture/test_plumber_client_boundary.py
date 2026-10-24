@@ -5,7 +5,10 @@ import tempfile
 import unittest
 
 from scripts.validate_architecture import validate_repository
-from test_dependency_boundaries import write_fixture
+if __package__:
+    from .test_dependency_boundaries import write_fixture
+else:
+    from test_dependency_boundaries import write_fixture
 
 
 class PlumberClientArchitectureTests(unittest.TestCase):
