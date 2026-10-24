@@ -35,3 +35,9 @@ directory = "packages/plumber-bridge"
 import_root = "trama_plumber_bridge"
 allowed_internal = ["trama_contracts", "trama_core"]
 allowed_external = []
+
+[packages."trama-plumber-client"]
+directory = "packages/plumber-client"
+import_root = "trama_plumber_client"
+allowed_internal = ["trama_core"]
+allowed_external = []

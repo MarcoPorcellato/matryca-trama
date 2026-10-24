@@ -13,3 +13,4 @@ trama-core = { workspace = true }
 trama-parser-bridge = { workspace = true }
 trama-logseq-og-adapter = { workspace = true }
 trama-plumber-bridge = { workspace = true }
+trama-plumber-client = { workspace = true }
