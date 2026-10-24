@@ -271,7 +271,6 @@ def main() -> None:
                 all(
                     flag in capabilities.stdout
                     for flag in (
-                        b"--signer-workflow",
                         b"--source-digest",
                         b"--source-ref",
                         b"--cert-identity",
@@ -290,8 +289,6 @@ def main() -> None:
                     str(wheel),
                     "--repo",
                     inputs["repository"],
-                    "--signer-workflow",
-                    inputs["signer_workflow"],
                     "--source-digest",
                     inputs["source_commit"],
                     "--source-ref",

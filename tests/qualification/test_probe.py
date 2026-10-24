@@ -1,5 +1,6 @@
 """Exercise probe evidence/error classification using inert children only."""
 
+import errno
 import json
 import os
 import sys
@@ -15,6 +16,98 @@ from resources import QualificationFailure
 
 
 class ProbeClassificationTests(unittest.TestCase):
+    def capture_attestation(self, capabilities: bytes) -> tuple[list[str], str | None]:
+        class CommandCaptured(Exception):
+            pass
+
+        command: list[str] = []
+        failure = None
+
+        def capture_tool(
+            root: Path,
+            label: str,
+            argv: list[str],
+            *,
+            environment: dict[str, str] | None = None,
+        ) -> process_boundary.ProcessResult:
+            if label == "attestation":
+                command.extend(argv)
+                raise CommandCaptured
+            return process_boundary.ProcessResult(
+                stdout=capabilities,
+                stderr=b"",
+                returncode=0,
+                child_reaped=True,
+                group_probe_errno=errno.ESRCH,
+                cleanup_succeeded=True,
+                cleanup_exception=None,
+                observations=(),
+                events=(),
+            )
+
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary).resolve() / "qualification"
+            with (
+                patch.object(sys, "argv", ["provision", "--root", str(root), "--producer"]),
+                patch.dict(
+                    os.environ,
+                    {
+                        "GITHUB_ACTIONS": "true",
+                        "GITHUB_REPOSITORY": "MarcoPorcellato/matryca-trama",
+                    },
+                    clear=True,
+                ),
+                patch.object(provision.platform, "system", return_value="Linux"),
+                patch.object(provision.platform, "machine", return_value="x86_64"),
+                patch.object(provision.platform, "python_version", return_value="3.12.14"),
+                patch.object(provision, "disk_admit"),
+                patch.object(provision, "download", return_value=root / "synthetic.whl"),
+                patch.object(provision.shutil, "which", return_value="/qualification/gh"),
+                patch.object(provision, "run_tool", side_effect=capture_tool),
+            ):
+                try:
+                    provision.main()
+                except CommandCaptured:
+                    pass
+                except QualificationFailure as error:
+                    failure = str(error)
+        return command, failure
+
+    def test_attestation_command_has_one_identity_selector_and_exact_provenance(self) -> None:
+        argv, failure = self.capture_attestation(
+            b"--signer-workflow --source-digest --source-ref "
+            b"--cert-identity --deny-self-hosted-runners"
+        )
+        self.assertIsNone(failure)
+        selectors = (
+            "--cert-identity",
+            "--cert-identity-regex",
+            "--signer-repo",
+            "--signer-workflow",
+        )
+        self.assertEqual([flag for flag in selectors if flag in argv], ["--cert-identity"])
+        self.assertEqual(argv[:3], ["/qualification/gh", "attestation", "verify"])
+        expected = {
+            "--repo": "MarcoPorcellato/matryca-plumber",
+            "--source-digest": "8c30f70e217722e719c5aedc322219ebccb87e68",
+            "--source-ref": "refs/tags/v2.1.0-alpha.3",
+            "--cert-identity": "https://github.com/MarcoPorcellato/matryca-plumber/"
+            ".github/workflows/release.yml@refs/tags/v2.1.0-alpha.3",
+            "--format": "json",
+        }
+        for flag, value in expected.items():
+            self.assertEqual(argv.count(flag), 1)
+            self.assertEqual(argv[argv.index(flag) + 1], value)
+        self.assertEqual(argv.count("--deny-self-hosted-runners"), 1)
+
+    def test_capability_check_does_not_require_unused_identity_selector(self) -> None:
+        argv, failure = self.capture_attestation(
+            b"--source-digest --source-ref --cert-identity --deny-self-hosted-runners"
+        )
+        self.assertIsNone(failure)
+        self.assertIn("--cert-identity", argv)
+        self.assertNotIn("--signer-workflow", argv)
+
     def test_managed_python_is_installed_before_both_workflow_lookups(self) -> None:
         workflow = (
             Path(__file__).resolve().parents[2]
