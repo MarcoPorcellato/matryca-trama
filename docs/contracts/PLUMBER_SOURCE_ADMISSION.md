@@ -218,3 +218,14 @@ or by source inspection; the workflow artifacts must supply it.
 Consumer admission in #2, the runtime-validator dependency decision and the
 real adapter under #4 remain separate owner decisions. No payload, DB, Windows,
 user graph, write, sync, release or stable compatibility claim follows.
+
+### M1 synthetic qualification evidence — 2026-10-24
+
+PR #30 merged as `bfd0e8907118905d392953bcd786b063af7e2986` after the exact
+reviewed candidate passed both hosted synthetic rows. The
+[durable consumer evidence record](../status/receipts/2026-10-24-og-alpha3-consumer-qualification.md)
+preserves the successful run, immutable original-wheel binding, selected report
+receipts and cleanup evidence. It records a test-only experiment, not consumer
+admission. Packaged status labels remain unchanged. Issue #2 still owns the
+explicit profile decision; #4 implementation, runtime dependencies and user
+graphs remain separately unauthorized.
