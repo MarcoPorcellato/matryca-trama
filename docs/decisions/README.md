@@ -11,5 +11,6 @@ ADRs record durable boundaries for Matryca Trama. They complement implementation
 - [ADR-0007: Plumber capability admission by user-facing claim](ADR-0007-PLUMBER-CAPABILITY-ADMISSION.md)
 - [ADR-0008: Test-only experimental process boundary (accepted for synthetic qualification; no consumer admission)](ADR-0008-EXPERIMENTAL-PROCESS-BOUNDARY.md)
 - [ADR-0009: Restricted synthetic Plumber client](ADR-0009-SYNTHETIC-PLUMBER-CLIENT.md)
+- [ADR-0010: Synthetic macOS sandbox exploration (draft; non-qualifying)](ADR-0010-MACOS-SANDBOX-EXPLORATION.md)
 
 New decisions must state context, decision, alternatives, consequences, and migration or reversal conditions.
