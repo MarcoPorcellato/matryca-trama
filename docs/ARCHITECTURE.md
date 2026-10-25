@@ -23,8 +23,8 @@ support. Its exact admission, producer closure and unchanged packaged labels
 are recorded in the [source-admission record](contracts/PLUMBER_SOURCE_ADMISSION.md#current-owner-admission--2026-10-24).
 Main CI and Producer-M3 exploration are separate evidence dimensions.
 
-The historical `trama.logseq.read/v1` implementation retains its original
-`862c5c8` baseline evidence for synthetic `graph.identify`, `page.read`, and
+The retained `trama.logseq.read/v1` is a historical experimental implementation.
+Its original `862c5c8` baseline evidence covers synthetic `graph.identify`, `page.read`, and
 complete ordered `block.subtree.read.complete`; it does not qualify the new
 client. `apps`, Nodi UI, payload/title/text/property reads, official DB host
 integration, writes, events, Shadow, synchronization, export, recovery,

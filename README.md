@@ -32,9 +32,12 @@ bounded exploratory run, not qualification of supported OS isolation.
 
 No user-facing application, real user graph, payload/title/text/property read,
 native DB, write, general network isolation, performance, distribution, stable
-support, or Trama release is established. The retained `trama.logseq.read/v1`
-experiment and its `862c5c8` qualification are historical evidence. Plumber is
-the sole Logseq gateway; Trama and Brain consume it without knowing Parser.
+support, or Trama release is established. The retained
+`trama.logseq.read/v1` source is a historical experimental read profile; its
+`862c5c8` qualification is historical evidence. The
+[Plumber authority decision](docs/decisions/ADR-0006-PLUMBER-GATEWAY-ADOPTION.md)
+keeps Plumber the sole Logseq gateway; Trama and Brain consume it without
+knowing Parser.
 See the [delivery program](docs/specs/MATRYCA_TRAMA_DELIVERY_PROGRAM.md),
 [claim ledger](docs/status/CLAIM_LEDGER.md), and [roadmap](docs/ROADMAP.md) for
 exact evidence and independent remaining gates.

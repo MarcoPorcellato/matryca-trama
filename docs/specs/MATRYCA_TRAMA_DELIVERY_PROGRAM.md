@@ -15,9 +15,13 @@ It never upgrades a planned boundary into an implemented or qualified feature.
 ### Accepted cross-repository gateway ownership
 
 [ADR-0006](../decisions/ADR-0006-PLUMBER-GATEWAY-ADOPTION.md) adopts Plumber's
-accepted owner decision. **Matryca Plumber is the sole Logseq gateway and
-canonical public-contract owner.** **Trama is a Plumber consumer; it does
-not own source adapters or Logseq wire contracts.** Parser remains the
+accepted owner decision. For broader product integration beyond the restricted
+synthetic capsule, its ownership direction remains: **Matryca Plumber is the
+sole future Logseq gateway and canonical public-contract owner.** **Trama is a
+future Plumber consumer; it does not own future source adapters or Logseq wire
+contracts.** The restricted synthetic client is already implemented, as recorded
+below; these future-facing ownership statements do not retract that completed
+slice. Parser remains the
 pure OG parsing provider behind Plumber; Brain is a separate Plumber consumer
 and does not know Parser.
 

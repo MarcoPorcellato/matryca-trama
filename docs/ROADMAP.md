@@ -157,10 +157,11 @@ broader Phase 3 capabilities retain their existing gates.
 
 After stable mode-specific Plumber artifacts are published, separately admitted
 and qualified, Trama may extend its consumer behind the internal port through a
-new bounded plan. A qualified `og_markdown` Plumber profile may support a
-separately authorized Community vertical independently of the DB transport
-Decision D1, Block 3 epistemic utility, or commercial-tier decisions; the full
-delivery checklist is unchanged. A `db_native` consumer profile
+new bounded plan. A qualified `og_markdown` Plumber profile may support the
+Trama consumer independently of D1. Here D1 is the DB transport decision; a
+separately authorized OG Community vertical also need not wait for Block 3
+epistemic utility or commercial-tier decisions. The full delivery checklist is
+unchanged. A `db_native` consumer profile
 requires D1 outcome `supported`. Trama does not import Parser or implement Logseq
 OG/DB adapters. Existing experimental adapters remain historical until explicitly
 deprecated or removed. A DB graph never falls back to Markdown.
