@@ -1,7 +1,7 @@
 # Matryca Trama Roadmap
 
 The accepted [Plumber gateway adoption](decisions/ADR-0006-PLUMBER-GATEWAY-ADOPTION.md)
-sets the future ownership direction: Trama and Brain consume only published
+sets ownership: Trama and Brain consume only published
 Plumber public contracts and remain unaware of Parser and source adapters. The
 [cross-repository contract roadmap](superpowers/specs/2026-09-05-cross-repository-contract-roadmap.md)
 remains a migration plan; no canonical contract artifact or consumer profile is
@@ -21,14 +21,33 @@ preserves the exact decision, wheel digest and immutable M1 evidence.
 
 Packaged qualification labels are unchanged. This is not general Logseq,
 network-isolation, stable, payload, DB or user-graph support. Issue #2 remains
-open. The separately approved M2 slice under #4 is a synthetic-only client
-implementation and qualification task, not a delivered adapter or permission
-to inspect an arbitrary graph. A future real-vault capability profile remains
+open. The separately approved Producer-M2 slice under #4 is implemented and
+synthetically qualified as described below; it grants no permission to inspect
+an arbitrary graph. A future real-vault capability profile remains
 separate work in [Plumber #654](https://github.com/MarcoPorcellato/matryca-plumber/issues/654).
+
+## Observed implementation and evidence — 2026-10-25
+
+Published main is `d21f2adb2101ce5fae222f6235925c1d66ece126`, tree
+`2b2e11c5937f350139e6ee46b2dde13a750a609b`. The original **Product-M1**
+(epistemic Blocks 2–3 and conditional review presentation) remains incomplete.
+It is distinct from the later **Producer-M1/M2/M3** sequence:
+
+| Slice | Recorded outcome | Boundary |
+|---|---|---|
+| Producer-M1 | Synthetic producer qualification followed by the separate owner admission above. | The original pre-admission receipt remains unchanged; the later decision does not rewrite its earlier “not admitted” result. |
+| Producer-M2 | Restricted domain port and outer client merged in [PR #33](https://github.com/MarcoPorcellato/matryca-trama/pull/33), merge `28e9b5dfb350c7fe875a91c2a630162d7da36582`. [Qualification attempt 2](https://github.com/MarcoPorcellato/matryca-trama/actions/runs/40112844731/attempts/2) succeeded at `a4463638baaca846fe731556417f1d2d660838f1`; PR-head and merge tree `6c6fc59abb2f1d2f46f85d03374b6d5f4d31cbdf`. | Complete only for the exact admitted synthetic capsule; no Trama release or user utility. Tree equivalence corroborates provenance, not another exercised head. |
+| Main CI | [Foundation](https://github.com/MarcoPorcellato/matryca-trama/actions/runs/40148195978) and [Python contracts](https://github.com/MarcoPorcellato/matryca-trama/actions/runs/40148195966) succeeded at the observed main. | Exact-main checks do not rebind specialized producer qualification or prove merge enforcement. |
+| Producer-M3 | [One exploratory attempt](https://github.com/MarcoPorcellato/matryca-trama/actions/runs/40148317931/attempts/1) completed successfully at the observed main; [PR #34](https://github.com/MarcoPorcellato/matryca-trama/pull/34) reports bounded macOS observations and cleanup. | Attempt consumed, not supported OS containment or Block 3 admission. This reconciliation did not download or independently rehash the original artifacts. |
+| MA | Separate maintainer-local synthetic tooling work. | No completed product result is established here; its active owner and execution scope remain separate. It does not unblock the comparator, real-graph or release lanes. |
+
+The admitted producer remains original Plumber `2.1.0a3` at
+`8c30f70e217722e719c5aedc322219ebccb87e68`; later Plumber verifier work or
+newer Parser releases do not replace that producer or upgrade its pinned closure.
 
 ## Historical experimental baseline
 
-The resolved `origin/main` merge parent is
+The historical merge-parent observation was
 `70fc14c27b11e31e8f557fd70684b6a83933e7d6`; it retains
 the historical experimental `trama.logseq.read/v1` source for owned synthetic
 OG fixtures. Hosted evidence at `862c5c89157f28c1985cde6145fc2c8af04a70b4`
@@ -42,7 +61,8 @@ User graphs, Logseq DB, writes, events, DB-source Shadow, synchronization,
 export, recovery, app/UI/Nodi, distribution, performance, and network behavior
 remain unsupported by that evidence. The experimental contract is historical
 evidence only; a future consumer requires the separate Plumber contract and
-profile gates.
+profile gates; the restricted later admission above is not an expansion of this
+historical experiment.
 
 ## Delivery rule
 
@@ -61,7 +81,7 @@ Block 2 is merged in PR #23 at `eca93f19398972ede50127ce6aaa93d78fb5d5cd`. Exact
 
 External/deferred references are Plumber [#582](https://github.com/MarcoPorcellato/matryca-plumber/issues/582), [#491](https://github.com/MarcoPorcellato/matryca-plumber/issues/491), and [#493](https://github.com/MarcoPorcellato/matryca-plumber/issues/493), Parser [#213](https://github.com/MarcoPorcellato/logseq-matryca-parser/issues/213), and Matryca-per-Delineat [#430](https://github.com/MarcoPorcellato/Matryca-per-Delineat/issues/430). These links assign no ownership, do not claim completion, and do not establish consumer readiness.
 
-The source-admission record and [ADR-0007](decisions/ADR-0007-PLUMBER-CAPABILITY-ADMISSION.md) distinguish Plumber capabilities: `plumber.graph.read/v1` supplies identity/session binding; `plumber.graph.topology/v1` adds complete content-free relationships; and the additive `plumber.graph.payload.read/v1` is additionally required for text/property-backed analysis. Plumber accepted payload semantics in [PR #590](https://github.com/MarcoPorcellato/matryca-plumber/pull/590), but the decision is documentation-only and does not establish a released artifact, host, or runtime. The planned Trama adapter gate still requires both read and topology; no reduced-profile consumer is authorized. The later admission gate must verify exact released artifacts, owner-defined profile coherence, and independent OG/DB evidence. No consumer is admitted by this roadmap. PolyForm Noncommercial and the contributor-rights gate remain in force.
+The source-admission record and [ADR-0007](decisions/ADR-0007-PLUMBER-CAPABILITY-ADMISSION.md) distinguish Plumber capabilities: `plumber.graph.read/v1` supplies identity/session binding; `plumber.graph.topology/v1` adds complete content-free relationships; and the additive `plumber.graph.payload.read/v1` is additionally required for title/text/property-backed analysis. Plumber accepted payload semantics in [PR #590](https://github.com/MarcoPorcellato/matryca-plumber/pull/590), but that decision alone establishes no released payload artifact, host, or runtime. The Trama adapter floor still requires both read and topology; no reduced-profile consumer is authorized. Beyond the exact synthetic exception above, admission requires stable released mode-specific artifacts, owner-defined profile coherence, and independent OG/DB evidence. This roadmap grants no additional admission. PolyForm Noncommercial and the contributor-rights gate remain in force.
 
 ## Ordered programme
 
@@ -125,14 +145,22 @@ exactly one supported official-host route or records `capability_no_go` or
 
 ### Phase 3 — Trama Plumber consumer profile
 
-The current M2 slice is limited to the exact synthetic-only admission above.
-It may implement the domain port and outer client under its separate owner
-approval; all broader capabilities in this phase retain their existing gates.
-No successful client or later real-vault qualification is claimed here.
+The completed Producer-M2 slice is limited to the exact synthetic-only admission
+above. `KnowledgeGraphGateway.snapshot() -> GraphSnapshot` and
+`PlumberClientAdapter` provide a content-free internal port and outer mapping.
+The client imports Community core and the standard library; its producer runs
+separately. Only an authenticated disposable synthetic fixture handle is
+accepted. The admitted profile allows at most 1,024 nodes and 4,096 edges,
+complete-only results and opaque revision-bound IDs. These limits are not
+product capacity measurements. Titles, text and properties are absent. All
+broader Phase 3 capabilities retain their existing gates.
 
-After Plumber publishes the contract, Trama may implement a Plumber client adapter
-behind its internal domain port. A qualified `og_markdown` Plumber profile may
-support the Trama consumer independently of D1. A `db_native` consumer profile
+After stable mode-specific Plumber artifacts are published, separately admitted
+and qualified, Trama may extend its consumer behind the internal port through a
+new bounded plan. A qualified `og_markdown` Plumber profile may support a
+separately authorized Community vertical independently of the DB transport
+Decision D1, Block 3 epistemic utility, or commercial-tier decisions; the full
+delivery checklist is unchanged. A `db_native` consumer profile
 requires D1 outcome `supported`. Trama does not import Parser or implement Logseq
 OG/DB adapters. Existing experimental adapters remain historical until explicitly
 deprecated or removed. A DB graph never falls back to Markdown.
@@ -140,7 +168,8 @@ deprecated or removed. A DB graph never falls back to Markdown.
 Evidence: stable graph binding, one page, one complete ordered subtree,
 explicit failures, bounded lifecycle, zero forbidden state change, and exact
 cross-repository hosted compatibility. Any text-backed page/subtree result
-also requires `plumber.graph.payload.read/v1`; all combined profiles must
+also requires `plumber.graph.payload.read/v1`, including titles and properties;
+all combined profiles must
 match owner-defined compatibility and graph/session/revision bindings. OG and
 DB remain separately qualified.
 

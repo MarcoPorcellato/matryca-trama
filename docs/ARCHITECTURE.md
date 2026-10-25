@@ -6,32 +6,45 @@ licensing, and optional integrations explicit.
 
 ## Current implementation status
 
-At `9905e8a`, bounded Python source exists for contracts, core behavior, Parser
-and Plumber bridges, and a synthetic OG adapter. This is a historical experimental
-implementation, not the future gateway authority. Qualification remains bound to
-the `862c5c8` baseline and only to synthetic fixtures plus
-`graph.identify`, `page.read`, and complete ordered
-`block.subtree.read.complete`. No evidence record qualifies `9905e8a` as the
-current head; matching runtime source does not replace exact-head evidence.
-`apps`, Nodi UI, a DB adapter, writes, events, Shadow, synchronization, export,
-recovery, distribution, and network behavior remain unimplemented or unsupported.
-No current source proves a migrated Plumber client or official host integration.
+Published main observed on 2026-10-25 is
+`d21f2adb2101ce5fae222f6235925c1d66ece126`. It contains the internal
+`KnowledgeGraphGateway.snapshot() -> GraphSnapshot` domain port, immutable
+content-free graph values, and the outer `PlumberClientAdapter`. That adapter
+depends on Community core and the standard library, not in-process Parser or
+Plumber imports. The client accepts only the admitted authenticated disposable
+synthetic fixture handle and invokes a separately provisioned producer;
+arbitrary graph roots, bypass and retry paths are excluded from the client.
+
+[Producer-M2 qualification](https://github.com/MarcoPorcellato/matryca-trama/actions/runs/40112844731/attempts/2)
+exercised `a4463638baaca846fe731556417f1d2d660838f1`, whose tree
+`6c6fc59abb2f1d2f46f85d03374b6d5f4d31cbdf` also identifies the PR #33 merge
+tree. This is a restricted synthetic client, not stable API or user-graph
+support. Its exact admission, producer closure and unchanged packaged labels
+are recorded in the [source-admission record](contracts/PLUMBER_SOURCE_ADMISSION.md#current-owner-admission--2026-10-24).
+Main CI and Producer-M3 exploration are separate evidence dimensions.
+
+The historical `trama.logseq.read/v1` implementation retains its original
+`862c5c8` baseline evidence for synthetic `graph.identify`, `page.read`, and
+complete ordered `block.subtree.read.complete`; it does not qualify the new
+client. `apps`, Nodi UI, payload/title/text/property reads, official DB host
+integration, writes, events, Shadow, synchronization, export, recovery,
+distribution, and supported OS isolation remain unimplemented or unsupported.
 Current status is governed by the
 [delivery program](specs/MATRYCA_TRAMA_DELIVERY_PROGRAM.md).
 
-## Future source-to-product boundary
+## Accepted source-to-product boundary
 
 The accepted [Plumber gateway adoption](decisions/ADR-0006-PLUMBER-GATEWAY-ADOPTION.md)
-defines the future ownership direction. The cross-repository migration plan does
-not alter or qualify current runtime code, publish a public contract artifact,
-or create a Trama client.
+defines ownership. That decision and the cross-repository migration plan alone
+did not create or qualify a client; the later separate owner admission and
+Producer-M2 implementation establish only the restricted slice above.
 
 ```text
 OG Markdown -> Parser -> Plumber -> Trama / Brain
 Logseq DB official host -> Plumber -> Trama / Brain
 ```
 
-Matryca Plumber is the sole future Logseq gateway and canonical public-contract
+Matryca Plumber is the sole Logseq gateway and canonical public-contract
 owner. It owns source selection, the OG Parser adapter, any official DB host
 adapter, canonical `plumber.*` schemas, and transport-neutral contract semantics.
 Trama is a consumer: it does not import Parser or Logseq storage/host APIs, and it
@@ -55,11 +68,13 @@ An export or derived index never becomes an implicit replacement authority.
 
 ## Repository boundaries
 
-- `trama-core`: Community domain behavior and stable product use cases.
-- future Plumber client: a Trama-owned outer adapter that consumes published
-  Plumber contracts through an internal port.
-- `nodi`: user-facing knowledge companion and presentation model.
-- `apps`: thin compositions of packages; business rules belong below this layer.
+- `trama-core`: Community domain behavior, immutable graph values and internal
+  gateway port; no public API stability is claimed.
+- `plumber-client`: the implemented Trama-owned outer adapter consuming the
+  admitted Plumber profiles through that port, with the restricted synthetic
+  input and separately provisioned producer described above.
+- `nodi`: planned user-facing knowledge companion and presentation model.
+- `apps`: planned thin compositions; business rules belong below this layer.
 
 The current `contracts`, `parser-bridge`, `plumber-bridge`, and synthetic adapter
 packages are preserved historical experimental components. They remain available
