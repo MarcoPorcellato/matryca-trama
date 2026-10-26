@@ -1,8 +1,8 @@
 # Matryca Trama Delivery Program
 
 **Status:** canonical long-horizon delivery specification
-**Live anchor:** `9905e8a36acb83a17a33b702a5fa620d6bfed185`
-**Qualified baseline:** `862c5c89157f28c1985cde6145fc2c8af04a70b4`
+**Observed published baseline (2026-10-25):** `d21f2adb2101ce5fae222f6235925c1d66ece126`
+**Historical experimental qualified baseline:** `862c5c89157f28c1985cde6145fc2c8af04a70b4`
 **Owner:** Matryca maintainer; every milestone requires explicit review and an evidence record.
 **Supersedes for current delivery status:**
 [`MATRYCA_TRAMA_PUBLIC_MONOREPO_FOUNDATION.md`](MATRYCA_TRAMA_PUBLIC_MONOREPO_FOUNDATION.md),
@@ -15,18 +15,53 @@ It never upgrades a planned boundary into an implemented or qualified feature.
 ### Accepted cross-repository gateway ownership
 
 [ADR-0006](../decisions/ADR-0006-PLUMBER-GATEWAY-ADOPTION.md) adopts Plumber's
-accepted owner decision. **Matryca Plumber is the sole future Logseq gateway and
-canonical public-contract owner.** **Trama is a future Plumber consumer; it does
-not own future source adapters or Logseq wire contracts.** Parser remains the
+accepted owner decision. For broader product integration beyond the restricted
+synthetic capsule, its ownership direction remains: **Matryca Plumber is the
+sole future Logseq gateway and canonical public-contract owner.** **Trama is a
+future Plumber consumer; it does not own future source adapters or Logseq wire
+contracts.** The restricted synthetic client is already implemented, as recorded
+below; these future-facing ownership statements do not retract that completed
+slice. Parser remains the
 pure OG parsing provider behind Plumber; Brain is a separate Plumber consumer
 and does not know Parser.
 
 The historical Trama `trama.logseq.read/v1`, Parser/Plumber bridges, and synthetic
 OG adapter remain preserved source and evidence, not future authority. Historical
 experimental Trama adapters remain evidence only until a separately reviewed,
-repository-local deprecation or removal change. Nothing in this direction proves
-that a Plumber contract artifact, host transport, DB capability, or Trama client
-exists.
+repository-local deprecation or removal change. This ownership decision alone
+proved no runtime capability; the later separately admitted and implemented
+synthetic client has the narrow evidence below.
+
+### Current bounded progress — 2026-10-25
+
+The observed main has tree `2b2e11c5937f350139e6ee46b2dde13a750a609b`.
+It is a published source baseline, not a Trama product release or qualification
+of a later documentation candidate. The original **Product-M1** remains the
+incomplete epistemic utility tranche (Blocks 2–3 and conditional presentation).
+It must not be confused with the later **Producer-M1/M2/M3** sequence.
+
+| Evidence dimension | Exact recorded fact | Limit |
+|---|---|---|
+| Admission | [Owner decision of 2026-10-24](https://github.com/MarcoPorcellato/matryca-trama/issues/2#issuecomment-6383824647), preserved with exact bytes/closure references in the [source-admission record](../contracts/PLUMBER_SOURCE_ADMISSION.md#current-owner-admission--2026-10-24). | Joint read/topology only: original Plumber `2.1.0a3` producer `8c30f70e217722e719c5aedc322219ebccb87e68`, hash-locked Parser `1.9.0` closure, CPython `3.12.14`, Linux x86_64/macOS arm64 and authenticated disposable synthetic fixture. Packaged qualification labels are unchanged. |
+| Implementation | [PR #33](https://github.com/MarcoPorcellato/matryca-trama/pull/33), merge `28e9b5dfb350c7fe875a91c2a630162d7da36582`: internal domain port, immutable content-free values and restricted outer client. | Separately provisioned producer; no in-process Parser/Plumber imports, arbitrary graph root, app or stable public API. |
+| Specialized qualification | [Producer-M2 attempt 2](https://github.com/MarcoPorcellato/matryca-trama/actions/runs/40112844731/attempts/2) succeeded at `a4463638baaca846fe731556417f1d2d660838f1`; PR-head/merge tree `6c6fc59abb2f1d2f46f85d03374b6d5f4d31cbdf`. | Complete only for that synthetic slice; tree equivalence does not change the exercised head. Original artifacts were not independently downloaded/rehashed in this status reconciliation. |
+| Main CI | [Foundation](https://github.com/MarcoPorcellato/matryca-trama/actions/runs/40148195978) and [Python contracts](https://github.com/MarcoPorcellato/matryca-trama/actions/runs/40148195966) succeeded at the observed main. | Separate from specialized producer qualification, supported hosts, release and technically enforced merge protection. |
+| Exploration | [Producer-M3 attempt 1](https://github.com/MarcoPorcellato/matryca-trama/actions/runs/40148317931/attempts/1) completed successfully at the observed main; [PR #34](https://github.com/MarcoPorcellato/matryca-trama/pull/34) records bounded macOS observations. | Consumed non-qualifying exploration; original artifacts were not independently downloaded/rehashed here. No supported OS containment, real data or comparator admission. |
+
+Producer-M1's original pre-admission receipt remains unchanged; the later owner
+decision is a separate event. Subsequent Plumber verifier work and newer Parser
+releases do not replace the original producer or its pinned closure. Separate
+maintainer-local synthetic tooling has no completed product result recorded here.
+No producer or comparator rerun is authorized by this status correction.
+
+The [claim ledger](../status/CLAIM_LEDGER.md) and [roadmap](../ROADMAP.md)
+retain historical evidence and broader open gates. Real OG and native DB require
+separate stable released mode-specific profiles, exact-byte admission, schemas,
+fixtures/TCK, provenance, compatibility and runtime/failure evidence. Titles,
+text and properties additionally require payload; content-free topology cannot
+supply them. A separately authorized and qualified OG Community vertical need
+not wait for native DB, Block 3 epistemic utility or commercial-tier decisions.
+None of these distinctions completes the full V0–V10 programme or its checklist.
 
 ## 1. Claim discipline
 
@@ -52,9 +87,10 @@ experience and Nodi. Logseq OG Markdown remains authoritative for OG; the native
 local database remains authoritative for DB. Exports, caches, indexes,
 visualizations, and AI chunks are derived views and never implicit substitutes.
 
-In scope: deterministic Community product behavior, a future public Plumber client
-boundary, Nodi, reproducible Community artifacts, and safe contributor workflows.
-Future source selection, OG Parser adaptation, official DB host adaptation, and
+In scope: deterministic Community product behavior, the restricted Plumber client
+and separately gated future extensions, Nodi, reproducible Community artifacts,
+and safe contributor workflows. Source selection, OG Parser adaptation,
+official DB host adaptation, and
 canonical public Logseq schemas belong to Plumber, subject to its accepted ADR and
 evidence. Pro source, Brain private source,
 entitlement enforcement, paid connectors, hosted accounts, telemetry by default,
@@ -211,7 +247,7 @@ UI affordance, or configuration flag alone.
 
 ## 6. Cross-repository rules
 
-Parser remains the authoritative parsing capability. Plumber is the sole future
+Parser remains the authoritative parsing capability. Plumber is the sole
 Logseq gateway and canonical public-contract owner: it owns source selection, the
 OG Parser adapter, any official DB host adapter, public schemas, and transport-
 neutral contract semantics. Trama owns its product mapping and Nodi; Brain remains
@@ -259,36 +295,49 @@ authoritative when invoked.
 | Skill or tool | Use | Do not use it for |
 |---|---|---|
 | `orchestrate-long-running-work` | Canonical status, milestone loop, persistent goal, and restart handoffs. | Replacing exact source or hosted evidence. |
-| `terra-cost-aware-orchestration` | Deterministic-first routing, delegation boundaries, and integration review. | Transferring maintainer authority to a worker. |
+| `luna-sol-astra-routing` | Apply the selected execution/review profile and explicit task exceptions. | Automatic implementation delegation or changing frozen experimental bindings. |
+| `terra-cost-aware-orchestration` | Legacy Terra-led lane only when explicitly selected for that work. | The default execution profile or transfer of maintainer authority. |
 | `superpowers:brainstorming` | New product, capability, protocol, or architecture decisions. | Re-opening accepted narrow work without a design reason. |
 | `superpowers:writing-plans` | One dependency-ready executable milestone at a time. | A single plan covering unrelated subsystems. |
 | `superpowers:using-git-worktrees` | Isolating delivery from dirty or active checkouts. | Replacing preservation of an existing worktree. |
 | `superpowers:test-driven-development` | Behavioral changes and new failure rules. | Documentation-only wording changes. |
 | `superpowers:systematic-debugging` | Unexpected test, CI, packaging, or runtime failure. | Guessing a fix from a symptom. |
-| `superpowers:subagent-driven-development` | Independent, bounded execution tasks after a plan is accepted. | Coupled shared-file edits without a single integrator. |
+| `superpowers:executing-plans` | Inline execution of accepted work under the current direct-main profile. | Expanding the selected scope or publication authority. |
+| `superpowers:subagent-driven-development` | Explicitly selected delegated execution after a plan is accepted. | Automatic worker spawning or coupled shared-file edits without an integrator. |
 | `superpowers:verification-before-completion` | Any qualified, release-ready, or completed claim. | Replacing an exact hosted or platform gate. |
 | `superpowers:requesting-code-review` and `receiving-code-review` | Review preparation and evidence-based feedback handling. | Automatic merge authority. |
 | `superpowers:finishing-a-development-branch` | Selecting an integration path after checks pass. | Skipping external authorization. |
 | `gitnexus-exploring` and `gitnexus-impact-analysis` | Fresh code-flow and blast-radius analysis for hub or contract changes. | Treating a stale or missing index as a safety result. |
-| `serena-code-intelligence` | Bounded symbol analysis when deterministic reads and graph inspection are insufficient. | Broad indexing or Markdown-only audits. |
+| `serena-code-intelligence` | Only when enabled and permitted for a bounded symbol-analysis need. | An override of an explicit tool exclusion, broad indexing or Markdown-only audits. |
 | `matryca-knowledge-research` | Cross-repository orientation and documentation comparison. | Replacing live source/release verification. |
 | `visualize` and `imagegen` | Approved Nodi, UX, or architecture visual exploration. | Runtime implementation or a substitute for accessibility tests. |
 | `openai-docs` | Any OpenAI/Codex integration, model, or agent-platform decision. | Generic repository work without that dependency. |
 | `skill-creator` and `plugin-creator` | A reusable agent skill or plugin once its product contract is approved. | Ad-hoc project documentation. |
 
-Luna owns bounded inventory, documentation drafting from settled facts, test-log
-distillation, and mechanical isolated edits. Terra owns decomposition,
-integration, acceptance criteria, and final ordinary evidence judgment. Sol is
-reserved for security/privacy, DB writes or concurrency, persistence/recovery,
-licensing, release qualification, or unresolved architecture.
+The current ordinary profile is **direct-main**: the selected primary executes,
+tests and corrects inline; an independent general-purpose **GPT-6 Astra Medium**
+reviewer checks meaningful phase boundaries. Explicit owner-selected profiles
+and applicable task-specific bindings take precedence. Research and
+implementation workers require explicit delegation authority; earlier Luna,
+Terra and Sol receipts retain their actual identities rather than defining a
+new default. Frozen comparator, MA and other experiment/model bindings remain
+unchanged until their own scope is reconciled. A review verdict cannot grant
+missing legal rights, runtime retry authority or publication permission.
 
 ## 10. Cost routing and restart protocol
 
-Use deterministic checks first; route bounded inventory, documentation, and
-mechanical evidence work to the cheapest capable worker. Retain architecture,
-licensing, security, integration, release, and final claim judgment with the
-maintainer/orchestrator. Do not spend hosted or local heavy resources for a
-public workflow without an explicit economic and technical justification.
+Use deterministic checks first and the selected profile; do not automatically
+delegate implementation. Retain architecture, licensing, security, integration,
+release and final claim judgment with the accountable primary and independent
+reviewer, subject to maintainer authority.
+
+Standard GitHub-hosted CI is the default for this public repository. Its standard
+runner minutes have no billed price, so ordinary public CI is not economically
+eligible for local CCP heavy replacement. A separately authorized documented
+non-economic exception does not become monetary savings. Keep billed savings,
+quota preservation, avoided remote compute, local operating cost and provenance
+value distinct. Documentation-only corrections require the checks in their
+accepted bounded plan, not a new producer qualification.
 
 Before handoff or restart, record the repository/worktree, branch, full HEAD,
 dirty state, contract/configuration digests, completed checks, unproven gates,

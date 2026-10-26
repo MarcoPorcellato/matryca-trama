@@ -2,9 +2,8 @@
 
 Matryca Trama is a calm, local-first sidecar for understanding and safely improving Logseq graphs. It is designed for both Logseq OG and Logseq DB, with Nodi as its friendly companion layer.
 
-This public repository contains the Community foundation, shared contracts, and
-a bounded Python reference implementation of the initial synthetic OG read
-profile.
+This public repository contains the Community foundation, historical synthetic
+read experiments, and a restricted Python client of published Plumber contracts.
 Its source is available under the PolyForm Noncommercial License 1.0.0:
 personal and other permitted noncommercial purposes are welcome, including the
 named noncommercial organisations described by the licence. Use for commercial
@@ -15,18 +14,33 @@ implementation details.
 
 ## Current status
 
-The resolved `origin/main` merge parent is
-`70fc14c27b11e31e8f557fd70684b6a83933e7d6`. It contains
-bounded Python source for synthetic OG fixtures and `graph.identify`,
-`page.read`, and complete ordered `block.subtree.read.complete`. The historical
-qualification record remains `862c5c8`; it does not qualify this head. This
-experimental `trama.logseq.read/v1` source is neither a published runtime nor
-the authority for future integration. The accepted [Plumber authority
-decision](docs/decisions/ADR-0006-PLUMBER-GATEWAY-ADOPTION.md) makes Plumber
-the future sole Logseq gateway; it does not publish a Plumber contract or a
-Trama consumer profile. No user-graph, Logseq-host, DB, write, network, UI,
-performance, distribution, or release claim follows. See the
-[roadmap](docs/ROADMAP.md).
+Published `main` observed on 2026-10-25 is
+`d21f2adb2101ce5fae222f6235925c1d66ece126`. It includes a content-free domain
+port and restricted outer Plumber client. The [owner admission](docs/contracts/PLUMBER_SOURCE_ADMISSION.md#current-owner-admission--2026-10-24)
+covers only the jointly bound read/topology profiles of the original Plumber
+`2.1.0a3` producer, its hash-locked closure including Parser `1.9.0`, CPython
+`3.12.14`, Linux x86_64/macOS arm64, and an authenticated disposable synthetic
+fixture. Packaged qualification labels remain unchanged.
+
+Producer-M2 implemented and synthetically qualified that client in
+[PR #33](https://github.com/MarcoPorcellato/matryca-trama/pull/33), with
+[qualification attempt 2](https://github.com/MarcoPorcellato/matryca-trama/actions/runs/40112844731/attempts/2)
+bound to head `a4463638baaca846fe731556417f1d2d660838f1`. The later observed
+main has separate passing Foundation and Python contracts checks; they do not
+rebind that specialized qualification to a different head. Producer-M3 was a
+bounded exploratory run, not qualification of supported OS isolation.
+
+No user-facing application, real user graph, payload/title/text/property read,
+native DB, write, general network isolation, performance, distribution, stable
+support, or Trama release is established. The retained
+`trama.logseq.read/v1` source is a historical experimental read profile; its
+`862c5c8` qualification is historical evidence. The
+[Plumber authority decision](docs/decisions/ADR-0006-PLUMBER-GATEWAY-ADOPTION.md)
+keeps Plumber the sole Logseq gateway; Trama and Brain consume it without
+knowing Parser.
+See the [delivery program](docs/specs/MATRYCA_TRAMA_DELIVERY_PROGRAM.md),
+[claim ledger](docs/status/CLAIM_LEDGER.md), and [roadmap](docs/ROADMAP.md) for
+exact evidence and independent remaining gates.
 
 ## Principles
 
@@ -41,22 +55,24 @@ performance, distribution, or release claim follows. See the
 ## Repository map
 
 - `docs/` — architecture, contracts, decisions, and roadmap.
-- `packages/` — bounded Python contracts, core, Parser and Plumber bridges, and
-  synthetic OG adapter; direct Parser use is historical experimental work, not a
-  future integration boundary.
+- `packages/` — Community core and restricted `plumber-client` outer adapter;
+  retained contracts, Parser/Plumber bridges and synthetic OG adapter are
+  historical experiments, not the source-acquisition boundary.
 - `apps/` — future Trama applications and sidecar surfaces.
 
 Further directories are introduced only after their contract and evidence gate.
-The delivery program is the current source of truth for scope and status.
+The [delivery program](docs/specs/MATRYCA_TRAMA_DELIVERY_PROGRAM.md) is the
+current source of truth for scope and status.
 
 ## Architecture and review
 
 The accepted [Clean Architecture standard](docs/standards/CLEAN_ARCHITECTURE.md)
 is canonical for package boundaries. The repository-local
 [development skill](.agents/skills/trama-development/SKILL.md) routes changes
-to that policy and its checks. R1 enforcement is implemented; it is not hosted
-or main-branch qualification until fork-safe CI records evidence for the exact
-published head.
+to that policy and its checks. R1 enforcement is implemented and has recorded
+hosted PR/main evidence; the observed main also passes Foundation and Python
+contracts. These checks do not establish runtime support or technical merge
+protection. Reverify exact candidate checks and mutable settings before integration.
 
 ## Contributing and safety
 

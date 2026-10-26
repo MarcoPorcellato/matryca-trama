@@ -5,7 +5,17 @@ This ledger records current capability claims under the
 release-support matrix. Every entry must retain its exact scope, revision,
 evidence, and limitations.
 
-## Current anchors
+## Observed published baseline — 2026-10-25
+
+- Published main: `d21f2adb2101ce5fae222f6235925c1d66ece126`, tree
+  `2b2e11c5937f350139e6ee46b2dde13a750a609b`.
+- Current narrow claims are recorded in the dated `PM-*` entries below. Admission,
+  source implementation, specialized qualification, main CI and exploratory
+  observations are distinct; none implies a Trama product release.
+- Mutable state must be reverified before a later action. This documentation
+  candidate is not itself a newly qualified runtime revision.
+
+## Historical anchors and claims
 
 - Repository head observed during planning: `9905e8a36acb83a17a33b702a5fa620d6bfed185`.
 - Qualified baseline: `862c5c89157f28c1985cde6145fc2c8af04a70b4`.
@@ -20,7 +30,8 @@ evidence, and limitations.
   `f1dacc9b30c993b2b69a48c20e73281732e781b3`. See
   [the sanitized receipt](receipts/2026-09-05-v0-anchor-audit.md). Initial
   sandbox fetch was blocked; the coordinator subsequently refreshed remote state
-  with one elevated fetch (exit 0). Current-head qualification remains blocked.
+  with one elevated fetch (exit 0). Current-head qualification was blocked at
+  that audit; later exact-head evidence is recorded separately below.
 
 ## Claims
 
@@ -51,6 +62,22 @@ evidence, and limitations.
 | `V9-DIST-001` | Unsupported | Reproducible Community artifacts. | None. | None. | Requires qualified runtime, SBOM, provenance, artifact inspection, and rehearsal. |
 | `V10-RELEASE-001` | Blocked | Public Community release. | None. | None. | Requires V0–V9 evidence and separate maintainer authorization. |
 
+### Restricted producer/client records — 2026-10-25
+
+The preceding IDs retain their historical wording and evidence. These additions
+record later facts without rewriting old receipts. **Product-M1** remains the
+incomplete epistemic utility/presentation tranche; **Producer-M1/M2/M3** refer
+only to the later synthetic producer/client/exploration sequence.
+
+| Claim ID | Class | Claim and scope | Qualified revision | Evidence | Limitations / next action |
+|---|---|---|---|---|---|
+| `PM-ADMISSION-001` | Documented | The owner admitted jointly `plumber.graph.read/v1` and `plumber.graph.topology/v1` for the exact original Plumber `2.1.0a3` capsule. | Original producer `8c30f70e217722e719c5aedc322219ebccb87e68`; original wheel SHA-256 `e5bc586a3da76d8e11760b39c9d7ac45b62b1240f085a8a96a573b9902bfea12`. | [Owner decision](https://github.com/MarcoPorcellato/matryca-trama/issues/2#issuecomment-6383824647) and [source-admission record](../contracts/PLUMBER_SOURCE_ADMISSION.md#current-owner-admission--2026-10-24). | Exact hash-locked closure with Parser `1.9.0`, CPython `3.12.14`, Linux x86_64/macOS arm64 and authenticated disposable synthetic fixture only. Packaged `proposed`, `static-only-unqualified`, `unqualified` and `planned` labels remain unchanged. No stable, real-graph, payload, DB or OS-isolation admission. |
+| `PM-M1-RECORD-001` | Documented | Producer-M1 qualification and subsequent owner admission are separate recorded events. | Original producer above; immutable evidence refs retained in the source-admission record. | [Source-admission record](../contracts/PLUMBER_SOURCE_ADMISSION.md). | The original pre-admission “consumer NOT ADMITTED” receipt remains valid for its earlier decision point. This audit did not independently rehash original runtime artifacts. |
+| `PM-M2-SOURCE-001` | Implemented | Content-free `KnowledgeGraphGateway` domain port, immutable graph values and restricted `PlumberClientAdapter` outer client. | Source merged as `28e9b5dfb350c7fe875a91c2a630162d7da36582`; present at the observed main. | [PR #33](https://github.com/MarcoPorcellato/matryca-trama/pull/33), `packages/core` and `packages/plumber-client`. | Core and standard-library imports; separately provisioned producer and trusted synthetic handle only. No arbitrary roots, in-process Parser/Plumber import, app, stable API, payload or real graph. |
+| `PM-M2-RECORD-001` | Documented | Successful specialized Producer-M2 synthetic qualification is recorded on its exact exercised head. | `a4463638baaca846fe731556417f1d2d660838f1`; PR-head/merge tree `6c6fc59abb2f1d2f46f85d03374b6d5f4d31cbdf`. | [Run 40112844731, attempt 2](https://github.com/MarcoPorcellato/matryca-trama/actions/runs/40112844731/attempts/2). | Complete only for the admitted capsule. Tree equivalence is provenance evidence, not execution on another commit. Original artifacts were not downloaded or independently rehashed in this reconciliation; no new runtime attempt or current-candidate qualification. |
+| `PM-MAIN-CI-001` | Documented | Foundation and Python contracts checks succeeded on the observed published main. | `d21f2adb2101ce5fae222f6235925c1d66ece126`. | [Foundation](https://github.com/MarcoPorcellato/matryca-trama/actions/runs/40148195978), [Python contracts](https://github.com/MarcoPorcellato/matryca-trama/actions/runs/40148195966). | Exact-main checks only; no substitution for specialized qualification, branch protection, release, user utility or supported host evidence. |
+| `PM-M3-RECORD-001` | Documented | One successful exploratory macOS run and its bounded observations/cleanup were reported. | `d21f2adb2101ce5fae222f6235925c1d66ece126`. | [Run 40148317931, attempt 1](https://github.com/MarcoPorcellato/matryca-trama/actions/runs/40148317931/attempts/1), [PR #34](https://github.com/MarcoPorcellato/matryca-trama/pull/34). | Consumed non-qualifying attempt. Public metadata and owner report were checked; original artifacts were not independently downloaded/rehashed. No supported OS isolation, comparator admission, MA completion, performance or real-data support. |
+
 ## Resolution note — 2026-09-26
 
 `ER-TRANCHE-004` and `ER-TRANCHE-005` preserve the planning and source-admission
@@ -60,6 +87,24 @@ discrepancy in ER-TRANCHE-004 is resolved by [ER-TRANCHE-009](#claims) and
 adapter floor remains `graph.read` plus `graph.topology`, while any
 text/property-backed capability also requires the additive payload profile.
 This does not admit a released profile or runtime consumer.
+
+## Resolution note — 2026-10-25
+
+The September resolution and `ER-TRANCHE-009` describe the earlier state.
+`PM-ADMISSION-001` and the M2 records supersede only their implication that no
+synthetic Plumber consumer has subsequently been admitted or implemented.
+`V4-PLUMBER-001` remains blocked for the broader consumer qualification; the
+synthetic exception is not its full exit. Stable mode-specific released
+artifacts, schemas/TCK, provenance, compatibility and independent qualification
+remain required for broader OG or DB support. Payload is additionally required
+for titles, text and properties; topology supplies none of them. Plumber remains
+the sole gateway, including for Brain; the admitted Trama client does not import
+Parser. The retained historical Parser bridge remains experimental evidence.
+
+Block 3 comparator utility remains blocked independently of the OG roadmap.
+Producer-M3 and separate maintainer-local tooling do not satisfy it. User-facing
+UI, real-graph operation, distribution and release remain unproved. PolyForm
+Noncommercial and the lawyer-reviewed contributor-agreement gate are unchanged.
 
 ## Update rule
 
