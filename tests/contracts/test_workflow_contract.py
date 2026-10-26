@@ -40,6 +40,8 @@ jobs:
       - run: uv run --all-packages python -m unittest discover -s tests/core -v
       - run: uv run --all-packages python -m unittest discover -s tests/client -v
       - run: uv run --all-packages python -m unittest discover -s tests/containment -v
+      # Pure source/unit controls only; the maintainer-local entry refuses CI.
+      - run: uv run --all-packages python -m unittest discover -s tests/maintainer_local -v
       - run: uv run --all-packages python -m unittest tests.integration.test_plumber_consumer -v
       - run: uv run --all-packages python -m unittest tests.test_foundation_validator -v
 """
@@ -66,6 +68,7 @@ class WorkflowContractTests(unittest.TestCase):
             "uv run --all-packages python -m unittest discover -s tests/core -v",
             "uv run --all-packages python -m unittest discover -s tests/client -v",
             "uv run --all-packages python -m unittest discover -s tests/containment -v",
+            "uv run --all-packages python -m unittest discover -s tests/maintainer_local -v",
             "uv run --all-packages python -m unittest tests.integration.test_plumber_consumer -v",
             "uv run --all-packages python -m unittest tests.test_foundation_validator -v",
         ):
@@ -82,8 +85,7 @@ class WorkflowContractTests(unittest.TestCase):
             "- run: uv run --all-packages python scripts/validate_architecture.py"
         )
         contract_suite = (
-            "- run: uv run --all-packages python -m unittest discover "
-            "-s tests/contracts -v"
+            "- run: uv run --all-packages python -m unittest discover -s tests/contracts -v"
         )
 
         self.assertIn(architecture_validation, workflow)
@@ -94,12 +96,10 @@ class WorkflowContractTests(unittest.TestCase):
         workflow = self.workflow()
 
         architecture_suite = (
-            "- run: uv run --all-packages python -m unittest discover "
-            "-s tests/architecture -v"
+            "- run: uv run --all-packages python -m unittest discover -s tests/architecture -v"
         )
         contract_suite = (
-            "- run: uv run --all-packages python -m unittest discover "
-            "-s tests/contracts -v"
+            "- run: uv run --all-packages python -m unittest discover -s tests/contracts -v"
         )
 
         self.assertIn(architecture_suite, workflow)
@@ -167,6 +167,7 @@ class WorkflowContractTests(unittest.TestCase):
                 "uv run --all-packages python -m unittest discover -s tests/core -v",
                 "uv run --all-packages python -m unittest discover -s tests/client -v",
                 "uv run --all-packages python -m unittest discover -s tests/containment -v",
+                "uv run --all-packages python -m unittest discover -s tests/maintainer_local -v",
                 "uv run --all-packages python -m unittest tests.integration.test_plumber_consumer -v",
                 "uv run --all-packages python -m unittest tests.test_foundation_validator -v",
             ],
