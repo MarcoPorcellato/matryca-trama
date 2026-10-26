@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta http-equiv="Content-Security-Policy" content="@@CSP@@">
+  <title>Matryca Trama · Un filo tra le idee</title>
+  <style>@@STYLE@@</style>
+</head>
+<body>
+  <a class="skip" href="#node-list">Vai all'elenco dei nodi</a>
+  <header class="app-header">
+    <div class="brand"><svg viewBox="0 0 40 40" aria-hidden="true"><path d="M7 27V12l13 8 13-8v15l-13-8Z" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linejoin="round"/><circle cx="20" cy="20" r="3" fill="currentColor"/></svg><div><strong>Matryca <span>Trama</span></strong><small>UNO SPAZIO PER LE TUE CONNESSIONI</small></div></div>
+    <div class="header-meta"><span class="demo-badge">Dati dimostrativi</span><button class="text-button" id="credits-open">Crediti</button></div>
+  </header>
+  <main>
+    <div class="intro"><div><p class="eyebrow">IL TUO MONDO, INSIEME</p><h1>Le idee trovano un filo.</h1><p class="subtitle">Persone, progetti e curiosità. Un solo grafo, più prospettive.</p></div><p class="source-status"><span></span>Nessun grafo collegato<br><small>Questo scenario è interamente inventato.</small></p></div>
+    <div class="toolbar">
+      <label class="search"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10" cy="10" r="6"/><path d="m15 15 5 5"/></svg><input id="search" type="search" aria-label="Cerca nel grafo" placeholder="Cerca una pagina, un'idea…" autocomplete="off"></label>
+      <div class="contexts" role="group" aria-label="Prospettiva del grafo"><button data-context="all" aria-pressed="true">Tutto</button><button data-context="work" aria-pressed="false">Lavoro</button><button data-context="personal" aria-pressed="false">Personale</button></div>
+      <button id="reset" class="secondary">↺ <span>Ripristina demo</span></button>
+    </div>
+    <div class="workspace">
+      <aside class="explore panel" aria-label="Esplora il grafo">
+        <div class="panel-heading"><h2>Esplora</h2><span id="list-count">24 nodi</span></div>
+        <fieldset><legend>TIPI DI NODO</legend><div class="category-grid">
+          <label><input type="checkbox" data-category="note" checked><i class="dot note"></i>Note</label>
+          <label><input type="checkbox" data-category="project" checked><i class="dot project"></i>Progetti</label>
+          <label><input type="checkbox" data-category="journal" checked><i class="dot journal"></i>Diari</label>
+          <label><input type="checkbox" data-category="tag" checked><i class="dot tag"></i>Tag</label>
+        </div></fieldset>
+        <h3 class="list-heading">NELLA VISTA ATTUALE</h3>
+        <div id="node-list" class="node-list" tabindex="-1" aria-label="Elenco dei nodi"></div>
+        <div class="explore-footer">Le dimensioni raccontano<br>quanti collegamenti ha un nodo.</div>
+      </aside>
+      <section class="graph-panel panel" aria-label="Mappa delle connessioni">
+        <div class="graph-heading"><div><span class="eyebrow">MAPPA DELLE CONNESSIONI</span><h2 id="view-title">Una vista d'insieme</h2></div><div class="graph-totals"><strong id="node-count">24</strong> nodi <span>·</span> <strong id="edge-count">46</strong> legami</div></div>
+        <div id="graph" role="img" aria-label="Grafo interattivo; la stessa navigazione è disponibile nell'elenco dei nodi"></div>
+        <div id="empty" class="empty" hidden><span>∅</span><h3>Nessun nodo in questa vista</h3><p>Prova un'altra ricerca o ripristina i filtri.</p></div>
+        <div class="graph-footer"><span>Trascina per esplorare. Seleziona per scoprire.</span><div class="zoom" role="group" aria-label="Controlli della mappa"><button id="zoom-out" aria-label="Riduci">−</button><button id="fit" aria-label="Inquadra grafo">⊡</button><button id="zoom-in" aria-label="Ingrandisci">+</button></div></div>
+      </section>
+      <aside class="inspector panel" aria-label="Dettagli del nodo">
+        <div class="panel-heading"><h2>Segui un filo</h2><span class="tiny-mark">↗</span></div>
+        <div id="inspector-empty" class="inspector-empty"><div class="orbit" aria-hidden="true"><span></span><i></i><b></b></div><h3>Ogni nodo è<br>un punto di partenza.</h3><p>Seleziona un elemento del grafo o dell'elenco. Scopri cosa gli sta vicino.</p><button id="start-exploring" class="primary">Esplora Progetto Faro <span>→</span></button></div>
+        <div id="details" hidden><p id="node-category" class="category-pill"></p><h3 id="node-label"></h3><p id="node-description"></p><div id="node-spaces" class="spaces"></div><div class="connections-heading"><h4>COLLEGAMENTI VISIBILI</h4><span id="neighbor-count"></span></div><div id="neighbors"></div></div>
+        <div class="inspector-note"><span class="note-symbol">✧</span><p>Il lavoro e la vita non sono grafi separati. A volte basta cambiare prospettiva.</p></div>
+      </aside>
+    </div>
+    <p id="status" class="sr-only" role="status" aria-live="polite"></p>
+    <footer class="page-footer"><span>MATRYCA TRAMA <span class="muted">/</span> ANTEPRIMA SINTETICA</span><span>Solo contenuti inventati · Nessuna sorgente personale</span></footer>
+  </main>
+  <dialog id="credits"><h2>Una demo, molti fili</h2><p>Interfaccia Trama su dati interamente inventati. Il motore vis-network 9.1.2 riprende la famiglia di renderer usata da LENS nel Matryca Parser. Nessun codice di estrazione del Parser è incorporato.</p><p>Codice Trama: PolyForm Noncommercial 1.0.0. Il renderer conserva le proprie licenze e attribuzioni.</p><details><summary>Licenze del renderer</summary><pre>@@LICENSES@@</pre></details><button id="credits-close" class="primary">Torna al grafo</button></dialog>
+  <script type="application/json" id="demo-data">@@DATA@@</script>
+  @@SCRIPTS@@
+</body>
+</html>

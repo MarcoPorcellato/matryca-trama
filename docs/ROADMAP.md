@@ -45,6 +45,22 @@ The admitted producer remains original Plumber `2.1.0a3` at
 `8c30f70e217722e719c5aedc322219ebccb87e68`; later Plumber verifier work or
 newer Parser releases do not replace that producer or upgrade its pinned closure.
 
+## Synthetic navigation demo — 2026-10-26
+
+The owner authorized a fictional graph application after Astra plan review.
+The scoped [design](superpowers/specs/2026-10-26-synthetic-graph-demo-design.md)
+and [ADR-0011](decisions/ADR-0011-SYNTHETIC-GRAPH-DEMO.md) admit only its local
+composition and bundled renderer. It presents invented labels and relationships
+through the existing core, without Parser/Plumber invocation or a source picker.
+Search, category/context filters, visible neighbors and accessible list
+navigation are demo behaviors, not new Plumber profile semantics.
+
+Ordinary offline tests and browser checks establish only the exact demo source.
+The source branch requires its own review/CI; documentation alone does not
+establish a merged head or release. Original Product-M1, Block 3, real OG/DB,
+payload, performance and distribution retain their independent gates. Existing
+MA evidence is historical; this demo neither reruns nor expands it.
+
 ## Historical experimental baseline
 
 The historical merge-parent observation was
