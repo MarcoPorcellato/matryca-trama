@@ -30,9 +30,10 @@ main has separate passing Foundation and Python contracts checks; they do not
 rebind that specialized qualification to a different head. Producer-M3 was a
 bounded exploratory run, not qualification of supported OS isolation.
 
-No user-facing application, real user graph, payload/title/text/property read,
+No supported Logseq application, real user graph, payload/title/text/property read,
 native DB, write, general network isolation, performance, distribution, stable
-support, or Trama release is established. The retained
+support, or Trama release is established. The fictional navigation demo below
+is a separate presentation experiment. The retained
 `trama.logseq.read/v1` source is a historical experimental read profile; its
 `862c5c8` qualification is historical evidence. The
 [Plumber authority decision](docs/decisions/ADR-0006-PLUMBER-GATEWAY-ADOPTION.md)
@@ -41,6 +42,33 @@ knowing Parser.
 See the [delivery program](docs/specs/MATRYCA_TRAMA_DELIVERY_PROGRAM.md),
 [claim ledger](docs/status/CLAIM_LEDGER.md), and [roadmap](docs/ROADMAP.md) for
 exact evidence and independent remaining gates.
+
+## Try the fictional graph demo
+
+The local synthetic demo renders an invented graph with search, category and
+personal/work filters, node details, visible-neighbor navigation and a
+keyboard-accessible node list. It reuses the vis-network renderer family used
+by Parser LENS, with all assets bundled locally and no Parser import.
+
+From the repository root, with the existing workspace dependencies available:
+
+```bash
+uv run --all-packages python -m apps.synthetic_demo
+```
+
+Open the generated `build/synthetic-demo/index.html` directly in a browser; it
+works offline. For an optional artifact-only loopback preview, use:
+
+```bash
+uv run --all-packages python -m apps.synthetic_demo --serve
+```
+
+The builder supports POSIX developer hosts and refuses linked output paths.
+The HTML contains only fictional annotations, never admitted Plumber payload.
+There is no graph picker, producer invocation, MA retry or user-graph route.
+This is an experimental demo, not a supported Logseq app or release. See
+[the scoped design](docs/superpowers/specs/2026-10-26-synthetic-graph-demo-design.md)
+and [ADR-0011](docs/decisions/ADR-0011-SYNTHETIC-GRAPH-DEMO.md).
 
 ## Principles
 
@@ -58,7 +86,7 @@ exact evidence and independent remaining gates.
 - `packages/` — Community core and restricted `plumber-client` outer adapter;
   retained contracts, Parser/Plumber bridges and synthetic OG adapter are
   historical experiments, not the source-acquisition boundary.
-- `apps/` — future Trama applications and sidecar surfaces.
+- `apps/` — the fixture-only synthetic demo and future Trama application surfaces.
 
 Further directories are introduced only after their contract and evidence gate.
 The [delivery program](docs/specs/MATRYCA_TRAMA_DELIVERY_PROGRAM.md) is the

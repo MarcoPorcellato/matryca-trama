@@ -2,8 +2,21 @@
 
 ## Current shipped dependencies
 
-None. This document-first foundation does not yet ship application code or
-third-party packages.
+The fictional browser demo admitted by ADR-0011 includes the following local
+asset. Trama-owned source remains PolyForm Noncommercial; upstream terms apply
+to the asset itself. No Python application dependency is added.
+
+| Asset | Version | Licence choice | Distribution |
+| --- | --- | --- | --- |
+| vis-network standalone UMD | 9.1.2 | MIT, offered alongside Apache-2.0 | Unmodified browser bundle in `apps/synthetic_demo/vendor`, embedded in the local demo artifact |
+
+Official source: `https://registry.npmjs.org/vis-network/-/vis-network-9.1.2.tgz`.
+Archive SHA-1 `ddaca300a9764bbf1646a0aa03eb28fe55823ca8`; asset SHA-256
+`3729be2f3994c83229106c3d34fb8de807572cf6f282c23e2b34ecf4e84ce863`.
+Retain both upstream license files, all copyright/license comments in the
+standalone bundle, and the readable license text in generated HTML. Embedded
+third-party notices are preserved; no source-minification or header stripping.
+This reuses the renderer family/version used by Parser LENS, not Parser code.
 
 ## Planned external integrations
 
