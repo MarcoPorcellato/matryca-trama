@@ -30,7 +30,7 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
       - name: Set up uv
-        uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
+        uses: astral-sh/setup-uv@07a047e608db84b3d8c06cd9a7c7dcc9c355c18e # v10.3.2
       - run: python --version
       - run: uv --version
       - run: uv sync --locked --all-packages
@@ -113,7 +113,7 @@ class WorkflowContractTests(unittest.TestCase):
             workflow,
         )
         self.assertIn(
-            "astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9",
+            "astral-sh/setup-uv@07a047e608db84b3d8c06cd9a7c7dcc9c355c18e",
             workflow,
         )
         self.assertNotIn("astral-sh/setup-uv@20cfd1bf945f4377ade1205e4dbc17946fc9a30d", workflow)
@@ -151,7 +151,7 @@ class WorkflowContractTests(unittest.TestCase):
             uses,
             [
                 "actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1",
-                "astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9",
+                "astral-sh/setup-uv@07a047e608db84b3d8c06cd9a7c7dcc9c355c18e",
             ],
         )
         runs = re.findall(r"^\s+- run:\s+(.+)$", workflow, re.MULTILINE)
