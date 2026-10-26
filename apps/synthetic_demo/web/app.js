@@ -2,12 +2,13 @@
 (function () {
   'use strict';
   const view = JSON.parse(document.getElementById('demo-data').textContent);
-  const { initialState, reduceState, visibleGraph, neighbors, suggestedNode } = window.TramaDemoState;
+  const { initialHistory, historyState, reduceHistory, visibleGraph, neighbors, suggestedNode } = window.TramaDemoState;
   const categories = { note:['Nota','#78dfbb'],project:['Progetto','#b5a0fc'],journal:['Diario','#7bb5fa'],tag:['Tag','#e6c17a'] };
   const byId = new Map(view.nodes.map(n => [n.id,n]));
   const $ = id => document.getElementById(id);
   const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  let state = initialState();
+  let history = initialHistory();
+  let state = historyState(history);
   let network = null, graphNodes = null, graphEdges = null;
   function element(tag, cls, text) {
     const node = document.createElement(tag);
@@ -55,6 +56,10 @@
     const ids = new Set(current.nodes.map(n=>n.id));
     const focused = document.activeElement && (document.activeElement.dataset.nodeId
       || (document.activeElement.id === 'start-exploring' ? state.selected : null));
+    $('history-back').disabled=history.index===0;
+    $('history-forward').disabled=history.index===history.entries.length-1;
+    $('history-position').textContent=(history.index+1)+' / '+history.entries.length;
+    $('history-position').setAttribute('aria-label','Passo '+(history.index+1)+' di '+history.entries.length);
     $('node-count').textContent=current.nodes.length;$('edge-count').textContent=current.edges.length;
     $('list-count').textContent=current.nodes.length+' nodi';
     $('view-title').textContent={all:"Una vista d'insieme",work:'La prospettiva del lavoro',personal:'La prospettiva personale'}[state.context];
@@ -85,20 +90,31 @@
       $('neighbors').replaceChildren(...adjacent.map(id=>nodeButton(byId.get(id),false,true)));
       if (!adjacent.length) $('neighbors').append(element('p','no-neighbors','Nessun vicino visibile. Puoi cambiare filtri o esplorare un altro nodo.'));
     }
-    $('status').textContent=current.nodes.length+' nodi e '+current.edges.length+' collegamenti visibili'+(node?'. Selezionato: '+node.label:'');
+    $('status').textContent=current.nodes.length+' nodi e '+current.edges.length+' collegamenti visibili'+(node?'. Selezionato: '+node.label:'')+'. Passo '+(history.index+1)+' di '+history.entries.length;
     if (focused && ids.has(focused)) {
       const button = Array.from($('node-list').querySelectorAll('button')).find(b=>b.dataset.nodeId===focused);
       if (button) button.focus({preventScroll:true});
     }
   }
   function dispatch(action, focus) {
-    state=reduceState(view,state,action);render();
-    if (focus && state.selected && network) network.focus(state.selected,{scale:Math.max(.85,network.getScale()),animation:reduced?false:{duration:250,easingFunction:'easeInOutQuad'}});
-    if (['context','category','reset'].includes(action.type)) fit();
+    const focusedControl = document.activeElement && document.activeElement.id;
+    const next = reduceHistory(view,history,action);
+    const reselecting = focus && action.type === 'select' && action.value === state.selected;
+    if (next === history && !reselecting) return;
+    history=next;state=historyState(history);render();
+    const traveling = action.type === 'back' || action.type === 'forward';
+    if ((focus || traveling) && state.selected && network) network.focus(state.selected,{scale:Math.max(.85,network.getScale()),animation:reduced?false:{duration:250,easingFunction:'easeInOutQuad'}});
+    if ((traveling && !state.selected) || ['context','category','reset'].includes(action.type)) fit();
+    if (traveling && ['history-back','history-forward'].includes(focusedControl) && $(focusedControl).disabled) {
+      const opposite = $(focusedControl === 'history-back' ? 'history-forward' : 'history-back');
+      (opposite.disabled ? $('reset') : opposite).focus({preventScroll:true});
+    }
   }
   $('search').addEventListener('input',event=>dispatch({type:'search',value:event.target.value},false));
   document.querySelectorAll('[data-context]').forEach(b=>b.addEventListener('click',()=>dispatch({type:'context',value:b.dataset.context},false)));
   document.querySelectorAll('[data-category]').forEach(b=>b.addEventListener('change',()=>dispatch({type:'category',value:b.dataset.category},false)));
+  $('history-back').addEventListener('click',()=>dispatch({type:'back'},false));
+  $('history-forward').addEventListener('click',()=>dispatch({type:'forward'},false));
   $('reset').addEventListener('click',()=>dispatch({type:'reset'},false));
   $('start-exploring').addEventListener('click',()=>dispatch({type:'select',value:$('start-exploring').dataset.suggested},true));
   $('zoom-in').addEventListener('click',()=>zoom(1.25));$('zoom-out').addEventListener('click',()=>zoom(.8));$('fit').addEventListener('click',fit);

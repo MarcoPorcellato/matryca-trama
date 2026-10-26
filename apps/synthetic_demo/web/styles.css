@@ -153,9 +153,42 @@ h1 {
 }
 .toolbar {
   display:flex;
+  flex-wrap:wrap;
   align-items:center;
   gap:16px;
   margin-bottom:16px
+}
+.history-controls {
+  display:flex;
+  align-items:center;
+  gap:4px;
+  padding:3px;
+  border:1px solid var(--line);
+  border-radius:9px;
+  background:#101925
+}
+.history-controls button {
+  min-height:36px;
+  padding:7px 10px;
+  border-radius:5px;
+  background:none;
+  color:#b9c7d4;
+  font-size:11px
+}
+.history-controls button:disabled {
+  opacity:.4;
+  cursor:not-allowed
+}
+.history-controls button:not(:disabled):hover {
+  background:#243d36;
+  color:#b5f0d8
+}
+.history-position {
+  min-width:35px;
+  color:var(--muted);
+  font-size:10px;
+  text-align:center;
+  white-space:nowrap
 }
 .search {
   display:flex;
@@ -851,6 +884,13 @@ dialog pre {
   .toolbar {
     flex-wrap:wrap;
     gap:10px
+  }
+  .history-controls {
+    flex-basis:100%
+  }
+  .history-controls button {
+    flex:1;
+    min-height:40px
   }
   .search {
     min-width:0;

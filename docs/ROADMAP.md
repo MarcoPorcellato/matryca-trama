@@ -55,6 +55,13 @@ through the existing core, without Parser/Plumber invocation or a source picker.
 Search, category/context filters, visible neighbors and accessible list
 navigation are demo behaviors, not new Plumber profile semantics.
 
+The initial demo merged in [PR #38](https://github.com/MarcoPorcellato/matryca-trama/pull/38)
+at `ec8c81aa5acc379d6fc1fed35ca413e2d44f1f9d`, with passing ordinary PR and
+post-merge checks. The separate owner-authorized history slice restores
+fictional selections and filters through bounded in-memory Back/Forward; see
+its [design](superpowers/specs/2026-10-26-synthetic-navigation-history-design.md).
+It adds no source, persistence or producer capability.
+
 Ordinary offline tests and browser checks establish only the exact demo source.
 The source branch requires its own review/CI; documentation alone does not
 establish a merged head or release. Original Product-M1, Block 3, real OG/DB,
