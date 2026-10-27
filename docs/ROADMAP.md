@@ -62,6 +62,10 @@ fictional selections and filters through bounded in-memory Back/Forward; see
 its [design](superpowers/specs/2026-10-26-synthetic-navigation-history-design.md).
 It adds no source, persistence or producer capability.
 
+The default demo presentation is English for international demonstrations,
+including invented annotations and accessible status text. This copy update
+preserves topology, history behavior, legal notices and source-admission gates.
+
 Ordinary offline tests and browser checks establish only the exact demo source.
 The source branch requires its own review/CI; documentation alone does not
 establish a merged head or release. Original Product-M1, Block 3, real OG/DB,

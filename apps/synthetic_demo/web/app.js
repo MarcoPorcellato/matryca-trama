@@ -3,7 +3,7 @@
   'use strict';
   const view = JSON.parse(document.getElementById('demo-data').textContent);
   const { initialHistory, historyState, reduceHistory, visibleGraph, neighbors, suggestedNode } = window.TramaDemoState;
-  const categories = { note:['Nota','#78dfbb'],project:['Progetto','#b5a0fc'],journal:['Diario','#7bb5fa'],tag:['Tag','#e6c17a'] };
+  const categories = { note:['Note','#78dfbb'],project:['Project','#b5a0fc'],journal:['Journal','#7bb5fa'],tag:['Tag','#e6c17a'] };
   const byId = new Map(view.nodes.map(n => [n.id,n]));
   const $ = id => document.getElementById(id);
   const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -51,6 +51,9 @@
     button.addEventListener('click',()=>dispatch({type:'select',value:node.id},true));
     return button;
   }
+  function countLabel(count, singular) {
+    return count+' '+singular+(count===1?'':'s');
+  }
   function render() {
     const current = visibleGraph(view,state);
     const ids = new Set(current.nodes.map(n=>n.id));
@@ -59,16 +62,16 @@
     $('history-back').disabled=history.index===0;
     $('history-forward').disabled=history.index===history.entries.length-1;
     $('history-position').textContent=(history.index+1)+' / '+history.entries.length;
-    $('history-position').setAttribute('aria-label','Passo '+(history.index+1)+' di '+history.entries.length);
+    $('history-position').setAttribute('aria-label','Step '+(history.index+1)+' of '+history.entries.length);
     $('node-count').textContent=current.nodes.length;$('edge-count').textContent=current.edges.length;
-    $('list-count').textContent=current.nodes.length+' nodi';
-    $('view-title').textContent={all:"Una vista d'insieme",work:'La prospettiva del lavoro',personal:'La prospettiva personale'}[state.context];
+    $('list-count').textContent=countLabel(current.nodes.length,'node');
+    $('view-title').textContent={all:'The whole picture',work:'The work perspective',personal:'The personal perspective'}[state.context];
     $('empty').hidden=current.nodes.length!==0;
     $('search').value=state.query;
     document.querySelectorAll('[data-context]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.context===state.context)));
     document.querySelectorAll('[data-category]').forEach(b=>{b.checked=state.categories.includes(b.dataset.category);});
     $('node-list').replaceChildren(...current.nodes.map(n=>nodeButton(n,n.id===state.selected,false)));
-    if (!current.nodes.length) $('node-list').append(element('p','no-neighbors','Nessun risultato. Prova un altro filtro.'));
+    if (!current.nodes.length) $('node-list').append(element('p','no-neighbors','No results. Try a different filter.'));
     if (network) {
       graphNodes.update(view.nodes.map(n=>({id:n.id,hidden:!ids.has(n.id)})));
       graphEdges.update(view.edges.map(e=>({id:e.id,hidden:!ids.has(e.from)||!ids.has(e.to)})));
@@ -79,18 +82,18 @@
     const suggestion=suggestedNode(view,state);
     $('start-exploring').disabled=!suggestion;
     $('start-exploring').dataset.suggested=suggestion?suggestion.id:'';
-    $('start-exploring').textContent=suggestion?'Esplora '+suggestion.label:'Modifica i filtri';
+    $('start-exploring').textContent=suggestion?'Explore '+suggestion.label:'Change the filters';
     if (suggestion) $('start-exploring').append(element('span','','→'));
     if (node) {
       $('node-label').textContent=node.label;$('node-description').textContent=node.description;
       $('node-category').textContent=categories[node.category][0];$('node-category').style.color=categories[node.category][1];
-      $('node-spaces').replaceChildren(...node.spaces.map(s=>element('span','',s==='work'?'Lavoro':'Personale')));
+      $('node-spaces').replaceChildren(...node.spaces.map(s=>element('span','',s==='work'?'Work':'Personal')));
       const adjacent = neighbors(current,node.id);
       $('neighbor-count').textContent=adjacent.length;
       $('neighbors').replaceChildren(...adjacent.map(id=>nodeButton(byId.get(id),false,true)));
-      if (!adjacent.length) $('neighbors').append(element('p','no-neighbors','Nessun vicino visibile. Puoi cambiare filtri o esplorare un altro nodo.'));
+      if (!adjacent.length) $('neighbors').append(element('p','no-neighbors','No visible neighbors. Change the filters or explore another node.'));
     }
-    $('status').textContent=current.nodes.length+' nodi e '+current.edges.length+' collegamenti visibili'+(node?'. Selezionato: '+node.label:'')+'. Passo '+(history.index+1)+' di '+history.entries.length;
+    $('status').textContent=countLabel(current.nodes.length,'node')+' and '+countLabel(current.edges.length,'link')+' visible'+(node?'. Selected: '+node.label:'')+'. Step '+(history.index+1)+' of '+history.entries.length;
     if (focused && ids.has(focused)) {
       const button = Array.from($('node-list').querySelectorAll('button')).find(b=>b.dataset.nodeId===focused);
       if (button) button.focus({preventScroll:true});

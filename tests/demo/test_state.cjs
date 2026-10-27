@@ -2,13 +2,13 @@ const test = require('node:test');
 const assert = require('node:assert/strict');
 const { initialState, reduceState, visibleGraph, neighbors, suggestedNode, initialHistory, historyState, reduceHistory } = require('../../apps/synthetic_demo/web/state.js');
 const view = { nodes: [
-  {id:'a',label:'Caffè e idee',category:'note',spaces:['personal']},
-  {id:'b',label:'Progetto Faro',category:'project',spaces:['work']},
+  {id:'a',label:'Café and ideas',category:'note',spaces:['personal']},
+  {id:'b',label:'Project Lighthouse',category:'project',spaces:['work']},
   {id:'c',label:'Ada',category:'note',spaces:['personal','work']},
-  {id:'d',label:'Diario',category:'journal',spaces:['personal']},
+  {id:'d',label:'Daily journal',category:'journal',spaces:['personal']},
 ], edges:[{id:'ab',from:'a',to:'b'},{id:'bc',from:'b',to:'c'},{id:'cd',from:'c',to:'d'}] };
 test('search is case and accent insensitive', () => {
-  const state = reduceState(view, initialState(), {type:'search',value:'CAFFE'});
+  const state = reduceState(view, initialState(), {type:'search',value:'CAFE'});
   assert.deepEqual(visibleGraph(view,state).nodes.map(n=>n.id), ['a']);
   assert.equal(visibleGraph(view,state).edges.length,0);
 });
@@ -80,12 +80,12 @@ test('an empty search and its cleared selection are restored as one view', () =>
 
 test('consecutive search input is one step and restores the final query verbatim', () => {
   let history=initialHistory();
-  for(const query of ['C','Ca','Caf','CAFFE'])history=action(history,'search',query);
+  for(const query of ['C','Ca','Caf','CAFE'])history=action(history,'search',query);
   assert.equal(history.entries.length,2);
   history=action(history,'back');
   assert.deepEqual(historyState(history),fullView);
   history=action(history,'forward');
-  assert.deepEqual(historyState(history),{...fullView,query:'CAFFE'});
+  assert.deepEqual(historyState(history),{...fullView,query:'CAFE'});
   assert.deepEqual(visibleGraph(view,historyState(history)).nodes.map(n=>n.id),['a']);
 });
 

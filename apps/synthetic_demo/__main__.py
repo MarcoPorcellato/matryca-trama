@@ -8,10 +8,10 @@ from .preview import serve_document
 
 def main() -> None:
     parser = argparse.ArgumentParser(
-        description="Trama: demo su dati interamente inventati"
+        description="Trama: an offline demo with entirely fictional data"
     )
     parser.add_argument(
-        "--serve", action="store_true", help="Apri un'anteprima locale su loopback"
+        "--serve", action="store_true", help="Serve a local preview on loopback"
     )
     args = parser.parse_args()
     path = build_document()

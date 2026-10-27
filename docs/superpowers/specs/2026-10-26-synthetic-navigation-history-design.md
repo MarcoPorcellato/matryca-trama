@@ -46,7 +46,7 @@ exploration with neither new dependencies nor data/source authority.
   filters add no entry and preserve an existing forward path.
 - A changed action after Back truncates the forward path and begins a new
   branch; a new search after Back never overwrites the historical current view.
-- Ripristina demo clears history and returns to the original full view.
+- Reset demo clears history and returns to the original full view.
   Reloading starts fresh. Nothing is stored beyond the in-memory session.
 - Zoom/pan, DOM focus, list scroll and dialogs are not history entries. On
   restoration, focus the selected canvas node or fit the visible graph when
@@ -54,11 +54,11 @@ exploration with neither new dependencies nor data/source authority.
 
 ## Controls and accessibility
 
-Add native Indietro/Avanti buttons in a labelled history group beside the
+Add native Back/Forward buttons in a labelled history group beside the
 existing toolbar and show the current position (for example 2 / 4). Disabled
 states reflect boundaries. Preserve focus on an activated history button
 while usable; when it becomes disabled, move focus to the enabled opposite
-button, or Ripristina demo if neither is available. The existing live status
+button, or Reset demo if neither is available. The existing live status
 announces position, visible counts and selection. No browser Back interception
 or keyboard shortcut overrides. Tab, Enter and Space use native controls.
 
