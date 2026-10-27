@@ -78,6 +78,12 @@
       if (state.selected) network.selectNodes([state.selected]);else network.unselectAll();
     }
     const node = byId.get(state.selected);
+    $('focus-connections').disabled=!node;
+    $('focus-connections').setAttribute('aria-pressed',String(state.scope==='connections'));
+    $('show-all').disabled=state.scope!=='connections';
+    $('scope-description').textContent=!node
+      ? (current.nodes.length?'Select a node on the map or in the list first.':'No nodes match. Change or reset filters, then select a node.')
+      : state.scope==='connections'?'Connections of '+node.label:'All nodes matching your filters';
     $('inspector-empty').hidden=Boolean(node);$('details').hidden=!node;
     const suggestion=suggestedNode(view,state);
     $('start-exploring').disabled=!suggestion;
@@ -91,9 +97,9 @@
       const adjacent = neighbors(current,node.id);
       $('neighbor-count').textContent=adjacent.length;
       $('neighbors').replaceChildren(...adjacent.map(id=>nodeButton(byId.get(id),false,true)));
-      if (!adjacent.length) $('neighbors').append(element('p','no-neighbors','No visible neighbors. Change the filters or explore another node.'));
+      if (!adjacent.length) $('neighbors').append(element('p','no-neighbors',state.scope==='connections'?'No visible neighbors. Use Show all to explore other nodes.':'No visible neighbors. Change the filters or explore another node.'));
     }
-    $('status').textContent=countLabel(current.nodes.length,'node')+' and '+countLabel(current.edges.length,'link')+' visible'+(node?'. Selected: '+node.label:'')+'. Step '+(history.index+1)+' of '+history.entries.length;
+    $('status').textContent=countLabel(current.nodes.length,'node')+' and '+countLabel(current.edges.length,'link')+' visible'+(node?'. Selected: '+node.label:'')+'. Step '+(history.index+1)+' of '+history.entries.length+(state.scope==='connections'?'. Focused connections':'. All matching nodes');
     if (focused && ids.has(focused)) {
       const button = Array.from($('node-list').querySelectorAll('button')).find(b=>b.dataset.nodeId===focused);
       if (button) button.focus({preventScroll:true});
@@ -106,8 +112,15 @@
     if (next === history && !reselecting) return;
     history=next;state=historyState(history);render();
     const traveling = action.type === 'back' || action.type === 'forward';
-    if ((focus || traveling) && state.selected && network) network.focus(state.selected,{scale:Math.max(.85,network.getScale()),animation:reduced?false:{duration:250,easingFunction:'easeInOutQuad'}});
-    if ((traveling && !state.selected) || ['context','category','reset'].includes(action.type)) fit();
+    if (state.scope === 'connections') {
+      fit();
+    } else {
+      if ((focus || traveling) && state.selected && network) network.focus(state.selected,{scale:Math.max(.85,network.getScale()),animation:reduced?false:{duration:250,easingFunction:'easeInOutQuad'}});
+      if ((traveling && !state.selected) || ['context','category','reset','scope'].includes(action.type)) fit();
+    }
+    if (focusedControl === 'show-all' && $('show-all').disabled) {
+      ($('focus-connections').disabled ? $('reset') : $('focus-connections')).focus({preventScroll:true});
+    }
     if (traveling && ['history-back','history-forward'].includes(focusedControl) && $(focusedControl).disabled) {
       const opposite = $(focusedControl === 'history-back' ? 'history-forward' : 'history-back');
       (opposite.disabled ? $('reset') : opposite).focus({preventScroll:true});
@@ -116,6 +129,8 @@
   $('search').addEventListener('input',event=>dispatch({type:'search',value:event.target.value},false));
   document.querySelectorAll('[data-context]').forEach(b=>b.addEventListener('click',()=>dispatch({type:'context',value:b.dataset.context},false)));
   document.querySelectorAll('[data-category]').forEach(b=>b.addEventListener('change',()=>dispatch({type:'category',value:b.dataset.category},false)));
+  $('focus-connections').addEventListener('click',()=>dispatch({type:'scope',value:'connections'},false));
+  $('show-all').addEventListener('click',()=>dispatch({type:'scope',value:'all'},false));
   $('history-back').addEventListener('click',()=>dispatch({type:'back'},false));
   $('history-forward').addEventListener('click',()=>dispatch({type:'forward'},false));
   $('reset').addEventListener('click',()=>dispatch({type:'reset'},false));

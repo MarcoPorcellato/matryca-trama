@@ -7,14 +7,21 @@
   'use strict';
   const categories = ['note', 'project', 'journal', 'tag'];
   const normalized = value => String(value).normalize('NFD').replace(/\p{M}/gu, '').toLocaleLowerCase('en').trim();
-  function initialState() { return { query: '', context: 'all', categories: [...categories], selected: null }; }
-  function visibleGraph(view, state) {
+  function initialState() { return { query: '', context: 'all', categories: [...categories], selected: null, scope: 'all' }; }
+  function filteredGraph(view, state) {
     const query = normalized(state.query);
     const nodes = view.nodes.filter(n => state.categories.includes(n.category)
       && (state.context === 'all' || n.spaces.includes(state.context))
       && normalized(n.label).includes(query));
     const ids = new Set(nodes.map(n => n.id));
     return { nodes, edges: view.edges.filter(e => ids.has(e.from) && ids.has(e.to)) };
+  }
+  function visibleGraph(view, state) {
+    const filtered = filteredGraph(view,state);
+    if (state.scope !== 'connections' || !filtered.nodes.some(n=>n.id===state.selected)) return filtered;
+    const ids = new Set([state.selected,...neighbors(filtered,state.selected)]);
+    return { nodes: filtered.nodes.filter(n=>ids.has(n.id)),
+      edges: filtered.edges.filter(e=>ids.has(e.from)&&ids.has(e.to)) };
   }
   function reduceState(view, old, action) {
     if (action.type === 'reset') return initialState();
@@ -25,10 +32,14 @@
       state.categories = state.categories.includes(action.value)
         ? state.categories.filter(c => c !== action.value) : [...state.categories, action.value];
     }
-    if (action.type === 'select' && visibleGraph(view,state).nodes.some(n=>n.id===action.value)) {
+    if (action.type === 'select' && visibleGraph(view,old).nodes.some(n=>n.id===action.value)) {
       state.selected = action.value;
     }
-    if (!visibleGraph(view, state).nodes.some(n => n.id === state.selected)) state.selected = null;
+    const selectedVisible = filteredGraph(view,state).nodes.some(n=>n.id===state.selected);
+    if (action.type === 'scope' && (action.value === 'all' || (action.value === 'connections' && selectedVisible))) {
+      state.scope=action.value;
+    }
+    if (!selectedVisible) { state.selected=null;state.scope='all'; }
     return state;
   }
   function neighbors(view, id) {
@@ -47,7 +58,7 @@
   }
   function sameView(left, right) {
     return left.query === right.query && left.context === right.context
-      && left.selected === right.selected
+      && left.selected === right.selected && left.scope === right.scope
       && left.categories.length === right.categories.length
       && left.categories.every(category => right.categories.includes(category));
   }
@@ -75,6 +86,6 @@
     const bounded = entries.slice(-100);
     return { entries: bounded, index: bounded.length - 1, lastAction: action.type };
   }
-  return { initialState, reduceState, visibleGraph, neighbors, suggestedNode,
+  return { initialState, reduceState, filteredGraph, visibleGraph, neighbors, suggestedNode,
     initialHistory, historyState, reduceHistory };
 });
