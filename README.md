@@ -45,15 +45,15 @@ exact evidence and independent remaining gates.
 
 ## Try the fictional graph demo
 
-The local synthetic demo renders an invented graph with search, category and
+The English-language local synthetic demo renders an invented graph with search, category and
 personal/work filters, node details, visible-neighbor navigation and a
 keyboard-accessible node list. It reuses the vis-network renderer family used
 by Parser LENS, with all assets bundled locally and no Parser import.
 
-Indietro/Avanti restores the selected node together with search, categories and
+Back/Forward restores the selected node together with search, categories and
 personal/work perspective. Consecutive search typing forms one step; a new
 action after going back starts a new path. The latest 100 views stay in memory
-only. Ripristina demo and reloading clear history; zoom and scroll are not saved.
+only. Reset demo and reloading clear history; zoom and scroll are not saved.
 
 From the repository root, with the existing workspace dependencies available:
 

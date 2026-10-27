@@ -63,8 +63,9 @@ demo view, never owner wire DTOs. Python checks topology through existing core.
 
 ## Visible behavior
 
-- Italian interface, always marked **Dati dimostrativi** and **Nessun grafo
-  collegato**. One graph offers Tutto, Lavoro and Personale views.
+- English interface (owner update, 2026-10-27), always marked **Demo data** and
+  **No graph connected**. One graph offers All, Work and Personal views.
+  Fictional annotations, placeholders, credits and accessibility text are English.
 - Search labels, toggle the four categories, show visible node/link counts,
   select nodes, inspect a description and navigate neighbor buttons.
 - Zoom, fit and reset; deterministic initial layout and degree-based sizes.

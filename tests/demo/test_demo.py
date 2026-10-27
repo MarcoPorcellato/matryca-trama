@@ -24,10 +24,12 @@ ROOT = Path(__file__).resolve().parents[2]
 class Markup(HTMLParser):
     def __init__(self):
         super().__init__()
-        self.tags, self.external, self.policy = [], [], ""
+        self.tags, self.external, self.policy, self.language = [], [], "", ""
 
     def handle_starttag(self, tag, attrs):
         self.tags.append(tag)
+        if tag == "html":
+            self.language = dict(attrs).get("lang", "")
         self.external.extend(
             v for k, v in attrs if k in {"src", "href"} and v and not v.startswith("#")
         )
@@ -82,7 +84,8 @@ class DemoTests(unittest.TestCase):
         self.assertEqual(parsed.external, [])
         self.assertIn("connect-src 'none'", parsed.policy)
         self.assertNotIn("unsafe-eval", parsed.policy)
-        self.assertTrue("Dati dimostrativi" in document)
+        self.assertEqual(parsed.language, "en")
+        self.assertIn("Demo data", document)
         self.assertLess(len(document.encode()), 1_048_576)
 
     def test_official_renderer_is_pinned(self):

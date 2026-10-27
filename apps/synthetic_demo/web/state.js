@@ -6,7 +6,7 @@
 })(globalThis, function () {
   'use strict';
   const categories = ['note', 'project', 'journal', 'tag'];
-  const normalized = value => String(value).normalize('NFD').replace(/\p{M}/gu, '').toLocaleLowerCase('it').trim();
+  const normalized = value => String(value).normalize('NFD').replace(/\p{M}/gu, '').toLocaleLowerCase('en').trim();
   function initialState() { return { query: '', context: 'all', categories: [...categories], selected: null }; }
   function visibleGraph(view, state) {
     const query = normalized(state.query);
