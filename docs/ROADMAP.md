@@ -67,6 +67,12 @@ adds a derived one-hop presentation scope, not a topology/source profile.
 It respects active filters and history; Show all retains those filters and
 selection. Focused framing covers the entire retained neighborhood.
 
+The owner-authorized [Find a path slice](superpowers/specs/2026-10-27-synthetic-find-a-path-design.md)
+adds shortest undirected link routes between two fictional pages in the current
+visible diagram. Native endpoint controls, ordered steps and map highlighting
+respect filters, Focus and full-view history. This is a presentation helper,
+with no shared intelligence, source acquisition or new contract capability.
+
 The default demo presentation is English for international demonstrations,
 including invented annotations and accessible status text. This copy update
 preserves topology, history behavior, legal notices and source-admission gates.

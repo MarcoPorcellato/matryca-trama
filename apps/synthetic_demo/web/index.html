@@ -32,6 +32,20 @@
       </div>
       <div class="scope-copy"><p id="scope-description">Select a node on the map or in the list first.</p><p id="scope-hint">Show all keeps your search and filters.</p></div>
     </div>
+    <details id="path-panel" class="path-panel">
+      <summary><strong>Find a path</strong><span id="path-summary">Choose two pages</span></summary>
+      <div class="path-body">
+        <p id="path-hint">Choose pages in the current view. Links can be followed in either direction.</p>
+        <p id="path-scope">Search and filters limit the route, including every intermediate page.</p>
+        <div class="path-controls">
+          <label for="path-start">Start page<select id="path-start" aria-describedby="path-hint path-scope"></select></label>
+          <label for="path-end">End page<select id="path-end" aria-describedby="path-hint path-scope"></select></label>
+          <button id="clear-path" type="button" class="secondary" disabled>Clear path</button>
+        </div>
+        <p id="path-result" role="status" aria-live="polite">Choose a start and an end page.</p>
+        <ol id="path-steps" aria-label="Path from start to end" hidden></ol>
+      </div>
+    </details>
     <div class="workspace">
       <aside class="explore panel" aria-label="Explore the graph">
         <div class="panel-heading"><h2>Explore</h2><span id="list-count">24 nodes</span></div>

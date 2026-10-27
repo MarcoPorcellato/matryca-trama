@@ -55,8 +55,14 @@ neighbors, fitted together. Show all returns to nodes matching the current
 search and filters; it retains the selection. Following a neighbor moves the
 focus to that node. Hiding the center clears focus and selection together.
 
+Open Find a path and choose a start and end page to highlight a shortest route
+in the current view, with readable steps. Links can be followed in either
+direction. Search, filters and Focus limit every page in the route; Show all
+expands the view while keeping filters. Clear path removes only the endpoint
+choices and highlighting. Choosing endpoints does not move or zoom the map.
+
 Back/Forward restores the selected node together with search, categories,
-personal/work perspective and graph scope. Consecutive search typing forms one step; a new
+personal/work perspective, graph scope and path endpoints. Consecutive search typing forms one step; a new
 action after going back starts a new path. The latest 100 views stay in memory
 only. Reset demo and reloading clear history; zoom and scroll are not saved.
 

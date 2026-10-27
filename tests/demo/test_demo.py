@@ -74,7 +74,7 @@ class DemoTests(unittest.TestCase):
             parsed = Markup()
             parsed.feed(build.render_document())
         self.assertNotIn("img", parsed.tags)
-        self.assertEqual(parsed.tags.count("script"), 4)
+        self.assertEqual(parsed.tags.count("script"), 5)
 
     def test_document_is_deterministic_self_contained_and_bounded(self):
         document = build.render_document()

@@ -44,7 +44,7 @@ jobs:
       - run: uv run --all-packages python -m unittest discover -s tests/maintainer_local -v
       - run: uv run --all-packages python scripts/validate_synthetic_demo.py
       - run: uv run --all-packages python -m unittest discover -s tests/demo -v
-      - run: node --test tests/demo/test_state.cjs
+      - run: node --test tests/demo/test_state.cjs tests/demo/test_path.cjs
       - run: uv run --all-packages python -m unittest tests.integration.test_plumber_consumer -v
       - run: uv run --all-packages python -m unittest tests.test_foundation_validator -v
 """
@@ -74,7 +74,7 @@ class WorkflowContractTests(unittest.TestCase):
             "uv run --all-packages python -m unittest discover -s tests/maintainer_local -v",
             "uv run --all-packages python scripts/validate_synthetic_demo.py",
             "uv run --all-packages python -m unittest discover -s tests/demo -v",
-            "node --test tests/demo/test_state.cjs",
+            "node --test tests/demo/test_state.cjs tests/demo/test_path.cjs",
             "uv run --all-packages python -m unittest tests.integration.test_plumber_consumer -v",
             "uv run --all-packages python -m unittest tests.test_foundation_validator -v",
         ):
@@ -176,7 +176,7 @@ class WorkflowContractTests(unittest.TestCase):
                 "uv run --all-packages python -m unittest discover -s tests/maintainer_local -v",
                 "uv run --all-packages python scripts/validate_synthetic_demo.py",
                 "uv run --all-packages python -m unittest discover -s tests/demo -v",
-                "node --test tests/demo/test_state.cjs",
+                "node --test tests/demo/test_state.cjs tests/demo/test_path.cjs",
                 "uv run --all-packages python -m unittest tests.integration.test_plumber_consumer -v",
                 "uv run --all-packages python -m unittest tests.test_foundation_validator -v",
             ],

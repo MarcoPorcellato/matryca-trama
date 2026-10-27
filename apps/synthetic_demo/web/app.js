@@ -3,6 +3,7 @@
   'use strict';
   const view = JSON.parse(document.getElementById('demo-data').textContent);
   const { initialHistory, historyState, reduceHistory, visibleGraph, neighbors, suggestedNode } = window.TramaDemoState;
+  const { shortestPath } = window.TramaDemoPath;
   const categories = { note:['Note','#78dfbb'],project:['Project','#b5a0fc'],journal:['Journal','#7bb5fa'],tag:['Tag','#e6c17a'] };
   const byId = new Map(view.nodes.map(n => [n.id,n]));
   const $ = id => document.getElementById(id);
@@ -54,8 +55,40 @@
   function countLabel(count, singular) {
     return count+' '+singular+(count===1?'':'s');
   }
+  function renderPath(current, path) {
+    for (const [id, value] of [['path-start',state.pathStart],['path-end',state.pathEnd]]) {
+      const placeholder = element('option','',current.nodes.length?'Choose a page…':'No pages in this view');
+      placeholder.value='';
+      $(id).replaceChildren(placeholder,...current.nodes.map(node=>{
+        const option=element('option','',node.label);option.value=node.id;return option;
+      }));
+      $(id).value=value || '';$(id).disabled=!current.nodes.length;
+    }
+    $('clear-path').disabled=!state.pathStart && !state.pathEnd;
+    $('path-scope').textContent=state.scope==='connections'
+      ? 'Focus connections limits the route. Show all widens the view and keeps your search and filters.'
+      : 'Search and filters limit the route, including every intermediate page.';
+    let result='Choose a start and an end page.', summary='Choose two pages';
+    if (!current.nodes.length) {
+      result='No pages in this view. Change or reset filters to find a path.';summary='No pages in this view';
+    } else if (path.status==='found') {
+      result=path.edgeIds.length ? 'Shortest path in this view: '+countLabel(path.edgeIds.length,'link')+'.' : 'Same page: 0 links.';
+      summary=countLabel(path.edgeIds.length,'link')+' · '+countLabel(path.nodeIds.length,'page')+' highlighted';
+    } else if (path.status==='unreachable') {
+      result='No path in this view. '+(state.scope==='connections'?'Try Show all or change filters.':'Change filters to explore another view.');
+      summary='No path in this view';
+    } else if (state.pathStart || state.pathEnd) {
+      result=state.pathStart?'Choose an end page.':'Choose a start page.';summary='Choose one more page';
+    }
+    $('path-summary').textContent=summary;$('path-result').textContent=result;
+    $('path-steps').replaceChildren(...path.nodeIds.map(id=>element('li','',byId.get(id).label)));
+    $('path-steps').hidden=path.status!=='found';
+  }
   function render() {
     const current = visibleGraph(view,state);
+    const path = shortestPath(current,state.pathStart,state.pathEnd);
+    const pathNodes = new Set(path.nodeIds), pathEdges = new Set(path.edgeIds);
+    renderPath(current,path);
     const ids = new Set(current.nodes.map(n=>n.id));
     const focused = document.activeElement && (document.activeElement.dataset.nodeId
       || (document.activeElement.id === 'start-exploring' ? state.selected : null));
@@ -73,8 +106,19 @@
     $('node-list').replaceChildren(...current.nodes.map(n=>nodeButton(n,n.id===state.selected,false)));
     if (!current.nodes.length) $('node-list').append(element('p','no-neighbors','No results. Try a different filter.'));
     if (network) {
-      graphNodes.update(view.nodes.map(n=>({id:n.id,hidden:!ids.has(n.id)})));
-      graphEdges.update(view.edges.map(e=>({id:e.id,hidden:!ids.has(e.from)||!ids.has(e.to)})));
+      graphNodes.update(view.nodes.map(n=>{
+        const onPath=pathNodes.has(n.id), color=categories[n.category][1];
+        return {id:n.id,hidden:!ids.has(n.id),borderWidth:onPath?3:1.4,
+          font:{color:onPath?'#ffe5ab':'#bfced7'},
+          color:{background:color,border:onPath?'#ffd68a':color,
+            highlight:{background:color,border:onPath?'#ffd68a':'#f2fff8'},
+            hover:{background:color,border:onPath?'#ffd68a':'#e4fff1'}}};
+      }));
+      graphEdges.update(view.edges.map(e=>{
+        const onPath=pathEdges.has(e.id);
+        return {id:e.id,hidden:!ids.has(e.from)||!ids.has(e.to),width:onPath?3:1,
+          color:{color:onPath?'#ffd68a':'#365363',highlight:onPath?'#ffd68a':'#9adfc8',hover:onPath?'#ffd68a':'#6e9d94'}};
+      }));
       if (state.selected) network.selectNodes([state.selected]);else network.unselectAll();
     }
     const node = byId.get(state.selected);
@@ -112,14 +156,18 @@
     if (next === history && !reselecting) return;
     history=next;state=historyState(history);render();
     const traveling = action.type === 'back' || action.type === 'forward';
-    if (state.scope === 'connections') {
+    const pathAction = ['path-start','path-end','clear-path'].includes(action.type);
+    if (!pathAction && state.scope === 'connections') {
       fit();
-    } else {
+    } else if (!pathAction) {
       if ((focus || traveling) && state.selected && network) network.focus(state.selected,{scale:Math.max(.85,network.getScale()),animation:reduced?false:{duration:250,easingFunction:'easeInOutQuad'}});
       if ((traveling && !state.selected) || ['context','category','reset','scope'].includes(action.type)) fit();
     }
     if (focusedControl === 'show-all' && $('show-all').disabled) {
       ($('focus-connections').disabled ? $('reset') : $('focus-connections')).focus({preventScroll:true});
+    }
+    if (focusedControl === 'clear-path' && $('clear-path').disabled) {
+      ($('path-start').disabled ? $('reset') : $('path-start')).focus({preventScroll:true});
     }
     if (traveling && ['history-back','history-forward'].includes(focusedControl) && $(focusedControl).disabled) {
       const opposite = $(focusedControl === 'history-back' ? 'history-forward' : 'history-back');
@@ -131,6 +179,10 @@
   document.querySelectorAll('[data-category]').forEach(b=>b.addEventListener('change',()=>dispatch({type:'category',value:b.dataset.category},false)));
   $('focus-connections').addEventListener('click',()=>dispatch({type:'scope',value:'connections'},false));
   $('show-all').addEventListener('click',()=>dispatch({type:'scope',value:'all'},false));
+  for (const id of ['path-start','path-end']) {
+    $(id).addEventListener('change',event=>dispatch({type:id,value:event.target.value || null},false));
+  }
+  $('clear-path').addEventListener('click',()=>dispatch({type:'clear-path'},false));
   $('history-back').addEventListener('click',()=>dispatch({type:'back'},false));
   $('history-forward').addEventListener('click',()=>dispatch({type:'forward'},false));
   $('reset').addEventListener('click',()=>dispatch({type:'reset'},false));
