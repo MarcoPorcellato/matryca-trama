@@ -50,6 +50,11 @@ personal/work filters, node details, visible-neighbor navigation and a
 keyboard-accessible node list. It reuses the vis-network renderer family used
 by Parser LENS, with all assets bundled locally and no Parser import.
 
+Indietro/Avanti restores the selected node together with search, categories and
+personal/work perspective. Consecutive search typing forms one step; a new
+action after going back starts a new path. The latest 100 views stay in memory
+only. Ripristina demo and reloading clear history; zoom and scroll are not saved.
+
 From the repository root, with the existing workspace dependencies available:
 
 ```bash

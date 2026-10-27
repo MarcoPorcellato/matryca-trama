@@ -16,6 +16,11 @@
   <main>
     <div class="intro"><div><p class="eyebrow">IL TUO MONDO, INSIEME</p><h1>Le idee trovano un filo.</h1><p class="subtitle">Persone, progetti e curiosità. Un solo grafo, più prospettive.</p></div><p class="source-status"><span></span>Nessun grafo collegato<br><small>Questo scenario è interamente inventato.</small></p></div>
     <div class="toolbar">
+      <div class="history-controls" role="group" aria-label="Cronologia nella demo">
+        <button id="history-back" type="button" disabled><span aria-hidden="true">←</span> Indietro</button>
+        <span id="history-position" class="history-position" aria-label="Passo 1 di 1">1 / 1</span>
+        <button id="history-forward" type="button" disabled>Avanti <span aria-hidden="true">→</span></button>
+      </div>
       <label class="search"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10" cy="10" r="6"/><path d="m15 15 5 5"/></svg><input id="search" type="search" aria-label="Cerca nel grafo" placeholder="Cerca una pagina, un'idea…" autocomplete="off"></label>
       <div class="contexts" role="group" aria-label="Prospettiva del grafo"><button data-context="all" aria-pressed="true">Tutto</button><button data-context="work" aria-pressed="false">Lavoro</button><button data-context="personal" aria-pressed="false">Personale</button></div>
       <button id="reset" class="secondary">↺ <span>Ripristina demo</span></button>

@@ -25,7 +25,9 @@
       state.categories = state.categories.includes(action.value)
         ? state.categories.filter(c => c !== action.value) : [...state.categories, action.value];
     }
-    if (action.type === 'select') state.selected = action.value;
+    if (action.type === 'select' && visibleGraph(view,state).nodes.some(n=>n.id===action.value)) {
+      state.selected = action.value;
+    }
     if (!visibleGraph(view, state).nodes.some(n => n.id === state.selected)) state.selected = null;
     return state;
   }
@@ -37,5 +39,42 @@
     const visible = visibleGraph(view,state).nodes;
     return visible.find(n=>n.category==='project') || visible[0] || null;
   }
-  return { initialState, reduceState, visibleGraph, neighbors, suggestedNode };
+  function initialHistory() {
+    return { entries: [initialState()], index: 0, lastAction: null };
+  }
+  function historyState(history) {
+    return history.entries[history.index];
+  }
+  function sameView(left, right) {
+    return left.query === right.query && left.context === right.context
+      && left.selected === right.selected
+      && left.categories.length === right.categories.length
+      && left.categories.every(category => right.categories.includes(category));
+  }
+  function reduceHistory(view, history, action) {
+    if (action.type === 'reset') return initialHistory();
+    if (action.type === 'back' || action.type === 'forward') {
+      const index = history.index + (action.type === 'back' ? -1 : 1);
+      if (index < 0 || index >= history.entries.length) return history;
+      return { ...history, index, lastAction: null };
+    }
+    const next = reduceState(view, historyState(history), action);
+    if (sameView(next, historyState(history))) return history;
+    const entries = history.entries.slice(0, history.index + 1);
+    const coalesce = action.type === 'search' && history.lastAction === 'search'
+      && history.index === history.entries.length - 1 && history.index > 0;
+    if (coalesce) {
+      if (sameView(next, entries[entries.length - 2])) {
+        entries.pop();
+        return { entries, index: entries.length - 1, lastAction: null };
+      }
+      entries[entries.length - 1] = next;
+    } else {
+      entries.push(next);
+    }
+    const bounded = entries.slice(-100);
+    return { entries: bounded, index: bounded.length - 1, lastAction: action.type };
+  }
+  return { initialState, reduceState, visibleGraph, neighbors, suggestedNode,
+    initialHistory, historyState, reduceHistory };
 });
