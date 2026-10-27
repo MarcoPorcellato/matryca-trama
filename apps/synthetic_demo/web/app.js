@@ -81,7 +81,9 @@
     $('focus-connections').disabled=!node;
     $('focus-connections').setAttribute('aria-pressed',String(state.scope==='connections'));
     $('show-all').disabled=state.scope!=='connections';
-    $('scope-description').textContent=state.scope==='connections'&&node?'Connections of '+node.label:'All nodes matching your filters';
+    $('scope-description').textContent=!node
+      ? (current.nodes.length?'Select a node on the map or in the list first.':'No nodes match. Change or reset filters, then select a node.')
+      : state.scope==='connections'?'Connections of '+node.label:'All nodes matching your filters';
     $('inspector-empty').hidden=Boolean(node);$('details').hidden=!node;
     const suggestion=suggestedNode(view,state);
     $('start-exploring').disabled=!suggestion;

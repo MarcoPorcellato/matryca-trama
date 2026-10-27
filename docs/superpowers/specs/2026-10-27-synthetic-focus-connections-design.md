@@ -72,7 +72,10 @@ Preserve focus on usable stable controls. When activating Show all disables
 it, move keyboard focus to the enabled Focus connections button (otherwise
 Reset demo). Keep existing node-list and history-boundary focus rules. Scope
 changes announce mode, visible counts and selection through the existing live
-status. Native Enter/Space work; no browser shortcuts or history are intercepted.
+status. When no node is selected, the nearby description explains that a node
+must be selected first; if filters leave no nodes, it asks the user to change
+or reset filters before selecting. Focus connections references that description
+and the filter hint through aria-describedby, including while disabled. Native Enter/Space work; no browser shortcuts or history are intercepted.
 
 ## Evidence and delivery
 
