@@ -62,6 +62,14 @@ fictional selections and filters through bounded in-memory Back/Forward; see
 its [design](superpowers/specs/2026-10-26-synthetic-navigation-history-design.md).
 It adds no source, persistence or producer capability.
 
+The owner-authorized [view-restoration slice](superpowers/plans/2026-10-27-synthetic-view-restoration.md)
+extends that fictional history with map centre/zoom and page/list/detail scroll
+captures. Captures remain session-only and bounded with their navigation entry;
+map and scroll interactions do not add steps. Changed layouts clamp scrolling
+to current content. Camera changes are immediate, avoiding a renderer race when
+interrupting an animation before its first frame. This slice grants no source
+or runtime capability; its branch review/CI remain separate from main status.
+
 The owner-authorized [Focus connections slice](superpowers/specs/2026-10-27-synthetic-focus-connections-design.md)
 adds a derived one-hop presentation scope, not a topology/source profile.
 It respects active filters and history; Show all retains those filters and
