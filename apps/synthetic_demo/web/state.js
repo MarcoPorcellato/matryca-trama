@@ -7,7 +7,7 @@
   'use strict';
   const categories = ['note', 'project', 'journal', 'tag'];
   const normalized = value => String(value).normalize('NFD').replace(/\p{M}/gu, '').toLocaleLowerCase('en').trim();
-  function initialState() { return { query: '', context: 'all', categories: [...categories], selected: null, scope: 'all' }; }
+  function initialState() { return { query: '', context: 'all', categories: [...categories], selected: null, scope: 'all', pathStart: null, pathEnd: null }; }
   function filteredGraph(view, state) {
     const query = normalized(state.query);
     const nodes = view.nodes.filter(n => state.categories.includes(n.category)
@@ -40,6 +40,15 @@
       state.scope=action.value;
     }
     if (!selectedVisible) { state.selected=null;state.scope='all'; }
+    if (action.type === 'path-start' || action.type === 'path-end') {
+      if (action.value === null || visibleGraph(view,old).nodes.some(n=>n.id===action.value)) {
+        state[action.type === 'path-start' ? 'pathStart' : 'pathEnd']=action.value;
+      }
+    }
+    if (action.type === 'clear-path') { state.pathStart=null;state.pathEnd=null; }
+    const visibleIds = new Set(visibleGraph(view,state).nodes.map(n=>n.id));
+    if (!visibleIds.has(state.pathStart)) state.pathStart=null;
+    if (!visibleIds.has(state.pathEnd)) state.pathEnd=null;
     return state;
   }
   function neighbors(view, id) {
@@ -59,6 +68,7 @@
   function sameView(left, right) {
     return left.query === right.query && left.context === right.context
       && left.selected === right.selected && left.scope === right.scope
+      && left.pathStart === right.pathStart && left.pathEnd === right.pathEnd
       && left.categories.length === right.categories.length
       && left.categories.every(category => right.categories.includes(category));
   }

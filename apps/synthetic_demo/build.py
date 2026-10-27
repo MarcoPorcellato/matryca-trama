@@ -32,6 +32,7 @@ def render_document() -> str:
     scripts = [
         renderer.decode().replace("\r\n", "\n"),
         (HERE / "web/state.js").read_text(),
+        (HERE / "web/path.js").read_text(),
         (HERE / "web/app.js").read_text(),
     ]
     if any("</script" in source.lower() for source in scripts):

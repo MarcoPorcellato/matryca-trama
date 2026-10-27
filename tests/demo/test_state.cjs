@@ -41,7 +41,7 @@ test('the suggested starting node is always visible, including personal and empt
   assert.equal(suggestedNode(view,state),null);
 });
 
-const fullView = {query:'',context:'all',categories:['note','project','journal','tag'],selected:null,scope:'all'};
+const fullView = {query:'',context:'all',categories:['note','project','journal','tag'],selected:null,scope:'all',pathStart:null,pathEnd:null};
 const action = (history,type,value) => reduceHistory(view,history,{type,value});
 
 test('history starts at a stable boundary and supports no movement beyond it', () => {
@@ -57,7 +57,7 @@ test('Back and Forward restore selection together with context and category filt
   history=action(history,'context','personal');
   history=action(history,'select','c');
   history=action(history,'category','note');
-  assert.deepEqual(historyState(history),{query:'',context:'personal',categories:['project','journal','tag'],selected:null,scope:'all'});
+  assert.deepEqual(historyState(history),{query:'',context:'personal',categories:['project','journal','tag'],selected:null,scope:'all',pathStart:null,pathEnd:null});
   history=action(history,'back');
   assert.deepEqual(historyState(history),{...fullView,context:'personal',selected:'c'});
   history=action(history,'back');
@@ -65,7 +65,7 @@ test('Back and Forward restore selection together with context and category filt
   history=action(history,'back');
   assert.deepEqual(historyState(history),{...fullView,selected:'b'});
   history=action(action(action(history,'forward'),'forward'),'forward');
-  assert.deepEqual(historyState(history),{query:'',context:'personal',categories:['project','journal','tag'],selected:null,scope:'all'});
+  assert.deepEqual(historyState(history),{query:'',context:'personal',categories:['project','journal','tag'],selected:null,scope:'all',pathStart:null,pathEnd:null});
 });
 
 test('an empty search and its cleared selection are restored as one view', () => {
@@ -306,4 +306,120 @@ test('focused projection and normalization do not mutate frozen view or state in
   const next=reduceState(frozenView,state,{type:'context',value:'personal'});
   assert.equal(next.scope,'all');assert.equal(next.selected,null);
   assert.equal(state.scope,'connections');assert.equal(state.selected,'b');
+});
+
+
+const {shortestPath} = require('../../apps/synthetic_demo/web/path.js');
+const route = history => shortestPath(visibleGraph(focusView,historyState(history)),historyState(history).pathStart,historyState(history).pathEnd);
+
+test('endpoint choices join full history without changing selection or scope',()=>{
+  let history=focusAction(initialHistory(),'select','c');
+  history=focusAction(history,'path-start','a');
+  const start=historyState(history);
+  history=focusAction(history,'path-end','e');
+  const complete=historyState(history);
+  assert.deepEqual(complete,{...fullView,selected:'c',pathStart:'a',pathEnd:'e'});
+  assert.deepEqual(route(history),{status:'found',nodeIds:['a','c','d','e'],edgeIds:['ac','cd','de']});
+  history=focusAction(history,'back');assert.deepEqual(historyState(history),start);
+  history=focusAction(history,'forward');assert.deepEqual(historyState(history),complete);
+  history=focusAction(history,'clear-path');
+  assert.deepEqual(historyState(history),{...fullView,selected:'c'});
+  assert.deepEqual(historyState(focusAction(history,'back')),complete);
+});
+
+test('hidden and unknown endpoints and redundant clears preserve Forward',()=>{
+  let history=focusAction(initialHistory(),'context','work');
+  history=focusAction(history,'path-start','b');
+  history=focusAction(history,'path-end','e');
+  history=focusAction(history,'back');
+  for(const [type,value]of[['path-start','a'],['path-end','unknown'],['path-start','b'],['path-end',null]]) {
+    assert.equal(focusAction(history,type,value),history);
+  }
+  assert.equal(historyState(focusAction(history,'forward')).pathEnd,'e');
+  const empty=initialHistory();assert.equal(focusAction(empty,'clear-path'),empty);
+});
+
+test('filter changes clear only newly hidden endpoints and Back restores them',()=>{
+  for(const [type,value,start,end,expectedStart,expectedEnd]of[
+    ['context','work','a','b',null,'b'],
+    ['category','journal','a','d','a',null],
+    ['search','Ada','a','c',null,'c'],
+  ]) {
+    let history=focusAction(initialHistory(),'path-start',start);
+    history=focusAction(history,'path-end',end);
+    const before=historyState(history);
+    history=focusAction(history,type,value);
+    assert.equal(historyState(history).pathStart,expectedStart);
+    assert.equal(historyState(history).pathEnd,expectedEnd);
+    assert.deepEqual(historyState(focusAction(history,'back')),before);
+  }
+});
+
+test('changing the Focus center clears hidden endpoints and Back restores path and center',()=>{
+  let history=focusAction(initialHistory(),'select','c');
+  history=focusAction(history,'scope','connections');
+  history=focusAction(history,'path-start','a');
+  history=focusAction(history,'path-end','d');
+  const before=historyState(history), beforeRoute=route(history);
+  history=focusAction(history,'select','b');
+  assert.deepEqual(focusIds(history),['a','b','c']);
+  assert.equal(historyState(history).pathStart,'a');
+  assert.equal(historyState(history).pathEnd,null);
+  assert.equal(route(history).status,'incomplete');
+  history=focusAction(history,'back');
+  assert.deepEqual(historyState(history),before);assert.deepEqual(route(history),beforeRoute);
+  assert.equal(historyState(focusAction(history,'forward')).pathEnd,null);
+});
+
+test('entering Focus validates against the new view and Show all never revives hidden choices',()=>{
+  let history=focusAction(initialHistory(),'path-start','a');
+  history=focusAction(history,'path-end','e');
+  history=focusAction(history,'select','b');
+  history=focusAction(history,'scope','connections');
+  assert.equal(historyState(history).pathStart,'a');assert.equal(historyState(history).pathEnd,null);
+  assert.equal(focusAction(history,'path-end','e'),history);
+  history=focusAction(history,'scope','all');
+  assert.equal(historyState(history).pathEnd,null);
+  history=focusAction(history,'path-end','e');assert.equal(route(history).status,'found');
+});
+
+test('Show all recomputes over the expanded diagram without changing valid endpoints or filters',()=>{
+  const v={nodes:['s','a','b','t','x'].map(id=>({id,label:id,category:'note',spaces:['work']})),edges:[
+    {id:'sa',from:'s',to:'a'},{id:'ab',from:'a',to:'b'},{id:'bt',from:'b',to:'t'},
+    ...['s','a','b','t'].map(id=>({id:'x'+id,from:'x',to:id}))]};
+  let h=reduceHistory(v,initialHistory(),{type:'context',value:'work'});
+  h=reduceHistory(v,h,{type:'select',value:'a'});h=reduceHistory(v,h,{type:'scope',value:'connections'});
+  h=reduceHistory(v,h,{type:'path-start',value:'s'});h=reduceHistory(v,h,{type:'path-end',value:'b'});
+  const before=historyState(h);
+  const length=shortestPath(visibleGraph(v,before),'s','b').edgeIds.length;
+  h=reduceHistory(v,h,{type:'scope',value:'all'});
+  assert.deepEqual(historyState(h),{...before,scope:'all'});
+  assert.equal(shortestPath(visibleGraph(v,historyState(h)),'s','b').edgeIds.length,length);
+});
+
+test('changed endpoints end search grouping while no-ops preserve it and history branches',()=>{
+  let history=action(initialHistory(),'search','a');
+  const count=history.entries.length;
+  assert.equal(action(history,'path-start','unknown'),history);
+  history=action(history,'search','Ad');assert.equal(history.entries.length,count);
+  history=action(history,'path-start','c');
+  history=action(history,'search','Ada');assert.equal(history.entries.length,count+2);
+  history=action(history,'back');history=action(history,'path-end','c');
+  assert.equal(action(history,'forward'),history);
+  history=action(history,'path-end',null);assert.equal(historyState(history).pathEnd,null);
+  history=action(history,'reset');assert.deepEqual(historyState(history),fullView);
+  assert.equal(history.entries.length,1);
+});
+
+test('endpoint normalization and clearing preserve frozen snapshots',()=>{
+  let history=focusAction(initialHistory(),'path-start','a');
+  history=focusAction(history,'path-end','d');
+  const before=JSON.stringify(history);
+  for(const entry of history.entries){Object.freeze(entry.categories);Object.freeze(entry);}
+  Object.freeze(history.entries);Object.freeze(history);
+  const next=focusAction(history,'category','journal');
+  assert.equal(historyState(next).pathEnd,null);
+  assert.equal(historyState(next).pathStart,'a');
+  assert.equal(historyState(focusAction(history,'clear-path')).pathStart,null);
+  assert.equal(JSON.stringify(history),before);
 });
