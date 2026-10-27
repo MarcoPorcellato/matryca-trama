@@ -72,6 +72,9 @@ adds shortest undirected link routes between two fictional pages in the current
 visible diagram. Native endpoint controls, ordered steps and map highlighting
 respect filters, Focus and full-view history. This is a presentation helper,
 with no shared intelligence, source acquisition or new contract capability.
+The owner-authorized Use selected as start/end convenience slice forwards the
+currently visible selected fictional page to either existing endpoint action.
+It preserves the other endpoint, filters, Focus, history rules and camera view.
 
 The default demo presentation is English for international demonstrations,
 including invented annotations and accessible status text. This copy update

@@ -37,9 +37,18 @@
       <div class="path-body">
         <p id="path-hint">Choose pages in the current view. Links can be followed in either direction.</p>
         <p id="path-scope">Search and filters limit the route, including every intermediate page.</p>
+        <p id="path-selected-hint">Select a page on the map or in the list first.</p>
         <div class="path-controls">
-          <label for="path-start">Start page<select id="path-start" aria-describedby="path-hint path-scope"></select></label>
-          <label for="path-end">End page<select id="path-end" aria-describedby="path-hint path-scope"></select></label>
+          <div class="path-endpoint">
+            <label for="path-start">Start page</label>
+            <select id="path-start" aria-describedby="path-hint path-scope"></select>
+            <button id="use-selected-start" type="button" class="secondary" aria-describedby="path-selected-hint" disabled>Use selected as start</button>
+          </div>
+          <div class="path-endpoint">
+            <label for="path-end">End page</label>
+            <select id="path-end" aria-describedby="path-hint path-scope"></select>
+            <button id="use-selected-end" type="button" class="secondary" aria-describedby="path-selected-hint" disabled>Use selected as end</button>
+          </div>
           <button id="clear-path" type="button" class="secondary" disabled>Clear path</button>
         </div>
         <p id="path-result" role="status" aria-live="polite">Choose a start and an end page.</p>
