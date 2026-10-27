@@ -25,6 +25,13 @@
       <div class="contexts" role="group" aria-label="Graph perspective"><button data-context="all" aria-pressed="true">All</button><button data-context="work" aria-pressed="false">Work</button><button data-context="personal" aria-pressed="false">Personal</button></div>
       <button id="reset" class="secondary" aria-label="Reset demo">↺ <span>Reset demo</span></button>
     </div>
+    <div class="scope-toolbar">
+      <div class="scope-controls" role="group" aria-label="Graph scope" aria-describedby="scope-hint">
+        <button id="focus-connections" type="button" aria-pressed="false" disabled>Focus connections</button>
+        <button id="show-all" type="button" disabled>Show all</button>
+      </div>
+      <div class="scope-copy"><p id="scope-description">All nodes matching your filters</p><p id="scope-hint">Show all keeps your search and filters.</p></div>
+    </div>
     <div class="workspace">
       <aside class="explore panel" aria-label="Explore the graph">
         <div class="panel-heading"><h2>Explore</h2><span id="list-count">24 nodes</span></div>

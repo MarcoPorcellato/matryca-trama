@@ -255,11 +255,55 @@ h1 {
 .secondary>span {
   margin-left:5px
 }
+.scope-toolbar {
+  display:flex;
+  flex-wrap:wrap;
+  align-items:center;
+  gap:10px 16px;
+  margin:0 0 16px
+}
+.scope-controls {
+  display:flex;
+  gap:5px;
+  padding:3px;
+  border:1px solid var(--line);
+  border-radius:9px;
+  background:#101925
+}
+.scope-controls button {
+  min-height:36px;
+  padding:7px 12px;
+  border-radius:5px;
+  background:none;
+  font-size:11px;
+  color:#b9c7d4
+}
+.scope-controls button[aria-pressed=true] {
+  background:#243d36;
+  color:#b5f0d8
+}
+.scope-controls button:disabled {
+  opacity:.4;
+  cursor:not-allowed
+}
+.scope-controls button:not(:disabled):hover {
+  background:#243d36
+}
+.scope-copy p {
+  margin:0;
+  font-size:11px;
+  color:#b9c7d4
+}
+.scope-copy #scope-hint {
+  margin-top:3px;
+  font-size:10px;
+  color:var(--muted)
+}
 .workspace {
   display:grid;
   grid-template-columns:238px minmax(300px,1fr) 258px;
   gap:15px;
-  height:max(550px,calc(100vh - 301px));
+  height:max(550px,calc(100vh - 361px));
   max-height:900px
 }
 .panel {
@@ -887,6 +931,16 @@ dialog pre {
   }
   .history-controls {
     flex-basis:100%
+  }
+  .scope-toolbar {
+    gap:8px
+  }
+  .scope-controls {
+    width:100%
+  }
+  .scope-controls button {
+    flex:1;
+    min-height:40px
   }
   .history-controls button {
     flex:1;

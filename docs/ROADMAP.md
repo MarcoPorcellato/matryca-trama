@@ -62,6 +62,11 @@ fictional selections and filters through bounded in-memory Back/Forward; see
 its [design](superpowers/specs/2026-10-26-synthetic-navigation-history-design.md).
 It adds no source, persistence or producer capability.
 
+The owner-authorized [Focus connections slice](superpowers/specs/2026-10-27-synthetic-focus-connections-design.md)
+adds a derived one-hop presentation scope, not a topology/source profile.
+It respects active filters and history; Show all retains those filters and
+selection. Focused framing covers the entire retained neighborhood.
+
 The default demo presentation is English for international demonstrations,
 including invented annotations and accessible status text. This copy update
 preserves topology, history behavior, legal notices and source-admission gates.

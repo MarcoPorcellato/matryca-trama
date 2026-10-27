@@ -50,8 +50,13 @@ personal/work filters, node details, visible-neighbor navigation and a
 keyboard-accessible node list. It reuses the vis-network renderer family used
 by Parser LENS, with all assets bundled locally and no Parser import.
 
-Back/Forward restores the selected node together with search, categories and
-personal/work perspective. Consecutive search typing forms one step; a new
+Select a node and use Focus connections to show it with its immediate visible
+neighbors, fitted together. Show all returns to nodes matching the current
+search and filters; it retains the selection. Following a neighbor moves the
+focus to that node. Hiding the center clears focus and selection together.
+
+Back/Forward restores the selected node together with search, categories,
+personal/work perspective and graph scope. Consecutive search typing forms one step; a new
 action after going back starts a new path. The latest 100 views stay in memory
 only. Reset demo and reloading clear history; zoom and scroll are not saved.
 
