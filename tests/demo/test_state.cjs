@@ -1,6 +1,7 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
 const { initialState, reduceState, visibleGraph, neighbors, suggestedNode, filteredGraph, initialHistory, historyState, reduceHistory } = require('../../apps/synthetic_demo/web/state.js');
+const { historyPresentation, rememberPresentation } = require('../../apps/synthetic_demo/web/state.js');
 const view = { nodes: [
   {id:'a',label:'Café and ideas',category:'note',spaces:['personal']},
   {id:'b',label:'Project Lighthouse',category:'project',spaces:['work']},
@@ -422,4 +423,166 @@ test('endpoint normalization and clearing preserve frozen snapshots',()=>{
   assert.equal(historyState(next).pathStart,'a');
   assert.equal(historyState(focusAction(history,'clear-path')).pathStart,null);
   assert.equal(JSON.stringify(history),before);
+});
+
+const capture = n => ({camera:{x:n,y:-n,scale:1+n/100},
+  scroll:{page:{x:0,y:n},list:{x:0,y:n+1},details:{x:0,y:n+2}}});
+
+test('presentation captures are separate from semantic views and defensively copied',()=>{
+  assert.equal(typeof rememberPresentation,'function');
+  assert.equal(historyPresentation(initialHistory()),null);
+  const input=capture(12), history=rememberPresentation(initialHistory(),input);
+  assert.deepEqual(historyState(history),fullView);
+  assert.deepEqual(historyPresentation(history),input);
+  input.camera.x=999;input.scroll.list.y=999;
+  const output=historyPresentation(history);output.camera.x=888;output.scroll.page.y=888;
+  assert.deepEqual(historyPresentation(history),capture(12));
+  assert.equal(history.entries.length,1);assert.equal(history.index,0);assert.equal(history.lastAction,null);
+});
+
+test('Back and Forward restore each presentation without populating new semantic steps',()=>{
+  let history=rememberPresentation(initialHistory(),capture(10));
+  history=action(history,'select','c');assert.equal(historyPresentation(history),null);
+  history=rememberPresentation(history,capture(20));
+  history=action(history,'context','personal');
+  history=rememberPresentation(history,capture(30));
+  history=action(history,'back');assert.deepEqual(historyPresentation(history),capture(20));
+  assert.deepEqual(historyState(history),{...fullView,selected:'c'});
+  history=action(history,'back');assert.deepEqual(historyPresentation(history),capture(10));
+  history=action(action(history,'forward'),'forward');
+  assert.deepEqual(historyPresentation(history),capture(30));
+});
+
+test('coalescing clears changed-query capture and collapse restores its predecessor capture',()=>{
+  let history=rememberPresentation(initialHistory(),capture(1));
+  history=action(history,'search','a');history=rememberPresentation(history,capture(2));
+  history=action(history,'search','ad');
+  assert.equal(history.entries.length,2);assert.equal(historyPresentation(history),null);
+  history=rememberPresentation(history,capture(3));history=action(history,'search','');
+  assert.equal(history.entries.length,1);assert.deepEqual(historyPresentation(history),capture(1));
+  history=action(history,'search','ada');history=rememberPresentation(history,capture(4));
+  history=action(history,'back');assert.deepEqual(historyPresentation(history),capture(1));
+});
+
+test('capture updates preserve Forward, no-op identity and consecutive search grouping',()=>{
+  let history=action(initialHistory(),'search','a');
+  history=rememberPresentation(history,capture(2));
+  assert.equal(action(history,'search','a'),history);
+  history=action(history,'search','ad');assert.equal(history.entries.length,2);
+  history=action(history,'select','c');history=action(history,'back');
+  history=rememberPresentation(history,capture(4));
+  assert.equal(history.entries.length,3);assert.equal(history.index,1);
+  assert.equal(action(history,'select','unknown'),history);
+  assert.equal(historyState(action(history,'forward')).selected,'c');
+});
+
+test('presentation alignment survives eviction and branching',()=>{
+  let history=initialHistory();
+  for(let i=0;i<110;i++) {
+    history=rememberPresentation(history,capture(i));
+    history=action(history,'select',i%2?'b':'c');
+  }
+  history=rememberPresentation(history,capture(110));
+  assert.equal(history.entries.length,100);assert.equal(history.presentations.length,100);
+  history=action(history,'back');assert.deepEqual(historyPresentation(history),capture(109));
+  history=action(history,'back');assert.deepEqual(historyPresentation(history),capture(108));
+  history=action(history,'context','personal');assert.equal(historyPresentation(history),null);
+  assert.equal(action(history,'forward'),history);
+  history=action(history,'back');assert.deepEqual(historyPresentation(history),capture(108));
+});
+
+test('invalid captures preserve history while renderer-free captures remain usable',()=>{
+  const history=rememberPresentation(initialHistory(),capture(5));
+  for(const bad of [null,{}, {...capture(1),camera:{x:0,y:0,scale:0}},
+    {...capture(1),camera:{x:Infinity,y:0,scale:1}},
+    {...capture(1),scroll:{...capture(1).scroll,list:{x:0,y:-1}}},
+    {...capture(1),scroll:{...capture(1).scroll,page:{x:0,y:NaN}}},
+    {...capture(1),camera:{x:'1',y:0,scale:1}}]) assert.equal(rememberPresentation(history,bad),history);
+  const withoutRenderer={...capture(7),camera:null};
+  assert.deepEqual(historyPresentation(rememberPresentation(history,withoutRenderer)),withoutRenderer);
+});
+
+test('capture and navigation preserve frozen inputs and reset clears all presentation history',()=>{
+  let history=rememberPresentation(initialHistory(),capture(1));
+  history=action(history,'select','c');history=rememberPresentation(history,capture(2));
+  const before=JSON.stringify(history);
+  const freeze=value=>{if(value&&typeof value==='object'){Object.values(value).forEach(freeze);Object.freeze(value);}};
+  freeze(history);const input=capture(3);freeze(input);
+  const updated=rememberPresentation(history,input);
+  assert.deepEqual(historyPresentation(updated),capture(3));
+  assert.equal(JSON.stringify(history),before);
+  const reset=action(updated,'reset');assert.equal(historyPresentation(reset),null);
+  assert.equal(reset.entries.length,1);assert.equal(reset.presentations.length,1);
+});
+
+const {mount}=require('./app_harness.cjs');
+const appView={nodes:view.nodes.map(n=>({...n,description:'Fictional',degree:2,x:50,y:60})),edges:view.edges};
+
+test('app Back and Forward restore map and all scroll targets after DOM rebuilding',()=>{
+  const app=mount(appView);
+  app.select('c');app.setPresentation(capture(10));
+  app.select('b');app.setPresentation(capture(20));
+  app.click('history-back');assert.deepEqual(app.presentation(),capture(10));
+  assert.equal(app.nodes.get('node-label').textContent,'Ada');
+  app.click('history-forward');assert.deepEqual(app.presentation(),capture(20));
+  assert.equal(app.nodes.get('node-label').textContent,'Project Lighthouse');
+  assert.equal(app.document.activeElement.id,'history-back');
+});
+
+test('app restoration survives pending focus animation and a late initial draw',()=>{
+  const app=mount(appView,{draw:false});app.setPresentation(capture(15));
+  app.select('b');
+  app.click('history-back');app.network.finishAnimation();app.network.emit('afterDrawing');
+  assert.deepEqual(app.presentation(),capture(15));
+});
+
+test('app-owned focus never schedules an uncancellable first-frame animation',()=>{
+  const app=mount(appView);app.select('b');
+  assert.equal(app.network.focuses[0].animation,false);
+  assert.equal(app.network.pending,null);
+});
+
+test('app search collapse restores predecessor camera/scroll before a fresh search',()=>{
+  const app=mount(appView);app.setPresentation(capture(5));
+  app.search('a');app.setPresentation(capture(9));app.search('');
+  assert.deepEqual(app.presentation(),capture(5));
+  app.search('ad');app.setPresentation(capture(12));app.click('history-back');
+  assert.deepEqual(app.presentation(),capture(5));
+  app.click('history-forward');assert.deepEqual(app.presentation(),capture(12));
+});
+
+test('app no-op endpoint actions preserve scroll and Forward without rebuilding',()=>{
+  const app=mount(appView);app.select('b');app.select('c');app.click('history-back');
+  app.setPresentation(capture(8));const before=app.nodes.get('node-list').rebuilds;
+  app.nodes.get('path-start').value='';app.nodes.get('path-start').emit('change');
+  assert.equal(app.nodes.get('node-list').rebuilds,before);
+  assert.deepEqual(app.presentation(),capture(8));
+  app.click('history-forward');app.click('history-back');
+  assert.deepEqual(app.presentation(),capture(8));
+});
+
+test('app preserves renderer-free scroll and clamps restored positions after reflow',()=>{
+  const app=mount(appView,{renderer:false});app.setPresentation({...capture(15),camera:null});
+  app.select('b');app.page.maxScroll=5;app.nodes.get('node-list').maxScroll=6;
+  app.click('history-back');
+  assert.deepEqual(app.presentation(),{camera:null,scroll:{page:{x:0,y:5},list:{x:0,y:6},details:{x:0,y:17}}});
+});
+
+test('map and scroll interactions create no navigation steps or Forward truncation',()=>{
+  const app=mount(appView);app.select('b');app.select('c');app.click('history-back');
+  const position=app.nodes.get('history-position').textContent;
+  app.setPresentation(capture(7));app.scroll();app.network.emit('zoom');app.network.emit('dragEnd');
+  assert.equal(app.nodes.get('history-position').textContent,position);
+  assert.equal(app.nodes.get('history-forward').disabled,false);
+  app.click('history-forward');app.click('history-back');assert.deepEqual(app.presentation(),capture(7));
+});
+
+test('explicit reselection recenters without adding a step or discarding Forward',()=>{
+  const app=mount(appView);app.select('b');app.select('c');app.click('history-back');
+  app.setPresentation(capture(8));const before=app.nodes.get('history-position').textContent;
+  app.select('b');assert.equal(app.nodes.get('history-position').textContent,before);
+  assert.equal(app.nodes.get('history-forward').disabled,false);
+  assert.deepEqual(app.network.camera,{x:50,y:60,scale:1.08});
+  app.click('history-forward');app.click('history-back');
+  assert.deepEqual(app.network.camera,{x:50,y:60,scale:1.08});
 });
