@@ -2,15 +2,35 @@
 (function () {
   'use strict';
   const view = JSON.parse(document.getElementById('demo-data').textContent);
-  const { initialHistory, historyState, reduceHistory, visibleGraph, neighbors, suggestedNode } = window.TramaDemoState;
+  const { initialHistory, historyState, reduceHistory, historyPresentation, rememberPresentation,
+    visibleGraph, neighbors, suggestedNode } = window.TramaDemoState;
   const { shortestPath } = window.TramaDemoPath;
   const categories = { note:['Note','#78dfbb'],project:['Project','#b5a0fc'],journal:['Journal','#7bb5fa'],tag:['Tag','#e6c17a'] };
   const byId = new Map(view.nodes.map(n => [n.id,n]));
   const $ = id => document.getElementById(id);
-  const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   let history = initialHistory();
   let state = historyState(history);
   let network = null, graphNodes = null, graphEdges = null;
+  let presenting = false, initialFitPending = true;
+  function scrollTargets() {
+    return {page:document.scrollingElement,list:$('node-list'),details:$('details')};
+  }
+  function capturePresentation() {
+    const position = network && network.getViewPosition();
+    return {camera:position ? {x:position.x,y:position.y,scale:network.getScale()} : null,
+      scroll:Object.fromEntries(Object.entries(scrollTargets()).map(([key,node])=>
+        [key,{x:Math.max(0,node.scrollLeft),y:Math.max(0,node.scrollTop)}]))};
+  }
+  function rememberCurrentPresentation() {
+    if (!presenting) history=rememberPresentation(history,capturePresentation());
+  }
+  function restorePresentation(snapshot) {
+    if (network && snapshot.camera) network.moveTo({
+      position:{x:snapshot.camera.x,y:snapshot.camera.y},scale:snapshot.camera.scale,animation:false});
+    for (const [key,node] of Object.entries(scrollTargets())) {
+      node.scrollLeft=snapshot.scroll[key].x;node.scrollTop=snapshot.scroll[key].y;
+    }
+  }
   function element(tag, cls, text) {
     const node = document.createElement(tag);
     if (cls) node.className = cls;
@@ -32,17 +52,22 @@
       interaction:{hover:true,tooltipDelay:250,keyboard:false,zoomView:true,dragView:true,multiselect:false},
     });
     network.on('click', event => { if (event.nodes.length) dispatch({type:'select',value:event.nodes[0]},false); });
-    network.once('afterDrawing', () => fit());
+    network.once('afterDrawing', () => { if (initialFitPending) fit(); });
+    for (const event of ['zoom','dragEnd','animationFinished']) network.on(event,rememberCurrentPresentation);
   }
   function fit() {
+    initialFitPending=false;
     if (!network) return;
     const ids = visibleGraph(view,state).nodes.map(n=>n.id);
     if (!ids.length) return;
     network.fit({nodes:ids,animation:false});
     if (network.getScale()>1.15) network.moveTo({scale:1.15,animation:false});
+    rememberCurrentPresentation();
   }
   function zoom(factor) {
+    initialFitPending=false;
     if (network) network.moveTo({scale:Math.max(.15,Math.min(3,network.getScale()*factor)),animation:false});
+    rememberCurrentPresentation();
   }
   function nodeButton(node, selected, neighbor) {
     const button = element('button','node-row'+(selected?' is-selected':''));
@@ -156,16 +181,21 @@
   }
   function dispatch(action, focus) {
     const focusedControl = document.activeElement && document.activeElement.id;
-    const next = reduceHistory(view,history,action);
+    const captured = rememberPresentation(history,capturePresentation());
+    const next = reduceHistory(view,captured,action);
     const reselecting = focus && action.type === 'select' && action.value === state.selected;
-    if (next === history && !reselecting) return;
-    history=next;state=historyState(history);render();
+    history=captured;
+    if (next === captured && !reselecting) return;
     const traveling = action.type === 'back' || action.type === 'forward';
+    const restoring = traveling || (action.type === 'search' && next.index < captured.index);
+    const destination = restoring ? historyPresentation(next) : null;
+    initialFitPending=false;presenting=true;
+    history=next;state=historyState(history);render();
     const pathAction = ['path-start','path-end','clear-path'].includes(action.type);
-    if (!pathAction && state.scope === 'connections') {
+    if (!destination && !pathAction && state.scope === 'connections') {
       fit();
-    } else if (!pathAction) {
-      if ((focus || traveling) && state.selected && network) network.focus(state.selected,{scale:Math.max(.85,network.getScale()),animation:reduced?false:{duration:250,easingFunction:'easeInOutQuad'}});
+    } else if (!destination && !pathAction) {
+      if ((focus || traveling) && state.selected && network) network.focus(state.selected,{scale:Math.max(.85,network.getScale()),animation:false});
       if ((traveling && !state.selected) || ['context','category','reset','scope'].includes(action.type)) fit();
     }
     if (focusedControl === 'show-all' && $('show-all').disabled) {
@@ -178,7 +208,10 @@
       const opposite = $(focusedControl === 'history-back' ? 'history-forward' : 'history-back');
       (opposite.disabled ? $('reset') : opposite).focus({preventScroll:true});
     }
+    if (destination) restorePresentation(destination);
+    presenting=false;rememberCurrentPresentation();
   }
+  document.addEventListener('scroll',rememberCurrentPresentation,true);
   $('search').addEventListener('input',event=>dispatch({type:'search',value:event.target.value},false));
   document.querySelectorAll('[data-context]').forEach(b=>b.addEventListener('click',()=>dispatch({type:'context',value:b.dataset.context},false)));
   document.querySelectorAll('[data-category]').forEach(b=>b.addEventListener('change',()=>dispatch({type:'category',value:b.dataset.category},false)));

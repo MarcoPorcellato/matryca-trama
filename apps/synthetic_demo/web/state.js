@@ -60,10 +60,33 @@
     return visible.find(n=>n.category==='project') || visible[0] || null;
   }
   function initialHistory() {
-    return { entries: [initialState()], index: 0, lastAction: null };
+    return { entries: [initialState()], presentations: [null], index: 0, lastAction: null };
   }
   function historyState(history) {
     return history.entries[history.index];
+  }
+  function copyPresentation(value) {
+    const point = p => p && Number.isFinite(p.x) && Number.isFinite(p.y);
+    if (!value || (value.camera !== null && (!point(value.camera)
+      || !Number.isFinite(value.camera.scale) || value.camera.scale <= 0))) return null;
+    const scroll = {};
+    for (const key of ['page','list','details']) {
+      const position = value.scroll && value.scroll[key];
+      if (!point(position) || position.x < 0 || position.y < 0) return null;
+      scroll[key] = {x:position.x,y:position.y};
+    }
+    return {camera:value.camera === null ? null
+      : {x:value.camera.x,y:value.camera.y,scale:value.camera.scale},scroll};
+  }
+  function historyPresentation(history) {
+    return copyPresentation(history.presentations && history.presentations[history.index]);
+  }
+  function rememberPresentation(history, snapshot) {
+    const capture = copyPresentation(snapshot);
+    if (!capture) return history;
+    const presentations = history.entries.map((_, index) => history.presentations?.[index] || null);
+    presentations[history.index] = capture;
+    return {...history,presentations};
   }
   function sameView(left, right) {
     return left.query === right.query && left.context === right.context
@@ -82,20 +105,25 @@
     const next = reduceState(view, historyState(history), action);
     if (sameView(next, historyState(history))) return history;
     const entries = history.entries.slice(0, history.index + 1);
+    const presentations = entries.map((_, index) => history.presentations?.[index] || null);
     const coalesce = action.type === 'search' && history.lastAction === 'search'
       && history.index === history.entries.length - 1 && history.index > 0;
     if (coalesce) {
       if (sameView(next, entries[entries.length - 2])) {
         entries.pop();
-        return { entries, index: entries.length - 1, lastAction: null };
+        presentations.pop();
+        return { entries, presentations, index: entries.length - 1, lastAction: null };
       }
       entries[entries.length - 1] = next;
+      presentations[presentations.length - 1] = null;
     } else {
       entries.push(next);
+      presentations.push(null);
     }
     const bounded = entries.slice(-100);
-    return { entries: bounded, index: bounded.length - 1, lastAction: action.type };
+    return { entries: bounded, presentations: presentations.slice(-100),
+      index: bounded.length - 1, lastAction: action.type };
   }
   return { initialState, reduceState, filteredGraph, visibleGraph, neighbors, suggestedNode,
-    initialHistory, historyState, reduceHistory };
+    initialHistory, historyState, reduceHistory, historyPresentation, rememberPresentation };
 });

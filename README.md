@@ -67,7 +67,11 @@ shows which page will be used. Repeating the same choice leaves history unchange
 Back/Forward restores the selected node together with search, categories,
 personal/work perspective, graph scope and path endpoints. Consecutive search typing forms one step; a new
 action after going back starts a new path. The latest 100 views stay in memory
-only. Reset demo and reloading clear history; zoom and scroll are not saved.
+only. Back/Forward also restores map centre, zoom and page/list/detail scrolling.
+Scrolling and moving the map do not add steps. Reset demo and reloading clear
+history; nothing is stored between sessions. A changed layout can clamp scroll
+positions to the available content. Selection centering and restoration are
+immediate, with no camera animation.
 
 From the repository root, with the existing workspace dependencies available:
 
