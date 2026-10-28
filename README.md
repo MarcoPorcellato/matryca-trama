@@ -60,6 +60,9 @@ in the current view, with readable steps. Links can be followed in either
 direction. Search, filters and Focus limit every page in the route; Show all
 expands the view while keeping filters. Clear path removes only the endpoint
 choices and highlighting. Choosing endpoints does not move or zoom the map.
+Select a page on the map or in the list, then use Use selected as start/end
+below either selector to set that endpoint directly. The selected-page hint
+shows which page will be used. Repeating the same choice leaves history unchanged.
 
 Back/Forward restores the selected node together with search, categories,
 personal/work perspective, graph scope and path endpoints. Consecutive search typing forms one step; a new

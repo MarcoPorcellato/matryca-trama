@@ -586,3 +586,82 @@ test('explicit reselection recenters without adding a step or discarding Forward
   app.click('history-forward');app.click('history-back');
   assert.deepEqual(app.network.camera,{x:50,y:60,scale:1.08});
 });
+
+test('selected endpoint shortcuts set the right targets without moving the camera',()=>{
+  const app=mount(appView);
+  assert.equal(app.nodes.get('use-selected-start').disabled,true);
+  assert.equal(app.nodes.get('use-selected-end').disabled,true);
+  app.select('b');app.setPresentation(capture(12));
+  app.click('use-selected-start');
+  assert.equal(app.nodes.get('path-start').value,'b');
+  assert.equal(app.nodes.get('path-end').value,'');
+  assert.deepEqual(app.network.camera,capture(12).camera);
+  assert.equal(app.nodes.get('history-position').textContent,'3 / 3');
+  app.select('c');app.setPresentation(capture(18));app.click('use-selected-end');
+  assert.equal(app.nodes.get('path-start').value,'b');
+  assert.equal(app.nodes.get('path-end').value,'c');
+  assert.deepEqual(app.network.camera,capture(18).camera);
+  assert.equal(app.document.activeElement.id,'use-selected-end');
+});
+
+test('duplicate selected endpoint after Back preserves Forward, capture and control focus',()=>{
+  const app=mount(appView);app.select('b');app.click('use-selected-start');
+  assert.equal(app.nodes.get('path-start').value,'b');
+  app.select('c');app.click('history-back');app.setPresentation(capture(27));
+  const position=app.nodes.get('history-position').textContent;
+  const rebuilds=app.nodes.get('node-list').rebuilds;
+  app.click('use-selected-start');
+  assert.equal(app.nodes.get('history-position').textContent,position);
+  assert.equal(app.nodes.get('history-forward').disabled,false);
+  assert.equal(app.nodes.get('node-list').rebuilds,rebuilds);
+  assert.equal(app.document.activeElement.id,'use-selected-start');
+  assert.deepEqual(app.presentation(),capture(27));
+  app.click('history-forward');assert.equal(app.nodes.get('node-label').textContent,'Ada');
+  app.click('history-back');assert.deepEqual(app.presentation(),capture(27));
+});
+
+test('duplicate selected endpoint keeps consecutive search typing in one history step',()=>{
+  const app=mount(appView);app.select('c');app.click('use-selected-start');
+  app.search('a');const position=app.nodes.get('history-position').textContent;
+  app.click('use-selected-start');app.search('ad');
+  assert.equal(app.nodes.get('history-position').textContent,position);
+  app.click('history-back');assert.equal(app.nodes.get('search').value,'');
+  assert.equal(app.nodes.get('path-start').value,'c');
+});
+
+test('selected endpoint shortcuts preserve Focus and perspective while history restores endpoints',()=>{
+  const app=mount(appView);app.select('b');
+  app.contexts.find(b=>b.dataset.context==='work').emit('click');
+  app.click('focus-connections');app.click('use-selected-start');app.select('c');
+  app.setPresentation(capture(11));app.click('use-selected-end');
+  assert.equal(app.nodes.get('focus-connections').attributes['aria-pressed'],'true');
+  assert.equal(app.nodes.get('view-title').textContent,'The work perspective');
+  assert.equal(app.nodes.get('path-start').value,'b');assert.equal(app.nodes.get('path-end').value,'c');
+  assert.deepEqual(app.network.camera,capture(11).camera);
+  app.click('history-back');assert.equal(app.nodes.get('path-end').value,'');
+  app.click('history-forward');assert.equal(app.nodes.get('path-end').value,'c');
+  assert.deepEqual(app.network.camera,capture(11).camera);
+});
+
+test('hidden and empty selections disable both shortcuts without adding history',()=>{
+  const app=mount(appView);app.select('b');app.click('use-selected-start');
+  app.contexts.find(b=>b.dataset.context==='personal').emit('click');
+  assert.equal(app.nodes.get('use-selected-start').disabled,true);
+  assert.equal(app.nodes.get('use-selected-end').disabled,true);
+  assert.equal(app.nodes.get('path-start').value,'');
+  assert.equal(app.nodes.get('path-selected-hint').textContent,'Select a page on the map or in the list first.');
+  app.search('fictional-no-results');const position=app.nodes.get('history-position').textContent;
+  assert.equal(app.nodes.get('path-selected-hint').textContent,'No pages in this view. Change or reset filters, then select a page.');
+  app.click('use-selected-end');assert.equal(app.nodes.get('history-position').textContent,position);
+  app.click('reset');assert.equal(app.nodes.get('history-position').textContent,'1 / 1');
+  assert.equal(app.nodes.get('use-selected-start').disabled,true);
+});
+
+test('selected-page hint retains hostile fictional labels as literal text',()=>{
+  const hostile='</script><img src=x onerror=alert(1)>';
+  const data={...appView,nodes:appView.nodes.map(n=>n.id==='b'?{...n,label:hostile}:n)};
+  const app=mount(data);app.select('b');
+  assert.equal(app.nodes.get('path-selected-hint').textContent,'Selected page: '+hostile);
+  assert.equal(app.nodes.get('path-selected-hint').children.length,0);
+  app.click('use-selected-end');assert.equal(app.nodes.get('path-end').value,'b');
+});

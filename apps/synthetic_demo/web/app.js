@@ -81,6 +81,11 @@
     return count+' '+singular+(count===1?'':'s');
   }
   function renderPath(current, path) {
+    const selected = current.nodes.find(node=>node.id===state.selected);
+    $('use-selected-start').disabled=!selected;$('use-selected-end').disabled=!selected;
+    $('path-selected-hint').textContent=selected ? 'Selected page: '+selected.label
+      : current.nodes.length ? 'Select a page on the map or in the list first.'
+      : 'No pages in this view. Change or reset filters, then select a page.';
     for (const [id, value] of [['path-start',state.pathStart],['path-end',state.pathEnd]]) {
       const placeholder = element('option','',current.nodes.length?'Choose a page…':'No pages in this view');
       placeholder.value='';
@@ -214,6 +219,9 @@
   $('show-all').addEventListener('click',()=>dispatch({type:'scope',value:'all'},false));
   for (const id of ['path-start','path-end']) {
     $(id).addEventListener('change',event=>dispatch({type:id,value:event.target.value || null},false));
+  }
+  for (const [id, type] of [['use-selected-start','path-start'],['use-selected-end','path-end']]) {
+    $(id).addEventListener('click',()=>dispatch({type,value:state.selected},false));
   }
   $('clear-path').addEventListener('click',()=>dispatch({type:'clear-path'},false));
   $('history-back').addEventListener('click',()=>dispatch({type:'back'},false));
