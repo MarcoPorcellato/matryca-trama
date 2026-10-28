@@ -107,3 +107,24 @@ hostile-label browser cases remain unqualified.
 All 253 ordinary Python tests, 40 Node tests and architecture/demo/foundation
 validators passed. The final independent source gate and draft-PR CI remain
 separate delivery gates. Local Beads holds execution receipts and completion.
+
+## Integration readiness review — 2026-10-28
+
+Local Beads `matryca-trama-l5a.29` records a separate readiness review after
+PRs #44 and #45. The candidate applies the original #43 changes at
+`328c8f3b95dca87d66fe957038c24d009678153d` to current main
+`0f5f8be89b2ecb2f0620b8ee4eb47bfe12d3b87a`, retaining camera/scroll restoration.
+The original six paths integrate automatically; no product correction was
+needed. This section does not replace the original design or broaden scope.
+
+Six additional composition tests exercise both endpoint bindings, duplicate
+choice after Back, search grouping, Focus/perspective preservation, hidden/empty
+selection and literal hostile-label display. All six fail against the old main
+composition without shortcuts, then pass against the combined candidate.
+Together with the existing suites, this gives 61 passing Node tests. Tests use
+the existing boundary harness; no new test or runtime dependency is introduced.
+
+Source publication, hosted checks on an updated #43 head and merge remain
+separate from this local review. Beads records the observed browser checks,
+independent Astra verdict and any remaining authorization. Earlier narrow,
+tablet and detail-overflow evidence limitations are not silently closed.
