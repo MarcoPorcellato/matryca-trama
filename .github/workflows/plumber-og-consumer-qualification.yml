@@ -58,7 +58,7 @@ jobs:
           "$PYTHON" -I -B tests/qualification/provision.py --root "$JOB_ROOT"
       - name: Retain bounded sanitized unit evidence
         if: always()
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
         with:
           name: trama-og-unit-${{ matrix.row }}-${{ github.run_id }}-${{ github.run_attempt }}
           path: ${{ env.QUAL_ROOT }}/artifacts/
@@ -106,7 +106,7 @@ jobs:
           "$QUAL_ROOT/consumer/bin/python" -I -B "$GITHUB_WORKSPACE/tests/qualification/real_probe.py" --root "$QUAL_ROOT"
       - name: Retain bounded sanitized producer evidence
         if: always()
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
         with:
           name: trama-og-alpha3-${{ matrix.row }}-${{ github.run_id }}-${{ github.run_attempt }}
           path: ${{ env.QUAL_ROOT }}/artifacts/
